@@ -1,0 +1,278 @@
+﻿<Page x:Class="Pebble_Time_Manager.HubPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:Pebble_Time_Manager"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:data="using:Pebble_Time_Manager.Data"
+      xmlns:converters="using:Pebble_Time_Manager.Converters"
+      mc:Ignorable="d">
+
+    <Page.Resources>
+        <ResourceDictionary>
+
+            <converters:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
+
+            <DataTemplate x:Key="HubSectionHeaderTemplate">
+                <TextBlock Margin="0,0,0,-9.5"
+                           Text="{Binding}" />
+            </DataTemplate>
+
+            <!-- Grid-appropriate item template as seen in section 2 -->
+            <DataTemplate x:Key="Standard200x180TileItemTemplate">
+                <Grid Margin="0,0,9.5,9.5"
+                      Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}">
+                    <Image Source="{Binding ImagePath}"
+                           Stretch="UniformToFill"
+                           AutomationProperties.Name="{Binding Title}"
+                           Height="138.5"
+                           Width="138.5" />
+                    <TextBlock Text="{Binding Title}"
+                               VerticalAlignment="Bottom"
+                               Margin="9.5,0,0,6.5"
+                               Style="{ThemeResource BaseTextBlockStyle}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="WatchItem" x:Name="dtWatchItem">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Image
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Source="{Binding Image}" Width="40" Height="40"                        
+                        />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="{Binding Name}"
+                                   VerticalAlignment="Center"
+                                   Margin="9.5,0,0,0"
+                                    >
+                        </TextBlock>
+                        <TextBlock Text="{Binding Developer}"
+                                   VerticalAlignment="Center"
+                                   Margin="9.5,0,0,6.5"
+                                    >
+                        </TextBlock>
+                    </StackPanel>    
+                    <SymbolIcon  Grid.Column="2"
+                                 Margin="0,0,40,0"
+                                 Symbol="Favorite"
+                                 VerticalAlignment="Top"
+                                 Visibility="{Binding Active, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="StandardTripleLineItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border 
+                            Margin="0,9.5,0,0"
+                            Grid.Column="0"
+                            HorizontalAlignment="Left">
+                        <Image Source="{Binding ImagePath}"
+                               Stretch="UniformToFill"
+                               AutomationProperties.Name="{Binding Title}"
+                               Height="79"
+                               Width="79" />
+                    </Border>
+                    <StackPanel Grid.Column="1"
+                                Margin="14.5,0,0,0">
+                        <TextBlock Text="{Binding Title}"
+                                    />
+                        <TextBlock Text="{Binding Description}"
+                                   
+                                   Foreground="{ThemeResource PhoneMidBrush}" />
+                        <TextBlock Text="{Binding Subtitle}"
+                                    />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="StandardDoubleLineItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border 
+                            Margin="0,9.5,0,0"
+                            Grid.Column="0"
+                            HorizontalAlignment="Left">
+                        <Image Source="{Binding ImagePath}"
+                               Stretch="UniformToFill"
+                               AutomationProperties.Name="{Binding Title}"
+                               Height="79"
+                               Width="79" />
+                    </Border>
+                    <StackPanel Grid.Column="1"
+                                Margin="14.5,0,0,0">
+                        <TextBlock Text="{Binding Title}"
+                                   />
+                        <TextBlock Text="{Binding Subtitle}"
+                                    />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Hub x:Name="Hub"
+             x:Uid="Hub"
+             Header="pebble time manager"
+             Background="#FF0088FF"
+             SectionsInViewChanged="Hub_SectionsInViewChanged">
+
+            <HubSection x:Uid="HubWatchFaces"
+                        x:Name="HubWatchFaces"
+                        Header="WATCH FACES"
+                        HeaderTemplate="{ThemeResource HubSectionHeaderTemplate}">
+                <DataTemplate>
+
+                    <ListView x:Name="lvWatchFaces"
+                              ItemTemplate="{StaticResource WatchItem}"
+                              ItemsSource="{Binding WatchFaces.WatchFaces}"
+                              Background="Transparent" 
+                              SelectionMode="None" 
+                              SelectionChanged="lvWatchFaces_SelectionChanged" 
+                              IsItemClickEnabled="True"
+                              ItemClick="lvWatchFaces_ItemClick"                             
+                              >
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
+
+                    </ListView>
+                </DataTemplate>
+            </HubSection>
+
+            <HubSection x:Uid="HubWatchApps"
+                        x:Name="HubWatchApps"
+                        Header="WATCH APPS"
+                        HeaderTemplate="{ThemeResource HubSectionHeaderTemplate}">
+                <DataTemplate>
+                    <!--<ListBox x:Name="lstWatchApps"
+                             ItemTemplate="{StaticResource WatchItem}"
+                             ItemsSource="{Binding WatchApps.WatchApps}"
+                             Background="Transparent">
+                    </ListBox>-->
+
+                    <ListView x:Name="lvWatchApps"
+                              ItemTemplate="{StaticResource WatchItem}"
+                              ItemsSource="{Binding WatchApps.WatchApps}"
+                              Background="Transparent" 
+                              SelectionMode="None" 
+                              IsItemClickEnabled="True" SelectionChanged="lvWatchApps_SelectionChanged" ItemClick="lvWatchApps_ItemClick"
+                              >
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+
+                </DataTemplate>
+            </HubSection>
+
+            <HubSection x:Name="StatusHub"
+                        x:Uid="Status"
+                        Header="STATUS"
+                        HeaderTemplate="{ThemeResource HubSectionHeaderTemplate}">
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        
+                        <Button Content="Connect"
+                            Grid.Row="4"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
+                            BorderBrush="Transparent"
+                            Background="#C000C000"
+                            Margin="0"
+                            Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=XOR}"
+                            Command="{Binding ConnectCommand}"/>
+
+                        <Button Content="Disconnect"
+                            Grid.Row="4"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
+                            BorderBrush="Transparent"
+                            Background="#C0C00000"
+                            Margin="0"
+                            Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Command="{Binding DisconnectCommand}"/>
+                        
+                        
+                    <ListBox x:Name="lstLogs"
+                             ItemsSource="{Binding Log}"
+                             Grid.Row="0"
+                             Grid.RowSpan="4"
+                             Margin="0,0,0,20"
+                             Background="#80FFFFFF"
+                             BorderBrush="Transparent"
+                             ScrollViewer.VerticalScrollBarVisibility="Visible" />
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+        </Hub>
+    </Grid>
+    <Page.BottomAppBar>
+        <CommandBar Background="#CC1F1F1F">
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Name="btnSynchronize"
+                              Icon="Sync"
+                              Label="Synchronize"
+                              Click="btnSynchronizeCalender_Click" />
+               <!-- <AppBarButton x:Name="btnTest"
+                              Icon="Tag"
+                              Label="Test" Click="btnTest_Click" 
+                              />-->
+                <AppBarButton x:Name="btnEdit"
+                              Icon="Edit"
+                              Label="Edit" 
+                              Click="btnEdit_Click" />
+                <AppBarButton x:Name="btnClear"
+                              Icon="Clear"
+                              Label="Clear"
+                              Command="{Binding ClearCommand}" Click="btnClear_Click"/>
+                <AppBarButton x:Name="btnSave"
+                              Icon="Back"
+                              Label="Back" Click="btnSave_Click"  />
+                <AppBarButton x:Name="btnDelete"
+                              Icon="Delete"
+                              Label="Delete" Click="btnDelete_Click"/>
+                <AppBarButton x:Name="btnStore"
+                              Icon="Add"
+                              Label="Store"
+                              Click="btnStore_Click" />
+                <AppBarButton x:Name="btnSettings"
+                              Icon="Setting"
+                              Label="Settings"
+                              Click="btnSettings_Click" />
+            </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="btnResync"
+                              Label="Resync Pebble Time" Click="btnResync_Click"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
+</Page>
