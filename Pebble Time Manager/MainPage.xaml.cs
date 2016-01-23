@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pebble_Time_Manager.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,11 +23,18 @@ namespace Pebble_Time_Manager
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private vmBinder _vmBinder;
+
         public MainPage()
         {
             this.InitializeComponent();
 
             if (IsMobile) MySplitView.CompactPaneLength = 0;
+
+            _vmBinder = vmBinder.GetInstance();
+            _vmBinder.PageWatchApp = true;
+
+            DataContext = _vmBinder;
         }
 
         public static bool IsMobile
@@ -41,6 +49,11 @@ namespace Pebble_Time_Manager
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)
         {
             MySplitView.IsPaneOpen = !MySplitView.IsPaneOpen;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine(_vmBinder.PageWatchApp);
         }
     }
 }

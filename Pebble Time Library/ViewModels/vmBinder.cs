@@ -61,6 +61,71 @@ namespace Pebble_Time_Manager.ViewModels
 
         public vmSportApp Sport { get; set; }
 
+        int _PageSelected = 2;
+        private int PageSelected
+        {
+            get
+            {
+                return _PageSelected;
+            }
+            set
+            {
+                _PageSelected = value;
+                NotifyPropertyChanged("PageWatchFace");
+                NotifyPropertyChanged("PageWatchApp");
+                NotifyPropertyChanged("PageConnect");
+                NotifyPropertyChanged("PageSettings");
+            }
+        }
+
+        public bool PageWatchFace
+        {
+            get
+            {
+                return (PageSelected == 1);
+            }
+            set
+            {
+                PageSelected = 1;
+            }
+        }
+
+        public bool PageWatchApp
+        {
+            get
+            {
+                return (PageSelected == 2);
+            }
+            set
+            {
+                PageSelected = 2;
+            }
+        }
+
+        public bool PageConnect
+        {
+            get
+            {
+                return (PageSelected == 3);
+            }
+            set
+            {
+                PageSelected = 3;
+            }
+        }
+
+        public bool PageSettings
+        {
+            get
+            {
+                return (PageSelected == 4);
+            }
+            set
+            {
+                PageSelected = 4;
+            }
+        }
+
         private vmNewMatch _newMatch;
         public vmNewMatch vmNewMatch
         {
