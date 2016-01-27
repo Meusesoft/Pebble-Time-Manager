@@ -4,7 +4,7 @@
       xmlns:local="using:Pebble_Time_Manager"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:data="using:Pebble_Time_Manager.Data"
+    
       xmlns:converters="using:Pebble_Time_Manager.Converters"
       mc:Ignorable="d">
 
@@ -90,7 +90,7 @@
                                     />
                         <TextBlock Text="{Binding Description}"
                                    
-                                   Foreground="{ThemeResource PhoneMidBrush}" />
+                                  />
                         <TextBlock Text="{Binding Subtitle}"
                                     />
                     </StackPanel>

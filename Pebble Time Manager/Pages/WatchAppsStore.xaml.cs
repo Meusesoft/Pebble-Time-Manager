@@ -97,7 +97,7 @@ namespace Pebble_Time_Manager
         {
             this.navigationHelper.OnNavigatedTo(e);
 
-            if (e.Parameter.GetType() == typeof(String))
+            /*if (e.Parameter.GetType() == typeof(String))
             {
                 String _parameter = (String)e.Parameter;
                 if (_parameter == "faces")
@@ -108,7 +108,7 @@ namespace Pebble_Time_Manager
                 {
                     btnApps_Click(null, null);
                 }
-            }
+            }*/
 
             wbView.LongRunningScriptDetected += WbView_LongRunningScriptDetected;
             wbView.ScriptNotify += WbView_ScriptNotify;

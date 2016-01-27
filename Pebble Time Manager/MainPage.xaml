@@ -67,7 +67,7 @@
                             Width="200"
                             Background="Transparent" 
                             Foreground="White" 
-                            Style="{StaticResource RadioButtonHighlightSelected}">
+                            Style="{StaticResource RadioButtonHighlightSelected}" Click="btnFaces_Click">
                             <StackPanel Width="170" Orientation="Horizontal">
                                 <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE2AD;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
                                 <TextBlock Text="Faces" FontSize="16" Foreground="White" VerticalAlignment="Center" />
@@ -81,7 +81,7 @@
                             Width="200"
                             Background="Transparent" 
                             Foreground="White"
-                            Style="{StaticResource RadioButtonHighlightSelected}">
+                            Style="{StaticResource RadioButtonHighlightSelected}" Click="btnApps_Click">
                             <StackPanel Width="170" Orientation="Horizontal">
                                 <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE1E4;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
                                 <TextBlock Text="Apps" FontSize="16" Foreground="White" VerticalAlignment="Center" />
@@ -95,24 +95,12 @@
                             Width="200"
                             Background="Transparent" 
                             Foreground="White"
-                            Style="{StaticResource RadioButtonHighlightSelected}">
+                            Style="{StaticResource RadioButtonHighlightSelected}" Click="btnConnect_Click">
                             <StackPanel Width="170" Orientation="Horizontal">
                                 <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE702;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
                                 <TextBlock Text="Connect" FontSize="16" Foreground="White" VerticalAlignment="Center" />
                             </StackPanel>
                         </RadioButton>
-
-                        <Button x:Name="btnPebbleStore"
-                            Height="50"
-                            Width="200"
-                            Background="Transparent" 
-                            Foreground="White"
-                            Style="{StaticResource ButtonHighlightSelected}">
-                            <StackPanel Width="170" Orientation="Horizontal">
-                                <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE719;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
-                                <TextBlock Text="Store" FontSize="16" Foreground="White" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
 
                         <Button x:Name="btnEdit"
                             Height="50"
@@ -125,7 +113,45 @@
                                 <TextBlock Text="Edit" FontSize="16" Foreground="White" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
+
+                        <Button x:Name="btnPace"
+                            Height="50"
+                            Width="200"
+                            Background="Transparent" 
+                            Foreground="White"
+                            Style="{StaticResource ButtonHighlightSelected}" Click="btnPace_Click">
+                            <StackPanel Width="170" Orientation="Horizontal">
+                                <TextBlock MinWidth="50" FontFamily="/Assets/ptm_icons.otf#ptm_icons" Text="D" FontSize="22" Foreground="White" VerticalAlignment="Center" />
+                                <TextBlock Text="Pace" FontSize="16" Foreground="White" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="btnTennis"
+                            Height="50"
+                            Width="200"
+                            Background="Transparent" 
+                            Foreground="White"
+                            Style="{StaticResource ButtonHighlightSelected}" Click="btnTennis_Click">
+                            <StackPanel Width="170" Orientation="Horizontal">
+                                <TextBlock MinWidth="50" FontFamily="/Assets/ptm_icons.otf#ptm_icons" Text="C" FontSize="18" Foreground="White" VerticalAlignment="Center" />
+                                <TextBlock Text="Tennis" FontSize="16" Foreground="White" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
+
+                    <StackPanel Grid.Row="1">
+                    
+                    <Button x:Name="btnPebbleStore"
+                            Height="50"
+                            Width="200"
+                            Background="Transparent" 
+                            Foreground="White"
+                            Style="{StaticResource ButtonHighlightSelected}" Click="btnPebbleStore_Click">
+                        <StackPanel Width="170" Orientation="Horizontal">
+                            <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE719;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
+                            <TextBlock Text="Store" FontSize="16" Foreground="White" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
 
                     <RadioButton 
                         x:Name="btnSettings"
@@ -135,67 +161,34 @@
                         Background="Transparent" 
                         Foreground="White"
                         Grid.Row="1"           
-                        Style="{StaticResource RadioButtonHighlightSelected}">
+                        Style="{StaticResource RadioButtonHighlightSelected}" Click="btnSettings_Click">
                         <StackPanel Width="170" Orientation="Horizontal">
                             <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE713;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
                             <TextBlock Text="Settings" FontSize="16" Foreground="White" VerticalAlignment="Center" />
                         </StackPanel>
                     </RadioButton>
+                    </StackPanel>
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
-                <Grid>
+                
+                <Grid Name="MainGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                    <Grid Background="#FFFF8800"
-                            VerticalAlignment="Stretch"
-                            Margin="0"
-                            Visibility="{Binding PageWatchFace, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    </Grid>
+                    <Frame x:Name="FrameLeft"
+                           VerticalAlignment="Stretch"
+                           Background="{StaticResource AppBackgroundBrush}"/>
 
-                    <Grid Background="#FF88FF00"
-                            VerticalAlignment="Stretch"
-                            Margin="0"
-                            Visibility="{Binding PageWatchApp, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    </Grid>
+                    <Frame x:Name="FrameRight"
+                           VerticalAlignment="Stretch"
+                           Grid.Column="1"
+                           Background="{StaticResource AppBackgroundBrush}"/>
 
-                    <Grid Background="#FFFF0088"
-                            VerticalAlignment="Stretch"
-                            Margin="0"
-                            Visibility="{Binding PageSettings, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    </Grid>
-
-                    <Grid Background="#FF0088FF"
-                            VerticalAlignment="Stretch"
-                            Margin="0"
-                            Visibility="{Binding PageConnect, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="5*"/>
-                            <RowDefinition Height="*" MinHeight="55" MaxHeight="80"/>
-                        </Grid.RowDefinitions>
-
-                        <ListBox x:Name="lstLogs"
-                            ItemsSource="{Binding Log}"
-                            Grid.Row="0"
-                            Margin="20"
-                            Background="#80FFFFFF"
-                            BorderBrush="Transparent"
-                            ScrollViewer.VerticalScrollBarVisibility="Visible" />
-
-                        <Button Content="Connect"
-                        Foreground="White"
-                        Grid.Row="1"
-                        FontSize="18"
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        BorderBrush="Transparent"
-                        Background="#C000C000"
-                        Margin="20,0,20,20"
-                        MaxHeight="60"
-                        MinHeight="35"
-                        Style="{StaticResource ButtonHighlightSelected}"
-                        Command="{Binding ConnectCommand}" Click="Button_Click"/>
-                    </Grid>
                 </Grid>
+                
             </SplitView.Content>
         </SplitView>
     </Grid>

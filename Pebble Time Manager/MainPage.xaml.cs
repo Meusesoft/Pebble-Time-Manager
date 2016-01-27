@@ -1,4 +1,5 @@
 ﻿using Pebble_Time_Manager.ViewModels;
+using Pebble_Time_Manager.Pages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,12 +25,28 @@ namespace Pebble_Time_Manager
     public sealed partial class MainPage : Page
     {
         private vmBinder _vmBinder;
+        private Frame _rootFrame;
+
 
         public MainPage()
         {
             this.InitializeComponent();
 
-            if (IsMobile) MySplitView.CompactPaneLength = 0;
+            FrameLeft.Navigate(typeof(WatchFacesPage));
+
+            if (IsMobile)
+            {
+                MySplitView.CompactPaneLength = 0;
+                FrameRight.Visibility = Visibility.Collapsed;
+                MainGrid.ColumnDefinitions.RemoveAt(1);
+                btnConnect.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                FrameRight.Navigate(typeof(ConnectPage));
+                btnConnect.Visibility = Visibility.Collapsed;
+            }
+
 
             _vmBinder = vmBinder.GetInstance();
             _vmBinder.PageWatchApp = true;
@@ -54,6 +71,41 @@ namespace Pebble_Time_Manager
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine(_vmBinder.PageWatchApp);
+        }
+
+        private void btnPebbleStore_Click(object sender, RoutedEventArgs e)
+        {
+            FrameLeft.Navigate(typeof(WatchAppsStore));
+        }
+
+        private void btnPace_Click(object sender, RoutedEventArgs e)
+        {
+            FrameLeft.Navigate(typeof(PaceApp));
+        }
+
+        private void btnTennis_Click(object sender, RoutedEventArgs e)
+        {
+            FrameLeft.Navigate(typeof(TennisApp));
+        }
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            FrameLeft.Navigate(typeof(SettingsPage));
+        }
+
+        private void btnFaces_Click(object sender, RoutedEventArgs e)
+        {
+            FrameLeft.Navigate(typeof(WatchFacesPage));
+        }
+
+        private void btnApps_Click(object sender, RoutedEventArgs e)
+        {
+            FrameLeft.Navigate(typeof(WatchAppsPage));
+        }
+
+        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            FrameLeft.Navigate(typeof(ConnectPage));
         }
     }
 }

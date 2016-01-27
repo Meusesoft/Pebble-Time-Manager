@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:converters="using:Pebble_Time_Manager.Converters"
-      mc:Ignorable="d"
-      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+      mc:Ignorable="d">
 
     <Page.Resources>
         <converters:BooleanXOR x:Name="BooleanXORConverter" />
@@ -31,7 +30,7 @@
             <HubSection Header="TIMELINE">
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}"
+                        <TextBlock 
                                    Margin="0,15,0,0">Background synchronization</TextBlock>
 
                         <!--<ToggleSwitch IsOn="{Binding TimeLineSynchronizer.BackgroundTask, Mode=TwoWay}"
@@ -43,12 +42,12 @@
                             <ComboBoxItem>60 minutes</ComboBoxItem>
                         </ComboBox>
 
-                        <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}">Last synchronization</TextBlock>
+                        <TextBlock >Last synchronization</TextBlock>
                         <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
                                    Margin="0,0,0,10"
                                    Text="{Binding TimeLineSynchronizer.LastSynchronization}"></TextBlock>
 
-                        <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}">Timeline reminders</TextBlock>
+                        <TextBlock >Timeline reminders</TextBlock>
 
                         <ToggleSwitch IsOn="{Binding TimeLineSynchronizer.Reminders, Mode=TwoWay}"
                                       Margin="0,-15,0,0" />
@@ -66,7 +65,7 @@
                 <DataTemplate>
                     <ScrollViewer>
                         <StackPanel>
-                            <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}">Notifications from selected apps will be send to the Pebble Time</TextBlock>
+                            <TextBlock >Notifications from selected apps will be send to the Pebble Time</TextBlock>
                             <ItemsControl ItemsSource="{Binding NotificationsHandler.Apps}"
                                           IsEnabled="{Binding NotificationsHandler.NotificationAppsEnabled}">
                                 <ItemsControl.ItemTemplate>
@@ -84,11 +83,11 @@
             <HubSection Header="METRICS">
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}">Temperature</TextBlock>
+                        <TextBlock >Temperature</TextBlock>
                         <CheckBox x:Name="chkFahrenheit"
                                   Margin="0,-5,0,0"
                                   IsChecked="{Binding TimeLineSynchronizer.Fahrenheit, Mode=TwoWay}">Fahrenheit</CheckBox>
-                        <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}">Distance</TextBlock>
+                        <TextBlock >Distance</TextBlock>
                         <CheckBox x:Name="chkDistance"
                                   Margin="0,-5,0,0"
                                   IsChecked="{Binding Sport.Miles, Mode=TwoWay}">Miles</CheckBox>

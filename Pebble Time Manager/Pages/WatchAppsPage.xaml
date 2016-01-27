@@ -1,0 +1,113 @@
+﻿<Page
+    x:Class="Pebble_Time_Manager.Pages.WatchAppsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Pebble_Time_Manager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:Pebble_Time_Manager.Converters"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ResourceDictionary>
+
+            <converters:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
+
+            <DataTemplate x:Key="Standard200x180TileItemTemplate">
+                <Grid Margin="0,0,9.5,9.5"
+                      Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}">
+                    <Image Source="{Binding ImagePath}"
+                           Stretch="UniformToFill"
+                           AutomationProperties.Name="{Binding Title}"
+                           Height="138.5"
+                           Width="138.5" />
+                    <TextBlock Text="{Binding Title}"
+                               VerticalAlignment="Bottom"
+                               Margin="9.5,0,0,6.5"
+                               Style="{ThemeResource BaseTextBlockStyle}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="StandardTripleLineItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border 
+                            Margin="0,9.5,0,0"
+                            Grid.Column="0"
+                            HorizontalAlignment="Left">
+                        <Image Source="{Binding ImagePath}"
+                               Stretch="UniformToFill"
+                               AutomationProperties.Name="{Binding Title}"
+                               Height="79"
+                               Width="79" />
+                    </Border>
+                    <StackPanel Grid.Column="1"
+                                Margin="14.5,0,0,0">
+                        <TextBlock Text="{Binding Title}"
+                                    />
+                        <TextBlock Text="{Binding Description}"
+                                   
+                                    />
+                        <TextBlock Text="{Binding Subtitle}"
+                                    />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="StandardDoubleLineItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border 
+                            Margin="0,9.5,0,0"
+                            Grid.Column="0"
+                            HorizontalAlignment="Left">
+                        <Image Source="{Binding ImagePath}"
+                               Stretch="UniformToFill"
+                               AutomationProperties.Name="{Binding Title}"
+                               Height="79"
+                               Width="79" />
+                    </Border>
+                    <StackPanel Grid.Column="1"
+                                Margin="14.5,0,0,0">
+                        <TextBlock Text="{Binding Title}"
+                                   />
+                        <TextBlock Text="{Binding Subtitle}"
+                                    />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+    <Grid 
+        Margin="20"
+        Background="{StaticResource AppBackgroundBrush}">
+
+        <ListView x:Name="lvWatchApps"
+                              ItemTemplate="{StaticResource WatchItem}"
+                              ItemsSource="{Binding WatchApps.WatchApps}"
+                              Background="Transparent" 
+                              SelectionMode="None"
+                              IsItemClickEnabled="True" 
+                              SelectionChanged="lvWatchApps_SelectionChanged" 
+                              ItemClick="lvWatchApps_ItemClick"
+                              >
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+
+
+    </Grid>
+</Page>
