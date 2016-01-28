@@ -105,5 +105,7 @@ namespace Pebble_Time_Manager
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+
+
     }
 }

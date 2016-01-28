@@ -25,8 +25,6 @@ namespace Pebble_Time_Manager
     public sealed partial class MainPage : Page
     {
         private vmBinder _vmBinder;
-        private Frame _rootFrame;
-
 
         public MainPage()
         {
@@ -46,7 +44,6 @@ namespace Pebble_Time_Manager
                 FrameRight.Navigate(typeof(ConnectPage));
                 btnConnect.Visibility = Visibility.Collapsed;
             }
-
 
             _vmBinder = vmBinder.GetInstance();
             _vmBinder.PageWatchApp = true;
@@ -76,36 +73,43 @@ namespace Pebble_Time_Manager
         private void btnPebbleStore_Click(object sender, RoutedEventArgs e)
         {
             FrameLeft.Navigate(typeof(WatchAppsStore));
+            MySplitView.IsPaneOpen = false;
         }
 
         private void btnPace_Click(object sender, RoutedEventArgs e)
         {
             FrameLeft.Navigate(typeof(PaceApp));
+            MySplitView.IsPaneOpen = false;
         }
 
         private void btnTennis_Click(object sender, RoutedEventArgs e)
         {
             FrameLeft.Navigate(typeof(TennisApp));
+            MySplitView.IsPaneOpen = false;
         }
 
         private void btnSettings_Click(object sender, RoutedEventArgs e)
         {
             FrameLeft.Navigate(typeof(SettingsPage));
+            MySplitView.IsPaneOpen = false;
         }
 
         private void btnFaces_Click(object sender, RoutedEventArgs e)
         {
             FrameLeft.Navigate(typeof(WatchFacesPage));
+            MySplitView.IsPaneOpen = false;
         }
 
         private void btnApps_Click(object sender, RoutedEventArgs e)
         {
             FrameLeft.Navigate(typeof(WatchAppsPage));
+            MySplitView.IsPaneOpen = false;
         }
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             FrameLeft.Navigate(typeof(ConnectPage));
+            MySplitView.IsPaneOpen = false;
         }
     }
 }
