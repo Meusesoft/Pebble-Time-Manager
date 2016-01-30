@@ -13,6 +13,8 @@
         <ResourceDictionary>
 
             <converters:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
+            <converters:BooleanToSelectionModeConverter x:Name="BooleanToSelectionModeConverter" />
+            <converters:BooleanXOR x:Name="BooleanXOR"/>
 
             <DataTemplate x:Key="Standard200x180TileItemTemplate">
                 <Grid Margin="0,0,9.5,9.5"
@@ -97,10 +99,10 @@
                               ItemTemplate="{StaticResource WatchItem}"
                               ItemsSource="{Binding WatchFaces.WatchFaces}"
                               Background="Transparent" 
-                              SelectionMode="None" 
+                              SelectionMode="{Binding WatchFaces.EditMode, Converter={StaticResource BooleanToSelectionModeConverter}}" 
                               SelectionChanged="lvWatchFaces_SelectionChanged" 
-                              IsItemClickEnabled="True"
-                              ItemClick="lvWatchFaces_ItemClick"                             
+                              IsItemClickEnabled="{Binding WatchFaces.EditMode, Converter={StaticResource BooleanXOR}}"
+                              ItemClick="lvWatchFaces_ItemClick" RequestedTheme="Dark"                             
                               >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">

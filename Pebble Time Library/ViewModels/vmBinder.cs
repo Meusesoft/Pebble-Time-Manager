@@ -64,7 +64,7 @@ namespace Pebble_Time_Manager.ViewModels
 
         public vmSportApp Sport { get; set; }
 
-        int _PageSelected = 2;
+        int _PageSelected = 1;
         private int PageSelected
         {
             get

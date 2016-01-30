@@ -98,6 +98,63 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+
+        private bool _SearchStore;
+        public bool SearchStore
+        {
+            get
+            {
+                return _SearchStore;
+            }
+            set
+            {
+                _SearchStore = value;
+                NotifyPropertyChanged("SearchStore");
+            }
+        }
+
+        private bool _Download;
+        public bool Download
+        {
+            get
+            {
+                return _Download;
+            }
+            set
+            {
+                _Download = value;
+                NotifyPropertyChanged("Download");
+            }
+        }
+
+        private bool _FaceStore;
+        public bool FaceStore
+        {
+            get
+            {
+                return _FaceStore;
+            }
+            set
+            {
+                _FaceStore = value;
+                NotifyPropertyChanged("FaceStore");
+            }
+        }
+
+        private bool _AppStore;
+        public bool AppStore
+        {
+            get
+            {
+                return _AppStore;
+            }
+            set
+            {
+                _AppStore = value;
+                NotifyPropertyChanged("AppStore");
+            }
+        }
+
         #endregion
 
         #region INotifyPropertyChanged Members

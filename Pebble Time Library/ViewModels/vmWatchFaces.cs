@@ -103,6 +103,7 @@ namespace Pebble_Time_Manager.ViewModels
                 _EditMode = value;
 
                 NotifyPropertyChanged("CurrentTemplate");
+                NotifyPropertyChanged("EditMode");
             }
         }
 
@@ -139,6 +140,13 @@ namespace Pebble_Time_Manager.ViewModels
             _WatchFace.Model = new Guid(TicTocGuid);
             WatchFaces.Add(_WatchFace);
             LoadImage(_WatchFace);
+
+            EditCommand = new RelayCommand(Edit);
+        }
+
+        private void Edit(object obj)
+        {
+            Edit();
         }
 
         public void Edit()
@@ -372,6 +380,16 @@ namespace Pebble_Time_Manager.ViewModels
             }
 
             NotifyPropertyChanged("ItemsSelected");
+        }
+
+        #endregion
+
+        #region Commands
+
+        public RelayCommand EditCommand
+        {
+            get;
+            private set;
         }
 
         #endregion

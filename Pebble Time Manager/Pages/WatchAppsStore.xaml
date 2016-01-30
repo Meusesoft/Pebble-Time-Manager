@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
-      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
 
     <Grid>
         <!--
@@ -83,8 +83,8 @@
         https://apps.getpebble.com/en_US/search/watchapps/1-->
     </Grid>
     <Page.BottomAppBar>
-        <CommandBar>
-            <!--<AppBarButton Icon="Home"
+        <CommandBar Visibility="Collapsed">
+            <!-- <AppBarButton Icon="Home"
                           Name="btnHome"
                           Label="Home"
                           Click="btnHome_Click" />-->
@@ -110,7 +110,6 @@
                           Name="btnApps"
                           Label="Apps" 
                           Click="btnApps_Click"/>
-
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

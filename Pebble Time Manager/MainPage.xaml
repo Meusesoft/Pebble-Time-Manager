@@ -205,12 +205,35 @@
                               Icon="Edit"
                               Label="Edit" 
                               Visibility="{Binding Commands.EditFaces, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Command="{Binding WatchFaces.EditCommand}"
                               />
                             <AppBarButton x:Name="btnEditApps"
                               Icon="Edit"
                               Label="Edit" 
                               Visibility="{Binding Commands.EditApps, Converter={StaticResource BoolToVisibilityConverter}}"
                               />
+
+                            <AppBarButton Icon="Download"
+                                Name="btnDownload"
+                                Label="Download"
+                                Visibility="{Binding Commands.Download, Converter={StaticResource BoolToVisibilityConverter}}"
+                                />
+                            <AppBarButton Icon="Find"
+                                Name="btnSearch"
+                                Label="Search"
+                                Visibility="{Binding Commands.SearchStore, Converter={StaticResource BoolToVisibilityConverter}}"
+                                />
+                            <AppBarButton Icon="Clock"
+                                Name="btnFace"
+                                Label="Faces" 
+                                Visibility="{Binding Commands.FaceStore, Converter={StaticResource BoolToVisibilityConverter}}"
+                                />
+                            <AppBarButton Icon="GoToStart"
+                                Name="btnStoreApps"
+                                Label="Apps" 
+                                Visibility="{Binding Commands.AppStore, Converter={StaticResource BoolToVisibilityConverter}}"
+                                />
+
                             <AppBarButton x:Name="btnSynchronize"
                               Icon="Sync"
                               Label="Synchronize"

@@ -22,6 +22,7 @@ using System.Threading;
 using Windows.UI.Xaml.Navigation;
 using Pebble_Time_Manager.Common;
 using Windows.UI.Popups;
+using Pebble_Time_Manager.ViewModels;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -546,6 +547,26 @@ namespace Pebble_Time_Manager
 
             btnStop.Visibility = Visibility.Collapsed;
             btnCancel.Visibility = Visibility.Visible;
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            vmBinder _vm = vmBinder.GetInstance();
+
+            _vm.Commands.SearchStore = true;
+            _vm.Commands.FaceStore = true;
+            _vm.Commands.AppStore = true;
+            _vm.Commands.Download = false;
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            vmBinder _vm = vmBinder.GetInstance();
+
+            _vm.Commands.SearchStore = false;
+            _vm.Commands.FaceStore = false;
+            _vm.Commands.AppStore = false;
+            _vm.Commands.Download = false;
         }
     }
 }
