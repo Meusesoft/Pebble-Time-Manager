@@ -654,6 +654,11 @@ namespace Pebble_Time_Manager.Connector
                     var x = await abc;
 
                     System.Diagnostics.Debug.WriteLine("DeviceTriggerResult: " + x.ToString());
+
+                    if (x != DeviceTriggerResult.Allowed)
+                    {
+                        throw new Exception(x.ToString());
+                    }
                 }
                 catch (Exception exc)
                 {

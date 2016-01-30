@@ -1,4 +1,5 @@
-﻿using Pebble_Time_Manager.ViewModels;
+﻿using Pebble_Time_Manager.Connector;
+using Pebble_Time_Manager.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +33,34 @@ namespace Pebble_Time_Manager.Pages
             _vmBinder.PageWatchApp = true;
 
             DataContext = _vmBinder;
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            _vmBinder.Log.Clear();
+        }
+
+        /// <summary>
+        /// Resync the Pebble Time with the smart phone
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void btnResync_Click(object sender, RoutedEventArgs e)
+        {
+            _vmBinder.Log.Add("Initiating resync...");
+
+            Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
+
+            await _pc.StartBackgroundTask(PebbleConnector.Initiator.Reset);
+        }
+
+        private async void btnSynchronizeCalender_Click(object sender, RoutedEventArgs e)
+        {
+            Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
+
+            await _pc.StartBackgroundTask(PebbleConnector.Initiator.Synchronize);
+
+            //await _TimeLineSynchronizer.Synchronize();
         }
     }
 }

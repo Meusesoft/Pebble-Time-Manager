@@ -43,6 +43,7 @@
                        HorizontalAlignment="Left"
                        Margin="20,0,0,0"
                        VerticalAlignment="Center">Pebble Time Manager</TextBlock>
+
         </Grid>
 
         <SplitView x:Name="MySplitView" 
@@ -102,7 +103,7 @@
                             </StackPanel>
                         </RadioButton>
 
-                        <Button x:Name="btnEdit"
+  <!--                      <Button x:Name="btnEdit"
                             Height="50"
                             Width="200"
                             Background="Transparent" 
@@ -112,7 +113,7 @@
                                 <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE70F;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
                                 <TextBlock Text="Edit" FontSize="16" Foreground="White" VerticalAlignment="Center" />
                             </StackPanel>
-                        </Button>
+                        </Button>-->
 
                         <Button x:Name="btnPace"
                             Height="50"
@@ -177,7 +178,12 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    
                     <Frame x:Name="FrameLeft"
                            VerticalAlignment="Stretch"
                            Background="{StaticResource AppBackgroundBrush}"/>
@@ -186,6 +192,30 @@
                            VerticalAlignment="Stretch"
                            Grid.Column="1"
                            Background="{StaticResource AppBackgroundBrush}"/>
+
+                    <CommandBar 
+                        Background="#FFF2F2F2"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="1">
+
+                        <CommandBar.PrimaryCommands>
+
+                            <AppBarButton x:Name="btnSynchronize"
+                              Icon="Sync"
+                              Label="Synchronize"
+                               />
+                            <AppBarButton x:Name="btnEdit"
+                              Icon="Edit"
+                              Label="Edit" 
+                              />
+                            <AppBarButton x:Name="btnClear"
+                              Icon="Clear"
+                              Label="Clear"
+                        
+                              />
+                        </CommandBar.PrimaryCommands>
+                    </CommandBar>
 
                 </Grid>
                 
