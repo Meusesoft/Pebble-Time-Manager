@@ -62,5 +62,17 @@ namespace Pebble_Time_Manager.Pages
 
             //await _TimeLineSynchronizer.Synchronize();
         }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            _vmBinder.Commands.ClearLog = true;
+            _vmBinder.Commands.Synchronize = true;
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _vmBinder.Commands.ClearLog = false;
+            _vmBinder.Commands.Synchronize = false;
+        }
     }
 }

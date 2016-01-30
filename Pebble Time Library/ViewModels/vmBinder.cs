@@ -23,6 +23,7 @@ namespace Pebble_Time_Manager.ViewModels
             Sport = new vmSportApp();
             Tennis = new vmTennisApp();
             Log = new ObservableCollection<string>();
+            Commands = new vmCommands();
 
             //NotificationsHandler = new Connector.NotificationsHandler();
             //Applications = new vmApps();
@@ -54,6 +55,8 @@ namespace Pebble_Time_Manager.ViewModels
         #endregion
 
         #region Properties
+
+        public vmCommands Commands { get; set; }
 
         public vmWatchFaces WatchFaces { get; set; }
 

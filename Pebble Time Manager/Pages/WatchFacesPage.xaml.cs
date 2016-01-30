@@ -79,5 +79,21 @@ namespace Pebble_Time_Manager.Pages
             }
         }
 
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            _vmBinder.Commands.EditFaces = true;
+            _vmBinder.Commands.DeleteFaces = false;
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _vmBinder.Commands.EditFaces = false;
+            _vmBinder.Commands.DeleteFaces = false;
+        }
+
+        private void Page_Unloaded_1(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

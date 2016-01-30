@@ -11,7 +11,7 @@
 
     <Page.Resources>
         <ResourceDictionary>
-            <converters:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
+            <converters:BooleanToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -201,18 +201,25 @@
 
                         <CommandBar.PrimaryCommands>
 
+                            <AppBarButton x:Name="btnEditFaces"
+                              Icon="Edit"
+                              Label="Edit" 
+                              Visibility="{Binding Commands.EditFaces, Converter={StaticResource BoolToVisibilityConverter}}"
+                              />
+                            <AppBarButton x:Name="btnEditApps"
+                              Icon="Edit"
+                              Label="Edit" 
+                              Visibility="{Binding Commands.EditApps, Converter={StaticResource BoolToVisibilityConverter}}"
+                              />
                             <AppBarButton x:Name="btnSynchronize"
                               Icon="Sync"
                               Label="Synchronize"
+                              Visibility="{Binding Commands.Synchronize, Converter={StaticResource BoolToVisibilityConverter}}"
                                />
-                            <AppBarButton x:Name="btnEdit"
-                              Icon="Edit"
-                              Label="Edit" 
-                              />
                             <AppBarButton x:Name="btnClear"
                               Icon="Clear"
                               Label="Clear"
-                        
+                              Visibility="{Binding Commands.ClearLog, Converter={StaticResource BoolToVisibilityConverter}}"
                               />
                         </CommandBar.PrimaryCommands>
                     </CommandBar>

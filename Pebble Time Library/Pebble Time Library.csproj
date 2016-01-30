@@ -184,6 +184,7 @@
     <None Include="ViewModels\vmApp.cs" />
     <None Include="ViewModels\vmApps.cs" />
     <Compile Include="ViewModels\vmBinder.cs" />
+    <Compile Include="ViewModels\vmCommands.cs" />
     <Compile Include="ViewModels\vmSportApp.cs" />
     <Compile Include="ViewModels\vmTennisApp.cs" />
     <Compile Include="ViewModels\vmWatchApp.cs" />
