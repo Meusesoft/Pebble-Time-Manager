@@ -14,15 +14,21 @@
                 <RowDefinition Height="*" MinHeight="55" MaxHeight="80"/>
             </Grid.RowDefinitions>
 
-            <ListBox x:Name="lstLogs"
+        <ListBox x:Name="lstLogs"
                             ItemsSource="{Binding Log}"
                             Grid.Row="0"
                             Margin="20"
                             Background="#80FFFFFF"
                             BorderBrush="Transparent"
-                            ScrollViewer.VerticalScrollBarVisibility="Visible" />
+                            ScrollViewer.VerticalScrollBarVisibility="Visible" >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock TextWrapping="Wrap" Text="{Binding}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-            <Button Content="Connect"
+        <Button Content="Connect"
                         Foreground="White"
                         Grid.Row="1"
                         FontSize="18"

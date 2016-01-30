@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pebble Time Manager", "Pebb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pebble Time Library", "Pebble Time Library\Pebble Time Library.csproj", "{BF2DF8F4-3167-49BA-8E69-C9515764FE44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Background Tasks", "Background Tasks\Background Tasks.csproj", "{C139F5FD-AC82-4E2A-94D3-3BD56B6B33FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundTasks", "Background Tasks\BackgroundTasks.csproj", "{C139F5FD-AC82-4E2A-94D3-3BD56B6B33FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pebble Time Tennis Library", "Pebble Time Tennis Library\Pebble Time Tennis Library.csproj", "{97C2684E-9904-445A-9995-649BED3E0356}"
 EndProject

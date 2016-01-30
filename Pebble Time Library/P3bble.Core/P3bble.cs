@@ -267,11 +267,11 @@ namespace P3bble
 
             try
             {
-#if NETFX_CORE && !WINDOWS_PHONE_APP
-                this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
-#else
+//#if NETFX_CORE && !WINDOWS_PHONE_APP
+//                this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
+//#else
                 this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
-#endif
+//#endif
                 this._protocol.MessageReceived += this.ProtocolMessageReceived;
 
                 P3bbleMessage _receivedMsg;
@@ -1062,7 +1062,7 @@ namespace P3bble
 
             try
             {
-#if NETFX_CORE  && !WINDOWS_PHONE_APP
+/*#if NETFX_CORE  && !WINDOWS_PHONE_APP
                 var devices = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.SerialPort));
                 foreach (var device in devices)
                 {
@@ -1073,7 +1073,7 @@ namespace P3bble
                         result.Add(new P3bble(service));
                     }
                 }
-#else
+#else*/
                 PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
                 IReadOnlyList<PeerInformation> pairedDevices = await PeerFinder.FindAllPeersAsync();
 
@@ -1093,7 +1093,7 @@ namespace P3bble
                 {
                     ServiceLocator.Logger.WriteLine("No paired devices were found.");
                 }
-#endif
+//#endif
             }
             catch (Exception ex)
             {

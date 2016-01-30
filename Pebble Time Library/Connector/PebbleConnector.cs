@@ -515,7 +515,7 @@ namespace Pebble_Time_Manager.Connector
         /// <summary>
         /// Start background task
         /// </summary>
-        public async Task StartBackgroundTask(Initiator InitiatedBy)
+        public async Task StartBackgroundTask_old(Initiator InitiatedBy)
         {
             PebbleConnector.SetBackgroundTaskRunningStatus(InitiatedBy);
 
@@ -555,6 +555,7 @@ namespace Pebble_Time_Manager.Connector
 
                     //Start on real device
                     var _Trigger = new DeviceUseTrigger();
+                
 
                     BackgroundTaskBuilder builder = new BackgroundTaskBuilder
                     {
@@ -581,6 +582,85 @@ namespace Pebble_Time_Manager.Connector
                         {
                             throw new Exception("Background communication task can't be started: " + exc.Message);
                         }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Search all the existing background tasks for the sync task
+        /// </summary>
+        /// <returns>If found, the background task registration for the sync task; else, null.</returns>
+        BackgroundTaskRegistration FindSyncTask()
+        {
+            foreach (var backgroundTask in BackgroundTaskRegistration.AllTasks.Values)
+            {
+                if (backgroundTask.Name == "abc")
+                {
+                    return (BackgroundTaskRegistration)backgroundTask;
+                }
+            }
+
+            return null;
+        }
+
+
+        private DeviceUseTrigger syncBackgroundTaskTrigger;
+        private BackgroundTaskRegistration backgroundSyncTaskRegistration;
+        public async Task StartBackgroundTask(Initiator InitiatedBy)
+        {
+            /* PebbleConnector _pc = PebbleConnector.GetInstance();
+             int Handler = await _pc.Connect(-1);
+
+             return;*/
+            var result = await BackgroundExecutionManager.RequestAccessAsync();
+
+            if (result == BackgroundAccessStatus.Denied) return;
+
+                PebbleConnector.SetBackgroundTaskRunningStatus(InitiatedBy);
+
+            if (!await IsBackgroundTaskRunning())
+            {
+                backgroundSyncTaskRegistration = FindSyncTask();
+                if (backgroundSyncTaskRegistration != null)
+                {
+                    backgroundSyncTaskRegistration.Unregister(true);
+                }
+                //if (backgroundSyncTaskRegistration == null)
+                // {
+                syncBackgroundTaskTrigger = new DeviceUseTrigger();
+
+                    // Create background task to write 
+                    var backgroundTaskBuilder = new BackgroundTaskBuilder();
+
+                    backgroundTaskBuilder.Name = "abc";
+                    backgroundTaskBuilder.TaskEntryPoint = Constants.BackgroundCommunicationTaskEntry;
+                    backgroundTaskBuilder.SetTrigger(syncBackgroundTaskTrigger);
+                    backgroundSyncTaskRegistration = backgroundTaskBuilder.Register();
+
+                
+               // }
+
+
+                try
+                {
+                    var device = (await DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.FromUuid(new Guid(Constants.PebbleGuid))))).FirstOrDefault(y => y.Name.ToLower().Contains("pebble"));
+
+                    if (device == null) throw new OperationCanceledException("Is bluetooth enabled and the Pebble Time paired?");
+
+                    //DeviceTriggerResult x = await syncBackgroundTaskTrigger.RequestAsync(device.Id);
+
+                    var abc = syncBackgroundTaskTrigger.RequestAsync(device.Id).AsTask();
+                    var x = await abc;
+
+                    System.Diagnostics.Debug.WriteLine("DeviceTriggerResult: " + x.ToString());
+                }
+                catch (Exception exc)
+                {
+                    if (exc.GetType() == typeof(System.OperationCanceledException)) throw exc;
+                    if (exc.GetType() != typeof(System.InvalidOperationException))
+                    {
+                        throw new Exception("Background communication task can't be started: " + exc.Message);
                     }
                 }
             }

@@ -2,15 +2,12 @@
 using Pebble_Time_Manager.Common;
 using Pebble_Time_Manager.Connector;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
-using System.Collections;
 using Tennis_Statistics.ViewModels;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using System.Collections.Generic;
-using Pebble_Time_Manager.Common;
 
 namespace BackgroundTasks
 {
