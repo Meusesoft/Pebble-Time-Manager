@@ -19,7 +19,7 @@
 
             <WebView Name="wbView"
                      Grid.Row="0"
-                 Source="https://apps.getpebble.com/en_US/watchfaces"
+                 Source="{Binding Store.URL, Mode=TwoWay}"
                  VerticalAlignment="Stretch"
                  LoadCompleted="wbView_LoadCompleted"
                  NavigationCompleted="wbView_NavigationCompleted"

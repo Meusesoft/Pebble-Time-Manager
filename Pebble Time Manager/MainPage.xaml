@@ -103,7 +103,21 @@
                             </StackPanel>
                         </RadioButton>
 
-  <!--                      <Button x:Name="btnEdit"
+                        <RadioButton x:Name="btnPebbleStore"
+                            IsChecked="{Binding PageStore, Mode=TwoWay}"
+                            Height="50"
+                            Width="200"
+                            Background="Transparent" 
+                            Foreground="White"
+                            Style="{StaticResource RadioButtonHighlightSelected}" Click="btnPebbleStore_Click">
+                            <StackPanel Width="170" Orientation="Horizontal">
+                                <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE719;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
+                                <TextBlock Text="Store" FontSize="16" Foreground="White" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </RadioButton>
+                        
+                        
+                        <!--                      <Button x:Name="btnEdit"
                             Height="50"
                             Width="200"
                             Background="Transparent" 
@@ -115,45 +129,36 @@
                             </StackPanel>
                         </Button>-->
 
-                        <Button x:Name="btnPace"
+                        <RadioButton x:Name="btnPace"
                             Height="50"
                             Width="200"
+                            IsChecked="{Binding PagePace, Mode=TwoWay}"
                             Background="Transparent" 
                             Foreground="White"
-                            Style="{StaticResource ButtonHighlightSelected}" Click="btnPace_Click">
+                            Style="{StaticResource RadioButtonHighlightSelected}" Click="btnPace_Click">
                             <StackPanel Width="170" Orientation="Horizontal">
                                 <TextBlock MinWidth="50" FontFamily="/Assets/ptm_icons.otf#ptm_icons" Text="D" FontSize="22" Foreground="White" VerticalAlignment="Center" />
                                 <TextBlock Text="Pace" FontSize="16" Foreground="White" VerticalAlignment="Center" />
                             </StackPanel>
-                        </Button>
+                        </RadioButton>
 
-                        <Button x:Name="btnTennis"
+                        <RadioButton x:Name="btnTennis"
                             Height="50"
                             Width="200"
+                            IsChecked="{Binding PageTennis, Mode=TwoWay}"
                             Background="Transparent" 
                             Foreground="White"
-                            Style="{StaticResource ButtonHighlightSelected}" Click="btnTennis_Click">
+                            Style="{StaticResource RadioButtonHighlightSelected}" 
+                            Click="btnTennis_Click">
                             <StackPanel Width="170" Orientation="Horizontal">
                                 <TextBlock MinWidth="50" FontFamily="/Assets/ptm_icons.otf#ptm_icons" Text="C" FontSize="18" Foreground="White" VerticalAlignment="Center" />
                                 <TextBlock Text="Tennis" FontSize="16" Foreground="White" VerticalAlignment="Center" />
                             </StackPanel>
-                        </Button>
+                        </RadioButton>
                     </StackPanel>
 
                     <StackPanel Grid.Row="1">
                     
-                    <Button x:Name="btnPebbleStore"
-                            Height="50"
-                            Width="200"
-                            Background="Transparent" 
-                            Foreground="White"
-                            Style="{StaticResource ButtonHighlightSelected}" Click="btnPebbleStore_Click">
-                        <StackPanel Width="170" Orientation="Horizontal">
-                            <TextBlock MinWidth="50" FontFamily="Segoe MDL2 Assets" Text="&#xE719;" FontSize="18" Foreground="White" VerticalAlignment="Center" />
-                            <TextBlock Text="Store" FontSize="16" Foreground="White" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
-
                     <RadioButton 
                         x:Name="btnSettings"
                         IsChecked="{Binding PageSettings, Mode=TwoWay}"
@@ -221,19 +226,21 @@
                             <AppBarButton Icon="Find"
                                 Name="btnSearch"
                                 Label="Search"
+                                Command="{Binding Store.StoreSearchCommand}"
                                 Visibility="{Binding Commands.SearchStore, Converter={StaticResource BoolToVisibilityConverter}}"
                                 />
                             <AppBarButton Icon="Clock"
-                                Name="btnFace"
+                                Name="btnStoreFaces"
                                 Label="Faces" 
+                                Command="{Binding Store.StoreFacesCommand}"
                                 Visibility="{Binding Commands.FaceStore, Converter={StaticResource BoolToVisibilityConverter}}"
                                 />
                             <AppBarButton Icon="GoToStart"
                                 Name="btnStoreApps"
                                 Label="Apps" 
+                                Command="{Binding Store.StoreAppsCommand}"
                                 Visibility="{Binding Commands.AppStore, Converter={StaticResource BoolToVisibilityConverter}}"
                                 />
-
                             <AppBarButton x:Name="btnSynchronize"
                               Icon="Sync"
                               Label="Synchronize"

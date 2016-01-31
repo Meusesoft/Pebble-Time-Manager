@@ -24,10 +24,12 @@ namespace Pebble_Time_Manager.ViewModels
             Tennis = new vmTennisApp();
             Log = new ObservableCollection<string>();
             Commands = new vmCommands();
+            Store = new vmStore();
 
             //NotificationsHandler = new Connector.NotificationsHandler();
             //Applications = new vmApps();
 
+            PageWatchFace = true;
 
             TimeLineSynchronizer.Log.CollectionChanged += Log_CollectionChanged;
 
@@ -64,6 +66,8 @@ namespace Pebble_Time_Manager.ViewModels
 
         public vmSportApp Sport { get; set; }
 
+        public vmStore Store{ get; set; }
+
         int _PageSelected = 1;
         private int PageSelected
         {
@@ -77,7 +81,10 @@ namespace Pebble_Time_Manager.ViewModels
                 NotifyPropertyChanged("PageWatchFace");
                 NotifyPropertyChanged("PageWatchApp");
                 NotifyPropertyChanged("PageConnect");
+                NotifyPropertyChanged("PageStore");
                 NotifyPropertyChanged("PageSettings");
+                NotifyPropertyChanged("PagePace");
+                NotifyPropertyChanged("PageTennis");
             }
         }
 
@@ -129,6 +136,41 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+        public bool PageStore
+        {
+            get
+            {
+                return (PageSelected == 5);
+            }
+            set
+            {
+                PageSelected = 5;
+            }
+        }
+
+        public bool PageTennis
+        {
+            get
+            {
+                return (PageSelected == 6);
+            }
+            set
+            {
+                PageSelected = 6;
+            }
+        }
+
+        public bool PagePace
+        {
+            get
+            {
+                return (PageSelected == 7);
+            }
+            set
+            {
+                PageSelected = 7;
+            }
+        }
         private vmNewMatch _newMatch;
         public vmNewMatch vmNewMatch
         {

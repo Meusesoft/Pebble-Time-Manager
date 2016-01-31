@@ -35,6 +35,7 @@ namespace Pebble_Time_Manager
     public sealed partial class WatchAppsStore : Page
     {
         private NavigationHelper navigationHelper;
+        private vmBinder _vmBinder;
 
         public WatchAppsStore()
         {
@@ -43,9 +44,10 @@ namespace Pebble_Time_Manager
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            _vmBinder = vmBinder.GetInstance();
+            DataContext = _vmBinder;
         }
-
-
 
         /// <summary>
         /// Populates the page with content passed during navigation.  Any saved state is also

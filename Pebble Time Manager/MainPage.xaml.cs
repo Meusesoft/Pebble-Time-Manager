@@ -46,7 +46,7 @@ namespace Pebble_Time_Manager
             }
 
             _vmBinder = vmBinder.GetInstance();
-            _vmBinder.PageWatchApp = true;
+           // _vmBinder.PageWatchApp = true;
 
             DataContext = _vmBinder;
         }
