@@ -18,23 +18,23 @@
             </Grid.RowDefinitions>
 
             <WebView Name="wbView"
-                     Grid.Row="0"
-                 Source="{Binding Store.URL, Mode=TwoWay}"
-                 VerticalAlignment="Stretch"
-                 LoadCompleted="wbView_LoadCompleted"
-                 NavigationCompleted="wbView_NavigationCompleted"
-                 ContentLoading="wbView_ContentLoading"
-                 DOMContentLoaded="wbView_DOMContentLoaded"
-                 ScriptNotify="wbView_ScriptNotify"
-                 Tapped="wbView_Tapped"
-                 Loaded="wbView_Loaded"
-                 FrameContentLoading="wbView_FrameContentLoading"
-                 FrameDOMContentLoaded="wbView_FrameDOMContentLoaded"
-                 FrameNavigationCompleted="wbView_FrameNavigationCompleted"
-                 FrameNavigationStarting="wbView_FrameNavigationStarting"
-                 NavigationStarting="wbView_NavigationStarting"
+                     Grid.Row="0"                     
+                     Source="{Binding Store.URL, Mode=TwoWay}"
+                     VerticalAlignment="Stretch"
+                     LoadCompleted="wbView_LoadCompleted"
+                     NavigationCompleted="wbView_NavigationCompleted"
+                     ContentLoading="wbView_ContentLoading"
+                     DOMContentLoaded="wbView_DOMContentLoaded"
+                     ScriptNotify="wbView_ScriptNotify"
+                     Tapped="wbView_Tapped"
+                     Loaded="wbView_Loaded"
+                     FrameContentLoading="wbView_FrameContentLoading"
+                     FrameDOMContentLoaded="wbView_FrameDOMContentLoaded"
+                     FrameNavigationCompleted="wbView_FrameNavigationCompleted"
+                     FrameNavigationStarting="wbView_FrameNavigationStarting"
+                     NavigationStarting="wbView_NavigationStarting"
                  />
-            <Grid Name="grDownload" Grid.Row="1" Visibility="Visible">
+            <Grid Name="grDownload" Grid.Row="1" Visibility="Visible" Background="Black">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>                    
@@ -43,18 +43,19 @@
                         <TextBlock 
                             Name="txtDownload"
                             FontSize="13"
-                            Margin="10">Downloading</TextBlock>
+                            Margin="10" RequestedTheme="Dark">Downloading</TextBlock>
                         <ProgressBar 
                             Name="pbDownload" 
                             Value="0" 
-                            Margin="10"/>
+                            Margin="10" RequestedTheme="Light"/>
                     </StackPanel>
                 <Button x:Name="btnCancel" 
                     BorderBrush="Transparent"
+                    Background="Transparent"
                     MinWidth="0"
                     Visibility="Collapsed"
                     Grid.Column="1" 
-                    Click="btnCancel_Click">
+                    Click="btnCancel_Click" RequestedTheme="Dark">
                     <Button.ContentTemplate>
                         <DataTemplate>
                             <SymbolIcon 
@@ -65,9 +66,10 @@
                 </Button>
                 <Button x:Name="btnStop" 
                     BorderBrush="Transparent"
+                    Background="Transparent"
                     MinWidth="0"
                     Grid.Column="1" 
-                    Click="btnStop_Click">
+                    Click="btnStop_Click" RequestedTheme="Dark">
                     <Button.ContentTemplate>
                         <DataTemplate>
                             <SymbolIcon 
@@ -92,24 +94,24 @@
                           Name="btnBack"
                           Label="Back"
                           Visibility="Collapsed"
-                          Click="btnBack_Click" />
+                           />
             <AppBarButton Icon="Download"
                           Name="btnDownload"
                           Label="Download"
                           Visibility="Collapsed"
-                          Click="btnDownload_Click" />
+                           />
             <AppBarButton Icon="Find"
                           Name="btnSearch"
                           Label="Search"
-                          Click="btnSearch_Click" />
+                           />
             <AppBarButton Icon="Clock"
                           Name="btnFace"
                           Label="Faces" 
-                          Click="btnFace_Click"/>
+                          />
             <AppBarButton Icon="GoToStart"
                           Name="btnApps"
                           Label="Apps" 
-                          Click="btnApps_Click"/>
+                          />
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

@@ -14,11 +14,14 @@ namespace Pebble_Time_Manager.ViewModels
 
         public vmStore()
         {
-            URL = "https://apps.getpebble.com/en_US/watchfaces";
+            URL = new Uri("https://apps.getpebble.com/en_US/watchfaces");
 
             StoreAppsCommand = new RelayCommand(OpenStoreApps);
             StoreFacesCommand = new RelayCommand(OpenStoreFaces);
             StoreSearchCommand = new RelayCommand(OpenStoreSearch);
+            DownloadCommand = new RelayCommand(StartDownloadItem);
+
+            this.DownloadAvailable = false;
         }
 
         #endregion
@@ -26,8 +29,8 @@ namespace Pebble_Time_Manager.ViewModels
 
         #region Properties
 
-        private String _URL;
-        public String URL
+        private Uri _URL;
+        public Uri URL
         {
             get
             {
@@ -41,7 +44,7 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         private bool _DownloadAvailable;
-        public bool DownloadAvailabele
+        public bool DownloadAvailable
         {
             get
             {
@@ -60,17 +63,27 @@ namespace Pebble_Time_Manager.ViewModels
 
         private void OpenStoreFaces(object obj)
         {
-            URL = "https://apps.getpebble.com/en_US/watchfaces";
+            URL = new Uri("https://apps.getpebble.com/en_US/watchfaces");
         }
 
         private void OpenStoreApps(object obj)
         {
-            URL = "https://apps.getpebble.com/en_US/watchapps";
+            URL = new Uri("https://apps.getpebble.com/en_US/watchapps");
         }
 
         private void OpenStoreSearch(object obj)
         {
-            URL = "https://apps.getpebble.com/en_US/search";
+            URL = new Uri("https://apps.getpebble.com/en_US/search");
+        }
+
+        public void CheckDownloadableItem(Uri URL)
+        {
+            DownloadAvailable = URL.AbsolutePath.Contains("en_US/application/");
+        }
+
+        private void StartDownloadItem(object obj)
+        {
+            if (StartDownload != null) StartDownload(this, EventArgs.Empty);
         }
 
         #endregion
@@ -103,6 +116,12 @@ namespace Pebble_Time_Manager.ViewModels
 
         #endregion
 
+        #region Events
+
+        public delegate void StartDownloadEventHandler(object sender, EventArgs e);
+        public event StartDownloadEventHandler StartDownload;
+
+        #endregion
 
         #region INotifyPropertyChanged Members
 

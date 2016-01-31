@@ -79,7 +79,7 @@ namespace Pebble_Time_Manager.ViewModels
             }
             set
             {
-                _EditFaces = value;
+                _EditApps = value;
                 NotifyPropertyChanged("EditApps");
             }
         }
@@ -110,20 +110,6 @@ namespace Pebble_Time_Manager.ViewModels
             {
                 _SearchStore = value;
                 NotifyPropertyChanged("SearchStore");
-            }
-        }
-
-        private bool _Download;
-        public bool Download
-        {
-            get
-            {
-                return _Download;
-            }
-            set
-            {
-                _Download = value;
-                NotifyPropertyChanged("Download");
             }
         }
 

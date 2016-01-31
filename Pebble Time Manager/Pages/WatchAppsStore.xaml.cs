@@ -1,28 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Pebble_Time_Manager.Common;
+using Pebble_Time_Manager.ViewModels;
+using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using System.Net.Http;
 using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using Windows.Storage;
 using Windows.Networking.BackgroundTransfer;
-using System.Threading;
-using Windows.UI.Xaml.Navigation;
-using Pebble_Time_Manager.Common;
+using Windows.Storage;
 using Windows.UI.Popups;
-using Pebble_Time_Manager.ViewModels;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -168,6 +160,9 @@ namespace Pebble_Time_Manager
         private void wbView_ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
         {
             System.Diagnostics.Debug.WriteLine("wbView_ContentLoading");
+
+            _vmBinder.Store.CheckDownloadableItem(args.Uri);
+            LastLoadedUrl = args.Uri.AbsoluteUri;
         }
 
         private void wbView_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
@@ -207,7 +202,7 @@ namespace Pebble_Time_Manager
 
             LastLoadedUrl = args.Uri.ToString();
 
-            if (args.Uri.ToString().Contains("en_US/application/"))
+            /*if (args.Uri.ToString().Contains("en_US/application/"))
             {
                 btnDownload.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
@@ -227,13 +222,12 @@ namespace Pebble_Time_Manager
                 btnFace.Visibility = Visibility.Visible;
             }
 
-
             try
             {
                    String Result = await wbView.InvokeScriptAsync("eval", new string[] { "document.getElementsByClassName(\"add-button\")).removeAttribute(\"ng-click\");" });
                     System.Diagnostics.Debug.WriteLine(Result);
             }
-            catch (Exception) { }
+            catch (Exception) { }*/
         }
 
         private void wbView_FrameDOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
@@ -264,10 +258,9 @@ namespace Pebble_Time_Manager
                 btnStop.Visibility = Visibility.Visible;
 
                 cts = new CancellationTokenSource();
-                
+
                 /*string html = await wbView.InvokeScriptAsync("eval", new string[] { "document.documentElement.outerHTML;" });
                 System.Diagnostics.Debug.WriteLine(html);*/
-
                 String currentURL = LastLoadedUrl;
                 char[] delimiterChars = { '/' };
                 String[] parts = currentURL.Split(delimiterChars);
@@ -293,7 +286,6 @@ namespace Pebble_Time_Manager
                 String File = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["latest_release"].GetObject()["pbw_file"].GetString();
                 String Uuid = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["uuid"].GetString();
                 String ListImage = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["list_image"].GetObject()["80x80"].GetString();
-
 
                 System.Diagnostics.Debug.WriteLine(String.Format("{0} {1} {2}", Type, Title, File));
 
@@ -330,8 +322,6 @@ namespace Pebble_Time_Manager
                 newWatchItem.Name = Title;
 
                 await HandleDownloadAsync(download, true);
-
-
             }
             catch (Exception ex)
             {
@@ -378,13 +368,20 @@ namespace Pebble_Time_Manager
                     btnCancel.Visibility = Visibility.Visible;
                     btnStop.Visibility = Visibility.Collapsed;
 
-                    //Set the name of thoe file in a localsetting
+                    //Set the name of the file in a localsetting
                     var localSettings = ApplicationData.Current.LocalSettings;
                     localSettings.Values[Constants.BackgroundCommunicatieDownloadedItem] = download.ResultFile.Name;
 
                     //Start background task to sed new item to pebble
                     Pebble_Time_Manager.Connector.PebbleConnector _pc = Pebble_Time_Manager.Connector.PebbleConnector.GetInstance();
-                    await _pc.StartBackgroundTask(Connector.PebbleConnector.Initiator.AddItem);
+                    try
+                    {
+                        await _pc.StartBackgroundTask(Connector.PebbleConnector.Initiator.AddItem);
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e.Message);
+                    }
 
                     //Add new item to viewmodel
                     WatchItems.WatchItem _newItem;
@@ -431,12 +428,8 @@ namespace Pebble_Time_Manager
             }
             catch (TaskCanceledException)
             {
-                System.Diagnostics.Debug.WriteLine("Canceled: " + download.Guid);
-
-                
+                System.Diagnostics.Debug.WriteLine("Canceled: " + download.Guid);                
             }
-
-
         }
 
         private void DownloadImageProgress(DownloadOperation download)
@@ -480,27 +473,6 @@ namespace Pebble_Time_Manager
         }
 
         /// <summary>
-        /// Open the search page
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnSearch_Click(object sender, RoutedEventArgs e)
-        {
-            wbView.Source = new Uri("https://apps.getpebble.com/en_US/search");
-        }
-
-        /// <summary>
-        /// Return to start page
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnHome_Click(object sender, RoutedEventArgs e)
-        {
-            // Navigate to the new page
-            Frame.Navigate(typeof(HubPage), null);
-        }
-
-        /// <summary>
         /// Cancel the download and/or close the window
         /// </summary>
         /// <param name="sender"></param>
@@ -511,30 +483,6 @@ namespace Pebble_Time_Manager
 
             btnCancel.Visibility = Visibility.Collapsed;
             btnStop.Visibility = Visibility.Visible;
-        }
-
-        /// <summary>
-        /// Switch to app store
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnApps_Click(object sender, RoutedEventArgs e)
-        {
-            wbView.Source = new Uri("https://apps.getpebble.com/en_US/watchapps");
-            btnApps.Visibility = Visibility.Collapsed;
-            btnFace.Visibility = Visibility.Visible;
-        }
-
-        /// <summary>
-        /// Switch to face store
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnFace_Click(object sender, RoutedEventArgs e)
-        {
-            wbView.Source = new Uri("https://apps.getpebble.com/en_US/watchfaces");
-            btnApps.Visibility = Visibility.Visible;
-            btnFace.Visibility = Visibility.Collapsed;
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
@@ -558,7 +506,14 @@ namespace Pebble_Time_Manager
             _vm.Commands.SearchStore = true;
             _vm.Commands.FaceStore = true;
             _vm.Commands.AppStore = true;
-            _vm.Commands.Download = false;
+            _vm.Store.DownloadAvailable = false;
+
+            _vm.Store.StartDownload += Store_StartDownload;
+        }
+
+        private void Store_StartDownload(object sender, EventArgs e)
+        {
+            btnDownload_Click(sender, null);
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -568,7 +523,7 @@ namespace Pebble_Time_Manager
             _vm.Commands.SearchStore = false;
             _vm.Commands.FaceStore = false;
             _vm.Commands.AppStore = false;
-            _vm.Commands.Download = false;
+            _vm.Store.DownloadAvailable = false;
         }
     }
 }
