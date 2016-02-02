@@ -141,12 +141,13 @@ namespace Pebble_Time_Manager.ViewModels
             WatchFaces.Add(_WatchFace);
             LoadImage(_WatchFace);
 
-            EditCommand = new RelayCommand(Edit);
+            EditCommand = new RelayCommand(EditSwitch);
+            DeleteCommand = new RelayCommand(Delete);
         }
 
-        private void Edit(object obj)
+        private void EditSwitch(object obj)
         {
-            Edit();
+            EditMode = !EditMode;
         }
 
         public void Edit()
@@ -183,6 +184,8 @@ namespace Pebble_Time_Manager.ViewModels
                     WatchFaces.Add(_WatchFace);
                     LoadImage(_WatchFace);
 
+                    System.Diagnostics.Debug.WriteLine("vmWatchFaces reset. ");
+
                     break;
 
 
@@ -197,16 +200,26 @@ namespace Pebble_Time_Manager.ViewModels
                     {
                         if (item.Type == WatchItemType.WatchFace)
                         {
+                            try
+                            {
+                                var vmExistingWatchFace = WatchFaces.Single(x => x.Model == item.ID);
+                                WatchFaces.Remove(vmExistingWatchFace);
+                            }
+                            catch (Exception) { };
+                                
                             vmWatchFace _newWatchFace = new vmWatchFace();
                             _newWatchFace.Name = item.Name;
                             _newWatchFace.Developer = item.Developer;
                             _newWatchFace.Model = item.ID;
+                            _newWatchFace.Editable = true;
                             _newWatchFace.Active = (CurrentWatchFace == item.ID);
                             _newWatchFace.ImageFile = item.File.Replace(".zip", ".gif");
                             WatchFaces.Add(_newWatchFace);
                             LoadImage(_newWatchFace);
 
                             if (_newWatchFace.Active) ActiveItem = _newWatchFace;
+
+                            System.Diagnostics.Debug.WriteLine("vmWatchFaces add item: " + item.Name);
                         }
                     }
 
@@ -230,8 +243,14 @@ namespace Pebble_Time_Manager.ViewModels
                                 }
                             }
 
-                            if (element != null) WatchFaces.Remove(element);
+                            try
+                            {
+                                if (element != null) WatchFaces.Remove(element);
+                            }
+                            catch (Exception) { }
                         }
+
+                        System.Diagnostics.Debug.WriteLine("vmWatchFaces remove item: " + item.Name);
                     }
 
                     break;
@@ -334,6 +353,11 @@ namespace Pebble_Time_Manager.ViewModels
             NotifyPropertyChanged("ItemsSelected");
         }
 
+        private void Delete(object obj)
+        {
+            DeleteSelectedItems();
+        }
+
         /// <summary>
         /// Delete selected items from phone and watch
         /// </summary>
@@ -387,6 +411,12 @@ namespace Pebble_Time_Manager.ViewModels
         #region Commands
 
         public RelayCommand EditCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand DeleteCommand
         {
             get;
             private set;

@@ -205,15 +205,22 @@
 
                         <CommandBar.PrimaryCommands>
 
+                            <AppBarButton x:Name="btnDeleteFaces"
+                              Icon="Delete"
+                              Label="Delete" 
+                              Visibility="{Binding WatchFaces.EditMode, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Command="{Binding WatchFaces.DeleteCommand}"
+                              />
+
                             <AppBarButton x:Name="btnEditFaces"
                               Icon="Bullets"
-                              Label="Edit" 
+                              Label="Select" 
                               Visibility="{Binding Commands.EditFaces, Converter={StaticResource BoolToVisibilityConverter}}"
                               Command="{Binding WatchFaces.EditCommand}"
                               />
                             <AppBarButton x:Name="btnEditApps"
                               Icon="Bullets"
-                              Label="Edit" 
+                              Label="Select" 
                               Visibility="{Binding Commands.EditApps, Converter={StaticResource BoolToVisibilityConverter}}"
                               />
 

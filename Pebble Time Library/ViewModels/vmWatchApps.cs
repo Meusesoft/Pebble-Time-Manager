@@ -128,6 +128,13 @@ namespace Pebble_Time_Manager.ViewModels
                     {
                         if (item.Type == WatchItemType.WatchApp)
                         {
+                            try
+                            {
+                                var vmExistingWatchFace = WatchApps.Single(x => x.Model == item.ID);
+                                WatchApps.Remove(vmExistingWatchFace);
+                            }
+                            catch (Exception) { };
+
                             vmWatchApp _newWatchApp = new vmWatchApp();
                             _newWatchApp.Name = item.Name;
                             _newWatchApp.Model = item.ID;
@@ -135,6 +142,8 @@ namespace Pebble_Time_Manager.ViewModels
                             _newWatchApp.ImageFile = item.File.Replace(".zip", ".gif");
                             WatchApps.Add(_newWatchApp);
                             LoadImage(_newWatchApp);
+
+                            System.Diagnostics.Debug.WriteLine("vmWatchApps add item: " + item.Name);
                         }
                     }
 
@@ -158,7 +167,14 @@ namespace Pebble_Time_Manager.ViewModels
                                 }
                             }
 
-                            if (element != null) WatchApps.Remove(element);
+                            try
+                            {
+                                if (element != null) WatchApps.Remove(element);
+                            }
+                            catch (Exception) { }
+
+                            System.Diagnostics.Debug.WriteLine("vmWatchApps remove item: " + item.Name);
+
                         }
                     }
 

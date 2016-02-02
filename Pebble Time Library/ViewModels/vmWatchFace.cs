@@ -75,7 +75,14 @@ namespace Pebble_Time_Manager.ViewModels
             }
             set
             {
-                _Selected = value;
+                if (!Editable)
+                {
+                    _Selected = false;
+                }
+                else
+                {
+                    _Selected = value;
+                }
                 NotifyPropertyChanged("Selected");
             }
         }

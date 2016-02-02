@@ -74,7 +74,7 @@ namespace Pebble_Time_Manager.Connector
                 if (_WatchItems == null)
                 {
                     _WatchItems = new Pebble_Time_Manager.WatchItems.WatchItems();
-                    _WatchItems.Load();
+                   // _WatchItems.Load();
                 }
 
                 return _WatchItems;
