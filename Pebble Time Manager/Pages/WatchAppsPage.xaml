@@ -6,12 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:Pebble_Time_Manager.Converters"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
 
     <Page.Resources>
         <ResourceDictionary>
 
             <converters:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
+            <converters:BooleanToSelectionModeConverter x:Name="BooleanToSelectionModeConverter" />
+            <converters:BooleanXOR x:Name="BooleanXOR"/>
 
             <DataTemplate x:Key="Standard200x180TileItemTemplate">
                 <Grid Margin="0,0,9.5,9.5"
@@ -87,7 +89,6 @@
         </ResourceDictionary>
     </Page.Resources>
 
-
     <Grid 
         Margin="20"
         Background="{StaticResource AppBackgroundBrush}">
@@ -96,10 +97,11 @@
                               ItemTemplate="{StaticResource WatchItem}"
                               ItemsSource="{Binding WatchApps.WatchApps}"
                               Background="Transparent" 
-                              SelectionMode="None"
-                              IsItemClickEnabled="True" 
+                              SelectionMode="{Binding WatchApps.EditMode, Converter={StaticResource BooleanToSelectionModeConverter}}" 
                               SelectionChanged="lvWatchApps_SelectionChanged" 
+                              IsItemClickEnabled="{Binding WatchApps.EditMode, Converter={StaticResource BooleanXOR}}"
                               ItemClick="lvWatchApps_ItemClick"
+                              RequestedTheme="Dark" 
                               >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">

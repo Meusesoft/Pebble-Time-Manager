@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Storage;
+using Windows.ApplicationModel.Store;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -54,16 +56,48 @@ namespace Pebble_Time_Manager
             _pc.WatchItems.Load();
 
             DataContext = _vmBinder;
+
+            InitialiseStore();
         }
 
+        private static bool? _IsMobile;
         public static bool IsMobile
         {
             get
             {
+                if (_IsMobile.HasValue) return _IsMobile.Value;
+
                 var qualifiers = Windows.ApplicationModel.Resources.Core.ResourceContext.GetForCurrentView().QualifierValues;
-                return (qualifiers.ContainsKey("DeviceFamily") && qualifiers["DeviceFamily"] == "Mobile");
+                _IsMobile = (qualifiers.ContainsKey("DeviceFamily") && qualifiers["DeviceFamily"] == "Mobile");
+                return _IsMobile.Value;
             }
         }
+
+        private async void InitialiseStore()
+        {
+            Helper.Purchases.getReference().Lock("pebble_notifications");
+
+            #if DEBUG
+            try
+            {
+                StorageFile _resource = await StorageFile.GetFileFromApplicationUriAsync(new System.Uri("ms-appx:///Assets/WindowsStoreProxy.xml"));
+                await CurrentAppSimulator.ReloadSimulatorAsync(_resource);
+
+                var licenseInformation = CurrentAppSimulator.LicenseInformation;
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            Helper.Purchases.getReference().Unlock("pebble_notifications");
+            Helper.Purchases.getReference().Lock("pebble_sports");
+            Helper.Purchases.getReference().ClearTryAvailable("pebble_sports");
+            Helper.Purchases.getReference().Lock("pebble_tennis");
+            Helper.Purchases.getReference().ClearTryAvailable("pebble_tennis");
+        #endif
+        }
+
 
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)
         {

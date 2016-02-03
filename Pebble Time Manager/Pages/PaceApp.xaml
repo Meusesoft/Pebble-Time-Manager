@@ -14,39 +14,29 @@
     </Page.Resources>
 
     <Grid x:Name="LayoutRoot"
-          Background="#FF0088FF">
+          Background="#FF0088FF"
+          Padding="20">
 
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition MinHeight="116" MaxHeight="160"/>
+                <RowDefinition MinHeight="116" MaxHeight="160"/>
+                <RowDefinition MinHeight="55" MaxHeight="100"/>
+                <RowDefinition MinHeight="55" MaxHeight="100"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="pace app" 
-                            FontSize="78"
-                            FontWeight="Light"
-                            Grid.Row="0" 
-                            Grid.Column="0" 
-                            Grid.ColumnSpan="2"
-                            CharacterSpacing="-22"
-                           FontFamily="Segoe WP"
-                           Margin="15,-1,0,30"
-                           />
-
         <!-- time -->
         <StackPanel
                     Grid.Column="0"
-                    Grid.Row="1"
+                    Grid.Row="0"
                     Background="#80FFFFFF"
                     Grid.ColumnSpan="2"
-                    Margin="10"
+                    Margin="0,0,0,10"
                     >
             <TextBlock Text="TIME" FontSize="15" Margin="5" HorizontalAlignment="Left"/>
             <TextBlock Text="{Binding Sport.Duration}" FontSize="40" Margin="5" x:Name="timeLabel" Foreground="Black" HorizontalAlignment="Center"/>
@@ -55,9 +45,9 @@
         <!-- distance -->
         <StackPanel
                     Grid.Column="0"
-                    Grid.Row="2"
+                    Grid.Row="1"
                     Background="#80FFFFFF"
-                    Margin="10">
+                    Margin="0,10,10,10">
             <TextBlock Text="DISTANCE" FontSize="15" Margin="5" HorizontalAlignment="Left"/>
             <TextBlock Text="{Binding Sport.Distance}" x:Name="distanceLabel" Margin="5" FontSize="40" HorizontalAlignment="Center" Foreground="Black"/>
             <TextBlock Text="KM" 
@@ -73,9 +63,9 @@
         <!-- pace -->
         <StackPanel
                     Grid.Column="1"
-                    Grid.Row="2"
+                    Grid.Row="1"
                     Background="#80FFFFFF"
-                    Margin="10"
+                    Margin="10,10,0,10"
                     >
             <TextBlock Text="PACE" FontSize="15" Margin="5" HorizontalAlignment="Left"/>
             <TextBlock Text="{Binding Sport.Pace}" x:Name="paceLabel" Margin="5" FontSize="40" Foreground="Black" HorizontalAlignment="Center"/>
@@ -91,24 +81,27 @@
 
         <!-- buttons-->
         <Button Content="Start" 
-                        Grid.Row="3"
+                        Grid.Row="2"
                         Grid.Column="0"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
-                        Margin="20"
+                        Margin="0,10,10,10"
                         Background="#C000C000"
                         BorderBrush="Transparent"
+                        Style="{StaticResource ButtonHighlightSelected}"
+                        Foreground="White"
                         Visibility="{Binding Sport.IsRunning, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=XOR}"
                         IsEnabled="{Binding Sport.Purchased}"
                         Command="{Binding Sport.StartActivityCommand}"                    
                         x:Name="StartButton"/>
 
         <Button Content="Stop" 
-                        Grid.Row="3"
+                        Grid.Row="2"
                         Grid.Column="0"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
-                        Margin="20,10,20,10"
+                        Margin="0,10,10,10"
+                        Foreground="White"
                         Background="#C0C00000"
                         BorderBrush="Transparent"
                         Visibility="{Binding Sport.IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -116,37 +109,40 @@
                         x:Name="StopButton"/>
 
         <Button Content="Resume"
-                        Grid.Row="3"
+                        Grid.Row="2"
                         Grid.Column="1"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
                         BorderBrush="Transparent"
                         Background="#C0808080"
-                        Margin="20,10,20,10"
+                        Margin="10,10,0,10"
+                        Foreground="White"
                         x:Name="ResumeButton" 
                         Visibility="{Binding Sport.Resumeable, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Command="{Binding Sport.ResumeActivityCommand}"/>
 
         <Button Content="Pause"
-                        Grid.Row="3"
+                        Grid.Row="2"
                         Grid.Column="1"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
                         BorderBrush="Transparent"
                         Background="#C0808080"
-                        Margin="20,10,20,10"
+                        Foreground="White"
+                        Margin="10,10,0,10"
                         x:Name="PauseButton" 
                         Visibility="{Binding Sport.Pauseable, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Command="{Binding Sport.ResumeActivityCommand}"/>
 
         <Button Content="Share"
-                        Grid.Row="4"
+                        Grid.Row="3"
                         Grid.ColumnSpan="2"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
                         BorderBrush="Transparent"
                         Background="#C0808080"
-                        Margin="20,10,20,10"
+                        Foreground="White"
+                        Margin="0,10,0,10"
                         x:Name="ShareButton" 
                         Visibility="{Binding Sport.Shareable, Converter={StaticResource BooleanToVisibilityConverter}}" Click="ShareButton_Click">
 
@@ -162,47 +158,56 @@
 
     </Grid>
 
-    <Button Content="Unlock"
+        <StackPanel
+            VerticalAlignment="Center">
+            <Button Content="Unlock"
                 Name="btnPurchase"
                 HorizontalAlignment="Center"
-                Visibility="{Binding Sport.Purchased, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=xor}"
+                Foreground="White"
+                Style="{StaticResource ButtonHighlightSelected}"                
+                Visibility="{Binding Purchased.Purchased, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=xor}"
                 Click="btnPurchase_Click"
-                Background="#FF3333FF"
-                Margin="116,210,116,280">
-            <Button.ContentTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Margin="5"
+                BorderThickness="1"
+                Background="#C000C000"
+                MinWidth="180"
+                Height="143">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Margin="5"
                                 HorizontalAlignment="Center"
                                 RenderTransformOrigin="0.5,0.5">
-                            <TextBlock.RenderTransform>
-                                <CompositeTransform ScaleX="0.7"
+                                <TextBlock.RenderTransform>
+                                    <CompositeTransform ScaleX="0.7"
                                                     ScaleY="0.7" />
-                            </TextBlock.RenderTransform>In-app purchase</TextBlock>
-                        <TextBlock Margin="10"
+                                </TextBlock.RenderTransform>In-app purchase</TextBlock>
+                            <TextBlock Margin="10"
                                 HorizontalAlignment="Center"
                                 RenderTransformOrigin="0.5,0.5">
-                            <TextBlock.RenderTransform>
-                                <CompositeTransform ScaleX="1.4"
+                                <TextBlock.RenderTransform>
+                                    <CompositeTransform ScaleX="1.4"
                                                     ScaleY="1.4" />
-                            </TextBlock.RenderTransform>Sports app</TextBlock>
-                        <TextBlock Margin="10"
+                                </TextBlock.RenderTransform>Pace app</TextBlock>
+                            <TextBlock Margin="10"
                                     HorizontalAlignment="Center">$ 0.99</TextBlock>
-                    </StackPanel>
-                </DataTemplate>
-            </Button.ContentTemplate>
-        </Button>
+                        </StackPanel>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
 
-        <Button Content="{Binding Sport.TriesLeft, Converter={StaticResource StringFormatConverter}, ConverterParameter='Try - {0} left'}"
+            <Button Content="{Binding Sport.TriesLeft, Converter={StaticResource StringFormatConverter}, ConverterParameter='Try - {0} left'}"
+                Style="{StaticResource ButtonHighlightSelected}"                
+                Background="#C0C0C0C0"
+                Foreground="Black"
                 Name="btnTry"
                 HorizontalAlignment="Center"
                 Visibility="{Binding Sport.TryLeft, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Background="#FF3333FF"
-                Margin="116,346,116,222" Width="168" 
-                Command="{Binding Sport.TryCommand}">
-            
-        </Button>
+                Width="180" 
+                Margin="0,10,0,0"
+                Command="{Binding Sport.TryCommand}" Height="65">
 
+            </Button>
+        </StackPanel>
     </Grid>
 
  

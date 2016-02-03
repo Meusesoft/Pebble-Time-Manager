@@ -156,7 +156,7 @@ namespace Pebble_Time_Manager.WatchItems
                     //else return false;
                 }
 
-                if (this.Find(x => x.ID == Guid.Parse(Constants.TennisAppGuid)) == null)
+                /*if (this.Find(x => x.ID == Guid.Parse(Constants.TennisAppGuid)) == null)
                 {
                     WatchItem newitem = new WatchItem();
                     newitem.Name = "Tennis";
@@ -173,7 +173,7 @@ namespace Pebble_Time_Manager.WatchItems
                     this.Add(newitem);
 
                     await Save();
-                }
+                }*/
 
                 NotifyCollectionChangedEventArgs ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
                 OnItemListChange(ea);

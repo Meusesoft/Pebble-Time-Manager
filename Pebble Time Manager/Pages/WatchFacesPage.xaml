@@ -31,7 +31,6 @@
                 </Grid>
             </DataTemplate>
 
-
             <DataTemplate x:Key="StandardTripleLineItemTemplate">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -109,7 +108,6 @@
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
             </ListView.ItemContainerStyle>
-
         </ListView>
     </Grid>
 </Page>

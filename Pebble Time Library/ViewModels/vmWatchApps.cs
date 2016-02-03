@@ -44,8 +44,32 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        public bool EditMode { get; set; }
+        private bool _EditMode;
+        /// <summary>
+        /// The view is in edit mode; items can be deleted.
+        /// </summary>
+        public bool EditMode
+        {
+            get
+            {
+                return _EditMode;
+            }
+            set
+            {
+                if (_EditMode != value)
+                {
+                    //clear the selection
+                    foreach (var element in WatchApps)
+                    {
+                        element.Selected = false;
+                    }
+                }
 
+                _EditMode = value;
+
+                NotifyPropertyChanged("EditMode");
+            }
+        }
         /// <summary>
         /// True if there are selected items
         /// </summary>
@@ -70,19 +94,23 @@ namespace Pebble_Time_Manager.ViewModels
         private void Initialize()
         {
             EditMode = false;
+
+            EditCommand = new RelayCommand(EditSwitch);
+            DeleteCommand = new RelayCommand(Delete);
+
             AddSportApp();
         }
 
         private void AddSportApp()
         {
-            vmWatchApp _WatchApp = new vmWatchApp();
+            /*vmWatchApp _WatchApp = new vmWatchApp();
             _WatchApp.Name = "Pace";
             _WatchApp.Developer = "Meusesoft";
             _WatchApp.ImageFile = "ms-appx:///Assets/sports_icon.png";
             byte[] SportsGuid = new byte[16] { 0x00, 0x3C, 0x86, 0x86, 0x31, 0xA1, 0x4F, 0x5F, 0x91, 0xF5, 0x01, 0x60, 0x0C, 0x9B, 0xDC, 0x59 };
             _WatchApp.Model = new Guid(SportsGuid);
             WatchApps.Add(_WatchApp);
-            LoadImage(_WatchApp);
+            LoadImage(_WatchApp);*/
 
             /*_WatchApp = new vmWatchApp();
             _WatchApp.Name = "Tennis";
@@ -91,6 +119,11 @@ namespace Pebble_Time_Manager.ViewModels
             _WatchApp.Model = Guid.Parse(Constants.TennisAppGuid);
             WatchApps.Add(_WatchApp);
             LoadImage(_WatchApp);*/
+        }
+
+        private void EditSwitch(object obj)
+        {
+            EditMode = !EditMode;
         }
 
         public void Edit()
@@ -263,6 +296,15 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         /// <summary>
+        /// Execute the delete command
+        /// </summary>
+        /// <param name="obj"></param>
+        private void Delete(object obj)
+        {
+            DeleteSelectedItems();
+        }
+
+        /// <summary>
         /// Delete selected items from phone and watch
         /// </summary>
         public async Task DeleteSelectedItems()
@@ -314,6 +356,22 @@ namespace Pebble_Time_Manager.ViewModels
 
         #endregion
 
+        #region Commands
+
+        public RelayCommand EditCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand DeleteCommand
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+        
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -85,6 +85,51 @@ namespace Pebble_Time_Manager.ViewModels
                 NotifyPropertyChanged("PageSettings");
                 NotifyPropertyChanged("PagePace");
                 NotifyPropertyChanged("PageTennis");
+                NotifyPropertyChanged("Title");
+            }
+        }
+
+        private bool? _IsMobile;
+        public bool IsMobile
+        {
+            get
+            {
+                if (_IsMobile.HasValue) return _IsMobile.Value;
+
+                var qualifiers = Windows.ApplicationModel.Resources.Core.ResourceContext.GetForCurrentView().QualifierValues;
+                _IsMobile = (qualifiers.ContainsKey("DeviceFamily") && qualifiers["DeviceFamily"] == "Mobile");
+                return _IsMobile.Value;
+            }
+        }
+
+        public String Title
+        {
+            get
+            {
+                String PageName = "";
+                String Result = "";
+
+                switch (PageSelected)
+                {
+                    case 1: PageName = "WatchFaces"; break;
+                    case 2: PageName = "WatchApps"; break;
+                    case 3: PageName = "Connect"; break;
+                    case 4: PageName = "Settings"; break;
+                    case 5: PageName = "Store"; break;
+                    case 6: PageName = "Tennis"; break;
+                    case 7: PageName = "Pace"; break;
+                }
+
+                if (IsMobile)
+                {
+                    Result = String.Format("{0}", PageName);
+                }
+                else
+                {
+                    Result = String.Format("Pebble Time Manager - {0}", PageName);
+                }
+
+                return Result;
             }
         }
 

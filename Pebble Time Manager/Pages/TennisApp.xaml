@@ -1589,7 +1589,8 @@
     </Page.Resources>
 
     <Grid x:Name="LayoutRoot"
-          Background="#FF0088FF">
+          Background="{StaticResource AppBackgroundBrush}"
+          Padding="20">
 
         <!-- New match page -->
         <Grid 
@@ -1597,10 +1598,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <!--<RowDefinition Height="*"/>-->
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" MinHeight="80"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -1608,25 +1607,14 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="tennis app" 
-                            FontSize="78"
-                            FontWeight="Light"
-                            Grid.Row="0" 
-                            Grid.Column="0" 
-                            Grid.ColumnSpan="2"
-                            CharacterSpacing="-22"
-                           FontFamily="Segoe WP"
-                           Margin="15,-1,0,30"
-                           />
-
             <!-- Button contestants-->
             <Button x:Name="btnContestants"
                                 BorderThickness="0"
                                 Padding="0"
-                                Grid.Row="1" 
+                                Grid.Row="0" 
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="2"
-                                Margin="10,0,10,0"                                HorizontalContentAlignment="Stretch"
+                                Margin="0,0,0,10"                                HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 VerticalContentAlignment="Stretch"
@@ -1794,7 +1782,8 @@
             <Button x:Name="btnMatch"
                                 BorderThickness="0"
                                 Padding="0"
-                                Margin="10,0,10,0"                                Grid.Row="2" 
+                                Margin="0,10,0,10"  
+                                Grid.Row="1" 
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="2"
                                 HorizontalContentAlignment="Stretch"
@@ -1916,7 +1905,7 @@
                                 BorderThickness="0"
                                 Padding="0"
                                 Margin="10,0,10,0"                                
-                                Grid.Row="3" 
+                                Grid.Row="2" 
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="2"
                                 HorizontalAlignment="Stretch"
@@ -1984,8 +1973,8 @@
             <Button x:Name="btnCourt"
                                 BorderThickness="0"
                                 Padding="0"
-                                Margin="10,0,10,0"
-                                Grid.Row="3" 
+                                Margin="0,10,0,10"
+                                Grid.Row="2" 
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="2"
                                 HorizontalAlignment="Stretch"
@@ -2071,16 +2060,21 @@
 
             <!-- Start button -->
             <Button Content="Start" 
-                        Grid.Row="4" 
+                        Grid.Row="3" 
                         Grid.Column="0" 
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
-                        Margin="10,0,10,0"
+                        Margin="0,10,0,10"
+                        FontSize="18"
                         Background="#C000C000"
                         BorderBrush="Transparent"
                         x:Name="StartButton"
+                        Foreground="White"
+                        MaxHeight="60"
+                        MinHeight="35"
                         IsEnabled="{Binding Tennis.Purchased}"
-                    Click="StartButton_Click"/>
+                        Style="{StaticResource ButtonHighlightSelected}"
+                        Click="StartButton_Click"/>
 
 
             <!-- distance 
@@ -2099,15 +2093,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
-            <TextBlock Text="tennis app" 
-                        FontSize="78"
-                        FontWeight="Light"
-                        Grid.Row="0" 
-                        Grid.Column="0" 
-                        CharacterSpacing="-22"
-                        FontFamily="Segoe WP"
-                        Margin="15,-1,0,30"/>
 
             <ContentPresenter Grid.Row="1"
                           Margin="10"
@@ -2134,13 +2119,19 @@
         </StackPanel>
 
 
+        <StackPanel
+            VerticalAlignment="Center">
         <Button Content="Unlock"
                 Name="btnPurchase"
                 HorizontalAlignment="Center"
+                Foreground="White"
+                Style="{StaticResource ButtonHighlightSelected}"                
                 Visibility="{Binding Tennis.Purchased, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=xor}"
                 Click="btnPurchase_Click"
-                Background="#FF3333FF"
-                Margin="116,210,116,227" Height="143">
+                BorderThickness="1"
+                Background="#C000C000"
+                MinWidth="180"
+                Height="143">
             <Button.ContentTemplate>
                 <DataTemplate>
                     <StackPanel>
@@ -2166,14 +2157,18 @@
         </Button>
 
         <Button Content="{Binding Tennis.TriesLeft, Converter={StaticResource StringFormatConverter}, ConverterParameter='Try - {0} left'}"
+                Style="{StaticResource ButtonHighlightSelected}"                
+                Background="#C0C0C0C0"
+                Foreground="Black"
                 Name="btnTry"
                 HorizontalAlignment="Center"
                 Visibility="{Binding Tennis.TryLeft, Converter={StaticResource BoolToVisibilityConverter}}"
-                Background="#FF3333FF"
-                Margin="116,339,116,176" Width="168" 
+                Width="180" 
+                Margin="0,10,0,0"
                 Command="{Binding Tennis.TryCommand}" Height="65">
 
         </Button>
+        </StackPanel>
     </Grid>
 
     <!-- App Bar-->

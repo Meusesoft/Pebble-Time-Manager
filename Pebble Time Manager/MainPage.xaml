@@ -42,8 +42,8 @@
                        FontWeight="Bold"
                        HorizontalAlignment="Left"
                        Margin="20,0,0,0"
-                       VerticalAlignment="Center">Pebble Time Manager</TextBlock>
-
+                       VerticalAlignment="Center"
+                       Text="{Binding Title}"/>
         </Grid>
 
         <SplitView x:Name="MySplitView" 
@@ -218,11 +218,19 @@
                               Visibility="{Binding Commands.EditFaces, Converter={StaticResource BoolToVisibilityConverter}}"
                               Command="{Binding WatchFaces.EditCommand}"
                               />
+                            
+                            <AppBarButton x:Name="btnDeleteApps"
+                              Icon="Delete"
+                              Label="Delete" 
+                              Visibility="{Binding WatchApps.EditMode, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Command="{Binding WatchApps.DeleteCommand}"
+                              />
+                            
                             <AppBarButton x:Name="btnEditApps"
                               Icon="Bullets"
                               Label="Select" 
                               Visibility="{Binding Commands.EditApps, Converter={StaticResource BoolToVisibilityConverter}}"
-                              />
+                              Command="{Binding WatchApps.EditCommand}"/>
 
                             <AppBarButton Icon="Download"
                                 Name="btnDownload"
@@ -248,11 +256,13 @@
                                 Command="{Binding Store.StoreAppsCommand}"
                                 Visibility="{Binding Commands.AppStore, Converter={StaticResource BoolToVisibilityConverter}}"
                                 />
+                            
                             <AppBarButton x:Name="btnSynchronize"
                               Icon="Sync"
                               Label="Synchronize"
                               Visibility="{Binding Commands.Synchronize, Converter={StaticResource BoolToVisibilityConverter}}"
                                />
+                            
                             <AppBarButton x:Name="btnClear"
                               Icon="Clear"
                               Label="Clear"
