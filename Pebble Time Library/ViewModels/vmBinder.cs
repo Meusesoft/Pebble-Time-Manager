@@ -231,21 +231,6 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        private vmMatchState _vmMatch;
-        public vmMatchState vmMatch
-        {
-            get
-            {
-                return _vmMatch;
-            }
-
-            set
-            {
-                _vmMatch = value;
-                NotifyPropertyChanged("vmMatch");
-            }
-        }
-
         private vmTennisApp _vmTennisApp;
         public vmTennisApp Tennis
         {

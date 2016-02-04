@@ -156,13 +156,11 @@
     <Content Include="Assets\Pebble_Logo_150.scale-240.png" />
     <Content Include="Assets\Pebble_Logo_71.scale-100.png" />
     <Content Include="Assets\share.png" />
-    <Content Include="Assets\SmallLogo.scale-100.png" />
-    <Content Include="Assets\SmallLogo.scale-140.png" />
-    <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-125.png" />
     <Content Include="Assets\SplashScreen.scale-150.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
+    <Content Include="Assets\SplashScreen.scale-400.png" />
     <Content Include="Assets\sports_icon.png" />
     <Content Include="Assets\Square150x150Logo.scale-100.png" />
     <Content Include="Assets\Square150x150Logo.scale-125.png" />

@@ -9,6 +9,7 @@ using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Pebble_Time_Manager.Connector;
+using Tennis_Statistics.ViewModels;
 
 namespace Pebble_Time_Manager.ViewModels
 {
@@ -20,6 +21,7 @@ namespace Pebble_Time_Manager.ViewModels
         {
             //Initialise properties
             TryInUse = false;
+            TennisVisible = false;
 
             TryCommand = new RelayCommand(Try);
         }
@@ -96,11 +98,112 @@ namespace Pebble_Time_Manager.ViewModels
         }
         
         /// <summary>
-                 /// A try is in use
-                 /// </summary>
+        /// A try is in use
+        /// </summary>
         public bool TryInUse
         {
             get; set;
+        }
+
+        private vmMatchState _vmMatch;
+        /// <summary>
+        /// The last match state
+        /// </summary>
+        public vmMatchState vmMatch
+        {
+            get
+            {
+                return _vmMatch;
+            }
+
+            set
+            {
+                _vmMatch = value;
+                NotifyPropertyChanged("vmMatch");
+            }
+        }
+
+        private bool _TennisVisible;
+        public bool TennisVisible
+        {
+            get
+            {
+                return _TennisVisible;
+            }
+            set
+            {
+                _TennisVisible = value;
+                NotifyPropertyChanged("TennisVisible");
+                NotifyPropertyChanged("CommandSwitch");
+                NotifyPropertyChanged("CommandResume");
+                NotifyPropertyChanged("CommandStop");
+                NotifyPropertyChanged("CommandSuspend");
+                NotifyPropertyChanged("CommandExtend");
+                NotifyPropertyChanged("CommandDelete");
+                NotifyPropertyChanged("CommandShare");
+            }
+        }
+
+        public bool CommandSwitch
+        {
+            get
+            {
+                if (vmMatch==null) return false;
+                return vmMatch.Switch && _TennisVisible;
+            }
+        }
+
+        public bool CommandResume
+        {
+            get
+            {
+                if (vmMatch == null) return false;
+                return vmMatch.Paused && _TennisVisible;
+            }
+        }
+
+        public bool CommandStop
+        {
+            get
+            {
+                if (vmMatch == null) return false;
+                return vmMatch.Stoppable && _TennisVisible;
+            }
+        }
+
+        public bool CommandSuspend
+        {
+            get
+            {
+                if (vmMatch == null) return false;
+                return vmMatch.Stoppable && _TennisVisible;
+            }
+        }
+
+        public bool CommandExtend
+        {
+            get
+            {
+                if (vmMatch == null) return false;
+                return vmMatch.IsExtendPossible && _TennisVisible;
+            }
+        }
+
+        public bool CommandDelete
+        {
+            get
+            {
+                if (vmMatch == null) return false;
+                return vmMatch.Completed && _TennisVisible;
+            }
+        }
+        public bool CommandShare
+        {
+            get
+            {
+                if (vmMatch == null) return false;
+                return vmMatch.Completed && _TennisVisible;
+            }
         }
 
         #endregion
@@ -114,7 +217,6 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         #endregion
-
 
         #region INotifyPropertyChanged Members
 

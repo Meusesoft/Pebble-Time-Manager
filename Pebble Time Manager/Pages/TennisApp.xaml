@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:Tennis_Statistics.Converters"
     xmlns:vm="using:Tennis_Statistics.ViewModels"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Unloaded="Page_Unloaded" Loaded="Page_Loaded">
 
     <Page.Resources>
         <converters:ColorToBrushConverter x:Name="ColorToBrushConverter" />
@@ -276,7 +276,8 @@
                                             <Grid>
                                                 <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                                 <TextBlock x:Name="PlaceholderTextBlock" AutomationProperties.AccessibilityView="Raw" Foreground="{x:Null}" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" Opacity="0" Text="Xg"/>
-                                                <Rectangle x:Name="PlaceholderRect" Fill="{ThemeResource GridViewItemPlaceholderBackgroundThemeBrush}" IsHitTestVisible="False" Visibility="Collapsed"/>
+                                                <Rectangle x:Name="PlaceholderRect" 
+                                                           IsHitTestVisible="False" Visibility="Collapsed"/>
                                             </Grid>
                                         </Border>
                                     </Border>
@@ -1013,10 +1014,10 @@
                TargetType="Button">
             <Setter Property="Background"
                     Value="Transparent" />
-            <Setter Property="BorderBrush"
+            <!--<Setter Property="BorderBrush"
                     Value="{ThemeResource PhoneForegroundBrush}" />
             <Setter Property="Foreground"
-                    Value="{ThemeResource PhoneForegroundBrush}" />
+                    Value="{ThemeResource PhoneForegroundBrush}" />-->
             <Setter Property="BorderThickness"
                     Value="{ThemeResource PhoneBorderThickness}" />
             <Setter Property="FontFamily"
@@ -1432,7 +1433,7 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="55*" />
-                        <RowDefinition Height="12*" />
+                        <RowDefinition Height="15*" />
                         <RowDefinition Height="55*" />
                     </Grid.RowDefinitions>
 
@@ -1546,16 +1547,17 @@
 
                 </Grid>
 
-                <!-- Point descriptor //-->
+                <!-- Point descriptor 
                 <Grid Background="#80FFFFFF"
                       Visibility="{Binding vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Grid Background="#30000000">
+                    <Grid>
                         <TextBlock Text="{Binding vmMatch.CurrentPointDescription}"
+                                   Visibility="{Binding vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}"
                                    FontSize="16"
                                    Margin="4,4,4,4" />
                     </Grid>
-                </Grid>
-                <!-- Hidden spacer //-->
+                </Grid>//-->
+                <!-- Hidden spacer 
                 <Grid Background="#00000000"
                       Visibility="{Binding vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=xor}">
                     <Grid Background="#00000000">
@@ -1563,14 +1565,19 @@
                                    FontSize="16"
                                    Margin="4,4,4,4" />
                     </Grid>
-                </Grid>
+                </Grid>//-->
                 <Grid Background="#80FFFFFF"
                       Visibility="{Binding vmMatch.InProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=XOR}">
-                    <Grid Background="#30000000">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60*" />
                             <ColumnDefinition Width="40*" />
                         </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding vmMatch.CurrentPointDescription}"
+                                   Visibility="{Binding vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}"
+                                   FontSize="16"
+                                   Grid.Column="0"
+                                   Margin="4,4,4,4" />
                         <TextBlock Text="{Binding vmMatch.Status}"
                                    FontSize="16"
                                    Grid.Column="0"
@@ -1611,18 +1618,20 @@
             <Button x:Name="btnContestants"
                                 BorderThickness="0"
                                 Padding="0"
-                                Grid.Row="0" 
+                                Grid.Row="0"
+                                Background="#80FFFFFF"
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="2"
-                                Margin="0,0,0,10"                                HorizontalContentAlignment="Stretch"
+                                Margin="0,0,0,10"
+                                Style="{StaticResource ButtonHighlightSelected}"
+                                HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 VerticalContentAlignment="Stretch"
                                 IsEnabled="{Binding Tennis.Purchased}">                    
                 <Button.ContentTemplate>
                     <DataTemplate>
-                        <Grid Background="#80FFFFFF"
-                                          HorizontalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
@@ -1634,7 +1643,7 @@
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="CONTESTANTS"
-                                                   FontSize="10"
+                                                   FontSize="14"
                                                    Foreground="#C0FFFFFF"
                                                    Margin="4"
                                                    Grid.Row="0" />
@@ -1783,16 +1792,17 @@
                                 BorderThickness="0"
                                 Padding="0"
                                 Margin="0,10,0,10"  
+                                Background="#80FFFFFF"
                                 Grid.Row="1" 
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="2"
+                                Style="{StaticResource ButtonHighlightSelected}"
                                 HorizontalContentAlignment="Stretch"
                                 HorizontalAlignment="Stretch"
                                 IsEnabled="{Binding Tennis.Purchased}">                    
                 <Button.ContentTemplate>
                     <DataTemplate>
-                        <Grid Background="#80FFFFFF"
-                                          HorizontalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
@@ -1804,7 +1814,7 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="MATCH"
-                                                   FontSize="10"
+                                                   FontSize="14"
                                                    Foreground="#C0FFFFFF"
                                                    Margin="4"
                                                    Grid.Row="0" />
@@ -1905,6 +1915,8 @@
                                 BorderThickness="0"
                                 Padding="0"
                                 Margin="10,0,10,0"                                
+                                Background="#80FFFFFF"
+                                Style="{StaticResource ButtonHighlightSelected}"
                                 Grid.Row="2" 
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="2"
@@ -1913,8 +1925,7 @@
                                 IsEnabled="{Binding Tennis.Purchased}">
                 <Button.ContentTemplate>
                     <DataTemplate>
-                        <Grid Background="#80FFFFFF"
-                                          HorizontalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
@@ -1948,8 +1959,8 @@
                     <Flyout x:Name="fyLogLevel">
                         <StackPanel Margin="8">
                             <TextBlock Text="LOGGING"
-                                                   FontSize="12"
-                                                   Foreground="#99FFFFFF" />
+                                                   FontSize="14"
+                                                   Foreground="#C0FFFFFF" />
 
                             <ListBox x:Name="lstLog"
                                                  SelectedIndex="{Binding vmNewMatch.LogLevel, Mode=TwoWay}"
@@ -1974,6 +1985,8 @@
                                 BorderThickness="0"
                                 Padding="0"
                                 Margin="0,10,0,10"
+                                Background="#80FFFFFF"
+                                Style="{StaticResource ButtonHighlightSelected}"
                                 Grid.Row="2" 
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="2"
@@ -1982,8 +1995,7 @@
                                 IsEnabled="{Binding Tennis.Purchased}">
                 <Button.ContentTemplate>
                     <DataTemplate>
-                        <Grid Background="#80FFFFFF"
-                                          HorizontalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="30" />
@@ -1994,7 +2006,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Text="COURT"
-                                                   FontSize="10"
+                                                   FontSize="14"
                                                    Foreground="#C0FFFFFF"
                                                    Margin="4"
                                                    Grid.Row="0" />
@@ -2076,13 +2088,11 @@
                         Style="{StaticResource ButtonHighlightSelected}"
                         Click="StartButton_Click"/>
 
-
             <!-- distance 
             <ContentPresenter Grid.Row="3"
                               Grid.ColumnSpan="2"
                           Margin="10,10,10,10"
                           ContentTemplate="{StaticResource MatchScore}" />-->
-
         </Grid>
 
         <!-- Match page -->
@@ -2118,7 +2128,6 @@
                 >(Re)loading match</TextBlock>
         </StackPanel>
 
-
         <StackPanel
             VerticalAlignment="Center">
         <Button Content="Unlock"
@@ -2129,7 +2138,7 @@
                 Visibility="{Binding Tennis.Purchased, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=xor}"
                 Click="btnPurchase_Click"
                 BorderThickness="1"
-                Background="#C000C000"
+                Background="#F000C000"
                 MinWidth="180"
                 Height="143">
             <Button.ContentTemplate>
@@ -2158,7 +2167,7 @@
 
         <Button Content="{Binding Tennis.TriesLeft, Converter={StaticResource StringFormatConverter}, ConverterParameter='Try - {0} left'}"
                 Style="{StaticResource ButtonHighlightSelected}"                
-                Background="#C0C0C0C0"
+                Background="#FFC0C0C0"
                 Foreground="Black"
                 Name="btnTry"
                 HorizontalAlignment="Center"
@@ -2171,14 +2180,10 @@
         </StackPanel>
     </Grid>
 
-    <!-- App Bar-->
+    <!-- App Bar
     <Page.BottomAppBar>
         <CommandBar Background="#CC1F1F1F" x:Name="BottomCommandBar">
             <CommandBar.PrimaryCommands>
-                <!--<AppBarButton x:Name="btnResume2"
-                              Icon="Play"
-                              Label="Connect" 
-                              Click="btnResume_Click"/>-->
                 <AppBarButton x:Name="btnSwitch"
                               Icon="Switch"
                               Visibility="{Binding vmMatch.Switch, Converter={StaticResource BoolToVisibilityConverter}}"
@@ -2214,13 +2219,7 @@
                         <BitmapIcon UriSource="ms-appx:///Assets/share.png" />
                     </AppBarButton.Icon>
                 </AppBarButton>
-                <!--
-                <AppBarButton x:Name="btnSave"
-                              Label="Save"
-                              Icon="Save"
-                              Visibility="{Binding vmMatch.Completed, Converter={StaticResource BoolToVisibilityConverter}}" />
-                //-->
             </CommandBar.PrimaryCommands>
         </CommandBar>
-    </Page.BottomAppBar>
+    </Page.BottomAppBar>-->
 </Page>

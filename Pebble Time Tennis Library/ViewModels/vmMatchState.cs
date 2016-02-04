@@ -466,7 +466,6 @@ namespace Tennis_Statistics.ViewModels
 
         #endregion
 
-
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -481,7 +480,6 @@ namespace Tennis_Statistics.ViewModels
         }
 
         #endregion
-
 
     }
 }

@@ -205,27 +205,51 @@
 
                         <CommandBar.PrimaryCommands>
 
+                            <AppBarButton x:Name="btnSwitch"
+                              Icon="Switch"
+                              Visibility="{Binding Tennis.CommandSwitch, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Label="Switch" />
+                            <AppBarButton x:Name="btnResume"
+                              Icon="Play"
+                              Label="Resume" 
+                              Visibility="{Binding Tennis.CommandResume, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <AppBarButton x:Name="btnStop"
+                              Label="Stop"
+                              Icon="Stop"
+                              Visibility="{Binding Tennis.CommandStop, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <AppBarButton x:Name="btnSuspend"
+                              Label="Suspend"
+                              Icon="Pause"
+                              Visibility="{Binding Tennis.CommandSuspend, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <AppBarButton x:Name="btnExtend"
+                              Label="New set"
+                              Icon="Add"
+                              Visibility="{Binding Tennis.CommandExtend, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <AppBarButton x:Name="btnDelete"
+                              Icon="Delete"
+                              Label="Delete" 
+                              Visibility="{Binding Tennis.CommandDelete, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <AppBarButton x:Name="btnShare"
+                              Label="Share"
+                              Icon="ReShare"
+                              Visibility="{Binding Tennis.CommandShare, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            
                             <AppBarButton x:Name="btnDeleteFaces"
                               Icon="Delete"
                               Label="Delete" 
                               Visibility="{Binding WatchFaces.EditMode, Converter={StaticResource BoolToVisibilityConverter}}"
-                              Command="{Binding WatchFaces.DeleteCommand}"
-                              />
-
+                              Command="{Binding WatchFaces.DeleteCommand}"/>
                             <AppBarButton x:Name="btnEditFaces"
                               Icon="Bullets"
                               Label="Select" 
                               Visibility="{Binding Commands.EditFaces, Converter={StaticResource BoolToVisibilityConverter}}"
-                              Command="{Binding WatchFaces.EditCommand}"
-                              />
+                              Command="{Binding WatchFaces.EditCommand}"/>
                             
                             <AppBarButton x:Name="btnDeleteApps"
                               Icon="Delete"
                               Label="Delete" 
                               Visibility="{Binding WatchApps.EditMode, Converter={StaticResource BoolToVisibilityConverter}}"
-                              Command="{Binding WatchApps.DeleteCommand}"
-                              />
-                            
+                              Command="{Binding WatchApps.DeleteCommand}"/>                            
                             <AppBarButton x:Name="btnEditApps"
                               Icon="Bullets"
                               Label="Select" 
@@ -236,38 +260,31 @@
                                 Name="btnDownload"
                                 Label="Download"
                                 Visibility="{Binding Store.DownloadAvailable, Converter={StaticResource BoolToVisibilityConverter}}"
-                                Command="{Binding Store.DownloadCommand}"
-                                          />
+                                Command="{Binding Store.DownloadCommand}"/>
                             <AppBarButton Icon="Find"
                                 Name="btnSearch"
                                 Label="Search"
                                 Command="{Binding Store.StoreSearchCommand}"
-                                Visibility="{Binding Commands.SearchStore, Converter={StaticResource BoolToVisibilityConverter}}"
-                                />
+                                Visibility="{Binding Commands.SearchStore, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton Icon="Clock"
                                 Name="btnStoreFaces"
                                 Label="Faces" 
                                 Command="{Binding Store.StoreFacesCommand}"
-                                Visibility="{Binding Commands.FaceStore, Converter={StaticResource BoolToVisibilityConverter}}"
-                                />
+                                Visibility="{Binding Commands.FaceStore, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton Icon="GoToStart"
                                 Name="btnStoreApps"
                                 Label="Apps" 
                                 Command="{Binding Store.StoreAppsCommand}"
-                                Visibility="{Binding Commands.AppStore, Converter={StaticResource BoolToVisibilityConverter}}"
-                                />
+                                Visibility="{Binding Commands.AppStore, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             
                             <AppBarButton x:Name="btnSynchronize"
                               Icon="Sync"
                               Label="Synchronize"
-                              Visibility="{Binding Commands.Synchronize, Converter={StaticResource BoolToVisibilityConverter}}"
-                               />
-                            
+                              Visibility="{Binding Commands.Synchronize, Converter={StaticResource BoolToVisibilityConverter}}"/>                            
                             <AppBarButton x:Name="btnClear"
                               Icon="Clear"
                               Label="Clear"
-                              Visibility="{Binding Commands.ClearLog, Converter={StaticResource BoolToVisibilityConverter}}"
-                              />
+                              Visibility="{Binding Commands.ClearLog, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         </CommandBar.PrimaryCommands>
                     </CommandBar>
                 </Grid>                

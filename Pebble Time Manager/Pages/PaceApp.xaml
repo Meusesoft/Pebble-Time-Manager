@@ -38,7 +38,7 @@
                     Grid.ColumnSpan="2"
                     Margin="0,0,0,10"
                     >
-            <TextBlock Text="TIME" FontSize="15" Margin="5" HorizontalAlignment="Left"/>
+                <TextBlock Text="TIME" FontSize="14" Margin="5" Foreground="#C0FFFFFF" HorizontalAlignment="Left"/>
             <TextBlock Text="{Binding Sport.Duration}" FontSize="40" Margin="5" x:Name="timeLabel" Foreground="Black" HorizontalAlignment="Center"/>
         </StackPanel>
 
@@ -48,7 +48,7 @@
                     Grid.Row="1"
                     Background="#80FFFFFF"
                     Margin="0,10,10,10">
-            <TextBlock Text="DISTANCE" FontSize="15" Margin="5" HorizontalAlignment="Left"/>
+                <TextBlock Text="DISTANCE" FontSize="14" Foreground="#C0FFFFFF" Margin="5" HorizontalAlignment="Left"/>
             <TextBlock Text="{Binding Sport.Distance}" x:Name="distanceLabel" Margin="5" FontSize="40" HorizontalAlignment="Center" Foreground="Black"/>
             <TextBlock Text="KM" 
                            Margin="5" 
@@ -67,7 +67,7 @@
                     Background="#80FFFFFF"
                     Margin="10,10,0,10"
                     >
-            <TextBlock Text="PACE" FontSize="15" Margin="5" HorizontalAlignment="Left"/>
+                <TextBlock Text="PACE" FontSize="14" Foreground="#C0FFFFFF" Margin="5" HorizontalAlignment="Left"/>
             <TextBlock Text="{Binding Sport.Pace}" x:Name="paceLabel" Margin="5" FontSize="40" Foreground="Black" HorizontalAlignment="Center"/>
             <TextBlock Text="MIN / KM" 
                            Visibility="{Binding Sport.Miles, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=XOR}"
@@ -165,10 +165,10 @@
                 HorizontalAlignment="Center"
                 Foreground="White"
                 Style="{StaticResource ButtonHighlightSelected}"                
-                Visibility="{Binding Purchased.Purchased, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=xor}"
+                Visibility="{Binding Sport.Purchased, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=xor}"
                 Click="btnPurchase_Click"
                 BorderThickness="1"
-                Background="#C000C000"
+                Background="#F000C000"
                 MinWidth="180"
                 Height="143">
                 <Button.ContentTemplate>
@@ -197,7 +197,7 @@
 
             <Button Content="{Binding Sport.TriesLeft, Converter={StaticResource StringFormatConverter}, ConverterParameter='Try - {0} left'}"
                 Style="{StaticResource ButtonHighlightSelected}"                
-                Background="#C0C0C0C0"
+                Background="#FFC0C0C0"
                 Foreground="Black"
                 Name="btnTry"
                 HorizontalAlignment="Center"
