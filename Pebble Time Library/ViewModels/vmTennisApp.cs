@@ -24,6 +24,7 @@ namespace Pebble_Time_Manager.ViewModels
             TennisVisible = false;
 
             TryCommand = new RelayCommand(Try);
+            SwitchCommand = new RelayCommand(Switch);
         }
 
         #endregion
@@ -46,6 +47,16 @@ namespace Pebble_Time_Manager.ViewModels
 
             NotifyPropertyChanged("Purchased");
             NotifyPropertyChanged("TryLeft");
+        }
+
+        /// <summary>
+        /// Request a switch of the server
+        /// </summary>
+        /// <param name="obj"></param>
+        private void Switch(object obj)
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values[Constants.TennisCommand] = "switch";
         }
 
         #endregion
@@ -119,8 +130,20 @@ namespace Pebble_Time_Manager.ViewModels
             set
             {
                 _vmMatch = value;
+                _vmMatch.NewState += _vmMatch_NewState;
                 NotifyPropertyChanged("vmMatch");
             }
+        }
+
+        private void _vmMatch_NewState(object sender, EventArgs e)
+        {
+            NotifyPropertyChanged("CommandSwitch");
+            NotifyPropertyChanged("CommandResume");
+            NotifyPropertyChanged("CommandStop");
+            NotifyPropertyChanged("CommandSuspend");
+            NotifyPropertyChanged("CommandExtend");
+            NotifyPropertyChanged("CommandDelete");
+            NotifyPropertyChanged("CommandShare");
         }
 
         private bool _TennisVisible;
@@ -211,6 +234,12 @@ namespace Pebble_Time_Manager.ViewModels
         #region Commands
 
         public RelayCommand TryCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand SwitchCommand
         {
             get;
             private set;

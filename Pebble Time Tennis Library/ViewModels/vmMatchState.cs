@@ -288,6 +288,8 @@ namespace Tennis_Statistics.ViewModels
             TotalSets.Notify();
             CurrentSetScore.Notify();
             StatisticsCollection.Notify();
+
+            if (NewState != null) NewState(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -463,6 +465,13 @@ namespace Tennis_Statistics.ViewModels
             }
         }
 
+
+        #endregion
+
+        #region Events
+
+        public delegate void NewStateEventHandler(object sender, EventArgs e);
+        public event NewStateEventHandler NewState;
 
         #endregion
 

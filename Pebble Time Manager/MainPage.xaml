@@ -208,6 +208,7 @@
                             <AppBarButton x:Name="btnSwitch"
                               Icon="Switch"
                               Visibility="{Binding Tennis.CommandSwitch, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Command="{Binding Tennis.SwitchCommand}"
                               Label="Switch" />
                             <AppBarButton x:Name="btnResume"
                               Icon="Play"

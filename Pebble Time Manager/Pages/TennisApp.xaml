@@ -55,22 +55,24 @@
                                 </Border.RenderTransform>
                                 <Grid>
                                     <ContentPresenter x:Name="contentPresenter"
+                                                      
                                                       ContentTransitions="{TemplateBinding ContentTransitions}"
                                                       ContentTemplate="{TemplateBinding ContentTemplate}"
                                                       Content="{TemplateBinding Content}"
                                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                      Margin="{TemplateBinding Padding}" />
+                                                       />
                                     <!-- The 'Xg' text simulates the amount of space one line of text will occupy.
                                             In the DataPlaceholder state, the Content is not loaded yet so we
-                                            approximate the size of the item using placeholder text. -->
+                                            approximate the size of the item using placeholder text. 
                                     <TextBlock x:Name="PlaceholderTextBlock"
                                                Opacity="0"
                                                Text="Xg"
+                                               Margin="0,-25,0,-25"
                                                Foreground="{x:Null}"
-                                               Margin="{TemplateBinding Padding}"
+                                              
                                                IsHitTestVisible="False"
-                                               AutomationProperties.AccessibilityView="Raw" />
+                                               AutomationProperties.AccessibilityView="Raw" />-->
 
                                 </Grid>
                             </Border>
@@ -1125,37 +1127,39 @@
                     <ColumnDefinition Width="85*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding Value1}"
-                           FontSize="15"
-                           Margin="5"
+                           FontSize="13"
+                           Margin="5,0,5,0"
                            Grid.Column="0"
                            FontWeight="Bold"
+                           Foreground="White"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Description}"
-                           FontSize="13"
-                           Margin="5"
+                           FontSize="11"
+                           Margin="5,0,5,0"
                            HorizontalAlignment="Center"
                            Foreground="#C0FFFFFF"
                            Grid.Column="1"
                            VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Value2}"
-                           FontSize="15"
-                           Margin="5"
+                           FontSize="13"
+                           Margin="5,0,5,0"
                            FontWeight="Bold"
                            Grid.Column="2"
+                           Foreground="White"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="SetFinished">
             <StackPanel MinWidth="50">
-                <TextBlock FontSize="48"
+                <TextBlock FontSize="44"
                            Text="{Binding Score1}"
                            Foreground="White"
                            Height="55"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
-                <TextBlock FontSize="48"
+                <TextBlock FontSize="44"
                            Text="{Binding Score2}"
                            Foreground="White"
                            Height="55"
@@ -1166,13 +1170,13 @@
         <DataTemplate x:Key="SetInProgress">
             <StackPanel Background="#60000000"
                         MinWidth="50">
-                <TextBlock FontSize="48"
+                <TextBlock FontSize="44"
                            Text="{Binding Score1}"
                            Foreground="White"
                            Height="55"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
-                <TextBlock FontSize="48"
+                <TextBlock FontSize="44"
                            Text="{Binding Score2}"
                            Foreground="White"
                            Height="55"
@@ -1230,7 +1234,7 @@
                     <StackPanel Orientation="Horizontal">
 
                         <!-- Type of statistic -->
-                        <ItemsControl ItemsSource="{Binding vmMatch.StatisticsCollection.Groups}"
+                        <ItemsControl ItemsSource="{Binding Tennis.vmMatch.StatisticsCollection.Groups}"
                                       HorizontalContentAlignment="Stretch"
                                       Margin="0,0,20,0">
                             <ItemsControl.ItemsPanel>
@@ -1250,6 +1254,7 @@
                                                   FontSize="10"
                                                   MinHeight="30"
                                                   MinWidth="50"
+                                                  RequestedTheme="Dark"
                                                   Style="{StaticResource ToggleButtonNoMarginSmall}">
 
                                     </ToggleButton>
@@ -1266,7 +1271,7 @@
                     <StackPanel Orientation="Horizontal">
 
                         <!-- Match or set -->
-                        <ItemsControl ItemsSource="{Binding vmMatch.StatisticsCollection.Children}"
+                        <ItemsControl ItemsSource="{Binding Tennis.vmMatch.StatisticsCollection.Children}"
                                       HorizontalContentAlignment="Stretch">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -1285,6 +1290,7 @@
                                                   FontSize="10"
                                                   MinHeight="30"
                                                   MinWidth="50"
+                                                  RequestedTheme="Dark"
                                                   Style="{StaticResource ToggleButtonNoMarginSmall}">
 
                                     </ToggleButton>
@@ -1304,35 +1310,38 @@
                         <ColumnDefinition Width="20*" />
                         <ColumnDefinition Width="40*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding vmMatch.NamePlayer1, Converter={StaticResource UppercaseConverter}}"
+                    <TextBlock Text="{Binding Tennis.vmMatch.NamePlayer1, Converter={StaticResource UppercaseConverter}}"
                                FontSize="13"
                                Margin="5"
+                               Foreground="White"
                                Grid.Column="0"
                                HorizontalAlignment="Left"
                                FontWeight="Bold" />
-                    <TextBlock Text="{Binding vmMatch.StatisticsCollection.Selected.Duration}"
+                    <TextBlock Text="{Binding Tennis.vmMatch.StatisticsCollection.Selected.Duration}"
                                FontSize="13"
                                Margin="5"
                                Grid.Column="1"
+                               Foreground="White"
                                HorizontalAlignment="Center"
                                FontWeight="Bold" />
-                    <TextBlock Text="{Binding vmMatch.NamePlayer2, Converter={StaticResource UppercaseConverter}}"
+                    <TextBlock Text="{Binding Tennis.vmMatch.NamePlayer2, Converter={StaticResource UppercaseConverter}}"
                                FontSize="13"
                                Margin="5"
                                Grid.Column="2"
+                               Foreground="White"
                                HorizontalAlignment="Right"
                                FontWeight="Bold" />
                 </Grid>
 
                 <!--Statistic-->
                 <Grid>
-                    <ListView ItemsSource="{Binding vmMatch.StatisticsCollection.VisibleElements}"
+                    <ListView ItemsSource="{Binding Tennis.vmMatch.StatisticsCollection.VisibleElements}"
                               IsItemClickEnabled="False"
                               Background="#80000000"
                               HorizontalAlignment="Stretch"
                               HorizontalContentAlignment="Stretch"
                               VerticalAlignment="Stretch"
-                              Visibility="{Binding vmMatch.StatisticsCollection.SelectedGroup.IsAvailable, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Visibility="{Binding Tennis.vmMatch.StatisticsCollection.SelectedGroup.IsAvailable, Converter={StaticResource BoolToVisibilityConverter}}"
                               ItemTemplate="{StaticResource StatisticsItem}">
                         <ListView.ItemContainerTransitions>
                             <TransitionCollection />
@@ -1341,6 +1350,7 @@
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment"
                                         Value="Stretch" />
+                                <Setter Property="MinHeight" Value="30"/>
                                 <Setter Property="Template"
                                         Value="{StaticResource ListViewItemSimple}" />
                             </Style>
@@ -1349,11 +1359,12 @@
                     <Grid VerticalAlignment="Stretch"
                           HorizontalAlignment="Stretch"
                           Background="#80000000"
-                          Visibility="{Binding vmMatch.StatisticsCollection.SelectedGroup.IsAvailable, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=XOR}">
+                          Visibility="{Binding Tennis.vmMatch.StatisticsCollection.SelectedGroup.IsAvailable, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=XOR}">
 
                         <TextBlock Text="This feature is not available."
                                    FontSize="20"
                                    Margin="20,50,20,50"
+                                   Foreground="White"
                                    VerticalAlignment="Center"
                                    HorizontalAlignment="Center" />
                     </Grid>
@@ -1437,7 +1448,7 @@
                         <RowDefinition Height="55*" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="{Binding vmMatch.NamePlayer1, Converter={StaticResource NameConverter}}"
+                    <TextBlock Text="{Binding Tennis.vmMatch.NamePlayer1, Converter={StaticResource NameConverter}}"
                                FontSize="36"
                                Grid.Row="0"
                                Grid.Column="0"
@@ -1445,52 +1456,57 @@
                                VerticalAlignment="Center"
                                Foreground="White"
                                Margin="5,0,0,0" />
-                    <TextBlock Text="{Binding vmMatch.ScorePlayer1}"
-                               FontSize="48"
+                    <TextBlock Text="{Binding Tennis.vmMatch.ScorePlayer1}"
+                               FontSize="44"
+                               Foreground="White"
                                FontWeight="Bold"
                                Grid.Row="0"
                                Grid.Column="4"
+                               VerticalAlignment="Center"
                                HorizontalAlignment="Center" />
                     <Rectangle Fill="Green"
                                Width="Auto"
                                Height="Auto"
                                Margin="0"
-                               Grid.Row="{Binding vmMatch.Winner}"
+                               Grid.Row="{Binding Tennis.vmMatch.Winner}"
                                Grid.Column="1"
-                               Visibility="{Binding vmMatch.Completed, Converter={StaticResource BoolToVisibilityConverter}}" />
+                               Visibility="{Binding Tennis.vmMatch.Completed, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <TextBlock Text="•"
                                FontSize="36"
                                FontWeight="Bold"
-                               Grid.Row="{Binding vmMatch.Server}"
+                               Grid.Row="{Binding Tennis.vmMatch.Server}"
                                Foreground="Yellow"
                                Grid.Column="1"
+                               VerticalAlignment="Center"
                                HorizontalAlignment="Center"
-                               Visibility="{Binding vmMatch.InProgress, Converter={StaticResource BoolToVisibilityConverter}}" 
+                               Visibility="{Binding Tennis.vmMatch.InProgress, Converter={StaticResource BoolToVisibilityConverter}}" 
                                >
                     </TextBlock>
-                    <TextBlock Text="{Binding vmMatch.TotalSets.Score1}"
-                               FontSize="48"
+                    <TextBlock Text="{Binding Tennis.vmMatch.TotalSets.Score1}"
+                               FontSize="44"
                                Grid.Row="0"
                                Foreground="White"
                                Grid.Column="2"
-                               HorizontalAlignment="Center"
-                               FontFamily="Global User Interface" />
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center" />
                     <Grid Background="#60000000"
                           Grid.Column="3"
                           Grid.Row="0">
                     </Grid>
-                    <TextBlock Text="{Binding vmMatch.CurrentSetScore.Score1}"
-                               FontSize="48"
+                    <TextBlock Text="{Binding Tennis.vmMatch.CurrentSetScore.Score1}"
+                               FontSize="44"
                                Foreground="White"
                                Grid.Row="0"
                                Grid.Column="3"
+                               VerticalAlignment="Center"
                                HorizontalAlignment="Center" />
                     <Grid Background="#30000000"
                           Grid.ColumnSpan="5"
                           Grid.Row="1">
                     </Grid>
-                    <TextBlock Text="{Binding vmMatch.MatchType}"
+                    <TextBlock Text="{Binding Tennis.vmMatch.MatchType}"
                                FontSize="8"
+                               Foreground="White"
                                Margin="5,2,2,2"
                                Grid.Column="0"
                                Grid.ColumnSpan="2"
@@ -1499,22 +1515,25 @@
                     <TextBlock Text="SETS"
                                FontSize="8"
                                Margin="2"
+                               Foreground="White"
                                Grid.Column="2"
                                Grid.Row="1"
                                HorizontalAlignment="Center" />
                     <TextBlock Text="GAMES"
                                FontSize="8"
                                Margin="2"
+                               Foreground="White"
                                Grid.Column="3"
                                Grid.Row="1"
                                HorizontalAlignment="Center" />
                     <TextBlock Text="POINTS"
                                FontSize="8"
                                Margin="2"
+                               Foreground="White"
                                Grid.Column="4"
                                Grid.Row="1"
                                HorizontalAlignment="Center" />
-                    <TextBlock Text="{Binding vmMatch.NamePlayer2, Converter={StaticResource NameConverter}}"
+                    <TextBlock Text="{Binding Tennis.vmMatch.NamePlayer2, Converter={StaticResource NameConverter}}"
                                FontSize="36"
                                Grid.Row="2"
                                Grid.Column="0"
@@ -1522,44 +1541,48 @@
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
                                Margin="5,0,0,0" />
-                    <TextBlock Text="{Binding vmMatch.ScorePlayer2}"
-                               FontSize="48"
+                    <TextBlock Text="{Binding Tennis.vmMatch.ScorePlayer2}"
+                               FontSize="44"
                                FontWeight="Bold"
                                Grid.Row="2"
                                Grid.Column="4"
+                               Foreground="White"
+                               VerticalAlignment="Center"
                                HorizontalAlignment="Center" />
-                    <TextBlock Text="{Binding vmMatch.TotalSets.Score2}"
-                               FontSize="48"
+                    <TextBlock Text="{Binding Tennis.vmMatch.TotalSets.Score2}"
+                               FontSize="44"
                                Foreground="White"
                                Grid.Row="2"
                                Grid.Column="2"
+                               VerticalAlignment="Center"
                                HorizontalAlignment="Center" />
                     <Grid Background="#60000000"
                           Grid.Column="3"
                           Grid.Row="2">
                     </Grid>
-                    <TextBlock Text="{Binding vmMatch.CurrentSetScore.Score2}"
-                               FontSize="48"
+                    <TextBlock Text="{Binding Tennis.vmMatch.CurrentSetScore.Score2}"
+                               FontSize="44"
                                Foreground="White"
                                Grid.Row="2"
                                Grid.Column="3"
+                               VerticalAlignment="Center"
                                HorizontalAlignment="Center" />
 
                 </Grid>
 
                 <!-- Point descriptor 
                 <Grid Background="#80FFFFFF"
-                      Visibility="{Binding vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}">
+                      Visibility="{Binding Tennis.vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid>
-                        <TextBlock Text="{Binding vmMatch.CurrentPointDescription}"
-                                   Visibility="{Binding vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}"
+                        <TextBlock Text="{Binding Tennis.vmMatch.CurrentPointDescription}"
+                                   Visibility="{Binding Tennis.vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}"
                                    FontSize="16"
                                    Margin="4,4,4,4" />
                     </Grid>
                 </Grid>//-->
                 <!-- Hidden spacer 
                 <Grid Background="#00000000"
-                      Visibility="{Binding vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=xor}">
+                      Visibility="{Binding Tennis.vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=xor}">
                     <Grid Background="#00000000">
                         <TextBlock Text=""
                                    FontSize="16"
@@ -1567,24 +1590,27 @@
                     </Grid>
                 </Grid>//-->
                 <Grid Background="#80FFFFFF"
-                      Visibility="{Binding vmMatch.InProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=XOR}">
+                      Visibility="{Binding Tennis.vmMatch.InProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=XOR}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60*" />
                             <ColumnDefinition Width="40*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding vmMatch.CurrentPointDescription}"
-                                   Visibility="{Binding vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}"
+                        <TextBlock Text="{Binding Tennis.vmMatch.CurrentPointDescription}"
+                                   Visibility="{Binding Tennis.vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}"
                                    FontSize="16"
                                    Grid.Column="0"
+                                   Foreground="White"
                                    Margin="4,4,4,4" />
-                        <TextBlock Text="{Binding vmMatch.Status}"
+                        <TextBlock Text="{Binding Tennis.vmMatch.Status}"
                                    FontSize="16"
                                    Grid.Column="0"
+                                   Foreground="White"
                                    Margin="4,4,4,4" />
-                        <TextBlock Text="{Binding vmMatch.Duration, Converter={StaticResource DateTimeConverter}, ConverterParameter='MATCH TIME: '}"
+                        <TextBlock Text="{Binding Tennis.vmMatch.Duration, Converter={StaticResource DateTimeConverter}, ConverterParameter='MATCH TIME: '}"
                                    FontSize="16"
                                    Grid.Column="1"
+                                   Foreground="White"
                                    Margin="4,4,4,4"
                                    HorizontalAlignment="Right" />
                     </Grid>
@@ -2125,6 +2151,7 @@
             <TextBlock
                 Margin="10"
                 FontSize="20"
+                Foreground="White"
                 >(Re)loading match</TextBlock>
         </StackPanel>
 
@@ -2186,35 +2213,35 @@
             <CommandBar.PrimaryCommands>
                 <AppBarButton x:Name="btnSwitch"
                               Icon="Switch"
-                              Visibility="{Binding vmMatch.Switch, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Visibility="{Binding Tennis.vmMatch.Switch, Converter={StaticResource BoolToVisibilityConverter}}"
                               Label="Switch" Click="btnSwitch_Click" />
                 <AppBarButton x:Name="btnResume"
                               Icon="Play"
                               Label="Resume" 
-                              Visibility="{Binding vmMatch.Paused, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Visibility="{Binding Tennis.vmMatch.Paused, Converter={StaticResource BoolToVisibilityConverter}}"
                               Click="btnResume_Click"/>
                 <AppBarButton x:Name="btnStop"
                               Label="Stop"
                               Icon="Stop"
-                              Visibility="{Binding vmMatch.Stoppable, Converter={StaticResource BoolToVisibilityConverter}}" 
+                              Visibility="{Binding Tennis.vmMatch.Stoppable, Converter={StaticResource BoolToVisibilityConverter}}" 
                               Click="btnStop_Click"/>
                 <AppBarButton x:Name="btnSuspend"
                               Label="Suspend"
                               Icon="Pause"
-                              Visibility="{Binding vmMatch.Stoppable, Converter={StaticResource BoolToVisibilityConverter}}" 
+                              Visibility="{Binding Tennis.vmMatch.Stoppable, Converter={StaticResource BoolToVisibilityConverter}}" 
                               Click="btnSuspend_Click"/>
                 <AppBarButton x:Name="btnExtend"
                               Label="New set"
                               Icon="Add"
-                              Visibility="{Binding vmMatch.IsExtendPossible, Converter={StaticResource BoolToVisibilityConverter}}" Click="btnExtend_Click"/>
+                              Visibility="{Binding Tennis.vmMatch.IsExtendPossible, Converter={StaticResource BoolToVisibilityConverter}}" Click="btnExtend_Click"/>
                 <AppBarButton x:Name="btnDelete"
                               Icon="Delete"
                               Label="Delete" 
-                              Visibility="{Binding vmMatch.Completed, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Visibility="{Binding Tennis.vmMatch.Completed, Converter={StaticResource BoolToVisibilityConverter}}"
                               Click="btnDelete_Click"/>
                 <AppBarButton x:Name="btnShare"
                               Label="Share"
-                              Visibility="{Binding vmMatch.Completed, Converter={StaticResource BoolToVisibilityConverter}}" Click="ShareButton_Click">
+                              Visibility="{Binding Tennis.vmMatch.Completed, Converter={StaticResource BoolToVisibilityConverter}}" Click="ShareButton_Click">
                     <AppBarButton.Icon>
                         <BitmapIcon UriSource="ms-appx:///Assets/share.png" />
                     </AppBarButton.Icon>
