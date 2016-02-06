@@ -26,15 +26,15 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0088FF" />
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.BackgroundSynchronizer">
-          <BackgroundTasks>
-            <Task Type="timer" />
-          </BackgroundTasks>
-        </Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.BackgroundCommunication">
           <BackgroundTasks>
             <Task Type="deviceUse" />
             <Task Type="bluetooth" />
+          </BackgroundTasks>
+        </Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.BackgroundSynchronizer">
+          <BackgroundTasks>
+            <Task Type="timer" />
           </BackgroundTasks>
         </Extension>
       </Extensions>
@@ -45,5 +45,6 @@
     <uap:Capability Name="appointments" />
     <DeviceCapability Name="bluetooth" />
     <DeviceCapability Name="location" />
+    <DeviceCapability Name="proximity" />
   </Capabilities>
 </Package>

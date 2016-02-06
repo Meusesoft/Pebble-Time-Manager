@@ -16,6 +16,9 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Storage;
 using Windows.ApplicationModel.Store;
+using Windows.Devices.Bluetooth;
+using Windows.Devices.Enumeration;
+using Windows.Devices.Bluetooth.Rfcomm;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -149,6 +152,14 @@ namespace Pebble_Time_Manager
         {
             FrameLeft.Navigate(typeof(ConnectPage));
             MySplitView.IsPaneOpen = false;
+        }
+
+        private async void btnResync_Click(object sender, RoutedEventArgs e)
+        {
+            Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
+            Connector.TimeLineSynchronizer _tl = new Connector.TimeLineSynchronizer();
+            _vmBinder.Log = _tl.Log;
+            await _tl.Wipe();
         }
     }
 }

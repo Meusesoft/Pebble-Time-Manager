@@ -287,6 +287,10 @@
                               Label="Clear"
                               Visibility="{Binding Commands.ClearLog, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         </CommandBar.PrimaryCommands>
+                        <CommandBar.SecondaryCommands>
+                            <AppBarButton x:Name="btnResync"
+                                          Label="Resync Pebble Time" Click="btnResync_Click"/>
+                        </CommandBar.SecondaryCommands>
                     </CommandBar>
                 </Grid>                
             </SplitView.Content>

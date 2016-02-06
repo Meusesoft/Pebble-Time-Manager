@@ -11,6 +11,7 @@ using Windows.Storage.Streams;
 using P3bble.PCL;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Bluetooth.Background;
+using Windows.Devices.Bluetooth;
 
 namespace P3bble.Communication
 {
@@ -81,6 +82,22 @@ namespace P3bble.Communication
 //#endif
 
             //throw new NotImplementedException();
+        }
+
+        public static async Task<Protocol> CreateProtocolAsync(BluetoothDevice _device)
+        {
+            try
+            {
+                StreamSocket socket = new StreamSocket();
+                await socket.ConnectAsync(_device.HostName, Guid.Parse(Pebble_Time_Manager.Common.Constants.PebbleGuid).ToString("B"));
+
+                return new Protocol(socket);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+            }
+            return null;
         }
 
 #if NETFX_CORE  && !WINDOWS_PHONE_APP

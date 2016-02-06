@@ -19,9 +19,11 @@ using Windows.Storage.Streams;
 using System.Collections.ObjectModel;
 using Pebble_Time_Manager.WatchItems;
 using Pebble_Time_Manager.Common;
+using Windows.Devices.Bluetooth;
+using Windows.Devices.Enumeration;
 
 
-#if NETFX_CORE  && !WINDOWS_PHONE_APP
+#if NETFX_CORE && !WINDOWS_PHONE_APP
 using Windows.Devices.Bluetooth.Rfcomm;
 #endif
 
@@ -87,6 +89,12 @@ namespace P3bble
         internal P3bble(PeerInformation peerInformation)
         {
             PeerInformation = peerInformation;
+        }
+
+        BluetoothDevice _blDevice;
+        internal P3bble(BluetoothDevice _device)
+        {
+            _blDevice = _device;
         }
 
 #if NETFX_CORE && !WINDOWS_PHONE_APP
@@ -267,10 +275,11 @@ namespace P3bble
 
             try
             {
-//#if NETFX_CORE && !WINDOWS_PHONE_APP
-//                this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
-//#else
-                this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
+                //#if NETFX_CORE && !WINDOWS_PHONE_APP
+                //                this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
+                //#else
+//                this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
+                this._protocol = await Protocol.CreateProtocolAsync(_blDevice);
 //#endif
                 this._protocol.MessageReceived += this.ProtocolMessageReceived;
 
@@ -1062,18 +1071,34 @@ namespace P3bble
 
             try
             {
-/*#if NETFX_CORE  && !WINDOWS_PHONE_APP
-                var devices = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.SerialPort));
+#if NETFX_CORE && !WINDOWS_PHONE_APP
+
+                var devices = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelector());
+                //if (Devices.Count <= 0) return;
+
+//                var selector = BluetoothDevice.GetDeviceSelector();
+//                var devices = await DeviceInformation.FindAllAsync(selector);
+
                 foreach (var device in devices)
                 {
-                    if (device.Name.StartsWith("Pebble", StringComparison.OrdinalIgnoreCase))
+                    if (device.Name.ToLower().Contains("pebble"))
                     {
-                        var service = await RfcommDeviceService.FromIdAsync(device.Id);
-
-                        result.Add(new P3bble(service));
+                        try {
+                            var _device = await BluetoothDevice.FromIdAsync(device.Id);
+                            //var service = await RfcommDeviceService.FromIdAsync(device.Id);
+                            //device.
+                            result.Add(new P3bble(_device));
+                        }
+                        catch (Exception e)
+                        {
+                            System.Diagnostics.Debug.WriteLine(e.Message);
+                        }
                     }
                 }
-#else*/
+
+                #else
+
+                //PeerFinder.Start();
                 PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
                 IReadOnlyList<PeerInformation> pairedDevices = await PeerFinder.FindAllPeersAsync();
 
@@ -1093,7 +1118,7 @@ namespace P3bble
                 {
                     ServiceLocator.Logger.WriteLine("No paired devices were found.");
                 }
-//#endif
+        #endif
             }
             catch (Exception ex)
             {
