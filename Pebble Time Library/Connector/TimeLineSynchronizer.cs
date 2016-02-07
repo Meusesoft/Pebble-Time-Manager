@@ -13,6 +13,8 @@ using Windows.Devices.Geolocation;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using P3bble.Messages;
+using Pebble_Time_Manager.WatchItems;
+using Pebble_Time_Manager.Common;
 
 namespace Pebble_Time_Manager.Connector
 {
@@ -687,8 +689,8 @@ namespace Pebble_Time_Manager.Connector
 
                 foreach (var item in _pc.Pebble.WatchItems)
                 {
-                    WatchItemAddMessage _waa = new WatchItemAddMessage(_pc.Pebble.GetNextMessageIdentifier(), item);
-                    await _pc.Pebble._protocol.WriteMessage(_waa);
+                    WatchItemAddMessage _waam = new WatchItemAddMessage(_pc.Pebble.GetNextMessageIdentifier(), item);
+                    await _pc.Pebble._protocol.WriteMessage(_waam);
 
                     switch (item.Type)
                     {
@@ -707,7 +709,6 @@ namespace Pebble_Time_Manager.Connector
                             break;
                     }
                 }
-
 
                 Log.Add("Watch items restored");
                 System.Diagnostics.Debug.WriteLine("Watch items restored");

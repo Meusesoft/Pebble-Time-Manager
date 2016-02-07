@@ -279,17 +279,20 @@
                                 Visibility="{Binding Commands.AppStore, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             
                             <AppBarButton x:Name="btnSynchronize"
-                              Icon="Sync"
-                              Label="Synchronize"
-                              Visibility="{Binding Commands.Synchronize, Converter={StaticResource BoolToVisibilityConverter}}"/>                            
+                                Icon="Sync"
+                                Label="Synchronize"
+                                Visibility="{Binding Commands.Synchronize, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Command="{Binding SynchronizeCommand}"/>                            
                             <AppBarButton x:Name="btnClear"
-                              Icon="Clear"
-                              Label="Clear"
-                              Visibility="{Binding Commands.ClearLog, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                Icon="Clear"
+                                Label="Clear"
+                                Visibility="{Binding Commands.ClearLog, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Command="{Binding ClearCommand}"/>
                         </CommandBar.PrimaryCommands>
                         <CommandBar.SecondaryCommands>
                             <AppBarButton x:Name="btnResync"
-                                          Label="Resync Pebble Time" Click="btnResync_Click"/>
+                                          Label="Resync Pebble Time" 
+                                          Command="{Binding ResyncCommand}"/>
                         </CommandBar.SecondaryCommands>
                     </CommandBar>
                 </Grid>                

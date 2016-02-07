@@ -40,8 +40,22 @@
                         Margin="20,0,20,20"
                         MaxHeight="60"
                         MinHeight="35"
+                        Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter},ConverterParameter=XOR}"
                         Style="{StaticResource ButtonHighlightSelected}"
                         Command="{Binding ConnectCommand}"/>
-    </Grid>
 
+        <Button Content="Disconnect"
+                        Grid.Row="1"
+                        FontSize="18"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        BorderBrush="Transparent"
+                        Background="#C0C00000"
+                        Margin="20,0,20,20"
+                        MaxHeight="60"
+                        MinHeight="35"
+                        Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Style="{StaticResource ButtonHighlightSelected}"
+                        Command="{Binding DisconnectCommand}"/>
+    </Grid>
 </Page>

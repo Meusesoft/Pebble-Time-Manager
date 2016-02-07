@@ -41,6 +41,8 @@ namespace Pebble_Time_Manager.ViewModels
             ConnectCommand = new RelayCommand(Connect);
             DisconnectCommand = new RelayCommand(Disconnect);
             ClearCommand = new RelayCommand(ClearLog);
+            ResyncCommand = new RelayCommand(Resync);
+            SynchronizeCommand = new RelayCommand(SynchronizeCalender);
         }
 
         private void Log_CollectionChanged1(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -295,6 +297,17 @@ namespace Pebble_Time_Manager.ViewModels
             get;
             private set;
         }
+        public RelayCommand ResyncCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand SynchronizeCommand
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Connect to Pebble Time and start a new background communication task
@@ -339,6 +352,38 @@ namespace Pebble_Time_Manager.ViewModels
         private void ClearLog(object obj)
         {
             Log.Clear();
+        }
+
+        private async void Resync(object obj)
+        {
+            try
+            {
+                _vmBinder.Log.Add("Initiating resync...");
+
+                Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
+
+                await _pc.StartBackgroundTask(PebbleConnector.Initiator.Reset);
+            }
+            catch (Exception exp)
+            {
+                Log.Add("An exception occurred while resyncing.");
+                Log.Add(exp.Message);
+            }
+        }
+
+        private async void SynchronizeCalender(object obj)
+        {
+            try
+            {
+                Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
+
+                await _pc.StartBackgroundTask(PebbleConnector.Initiator.Synchronize);
+            }
+            catch (Exception exp)
+            {
+                Log.Add("An exception occurred while synchronizing.");
+                Log.Add(exp.Message);
+            }
         }
 
         #endregion

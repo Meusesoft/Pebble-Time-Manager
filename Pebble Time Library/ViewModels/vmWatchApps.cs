@@ -161,6 +161,8 @@ namespace Pebble_Time_Manager.ViewModels
                     {
                         if (item.Type == WatchItemType.WatchApp)
                         {
+                            if (item.ID == Guid.Parse(Constants.TennisAppGuid)) return;
+
                             try
                             {
                                 var vmExistingWatchFace = WatchApps.Single(x => x.Model == item.ID);
