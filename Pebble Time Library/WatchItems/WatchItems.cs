@@ -99,28 +99,6 @@ namespace Pebble_Time_Manager.WatchItems
         /// <returns></returns>
         public async Task<bool> Load()
         {
-//#if DEBUG
-            if (this.Find(x => x.ID == Guid.Parse(Constants.TennisAppGuid)) == null)
-            {
-                /*WatchItem newitem = await WatchItem.Load("ms-appx:///Assets/Tennis.pbw");
-                Add(newitem);  */             
-
-                /*WatchItem newitem = new WatchItem();
-                newitem.Name = "Tennis";
-                newitem.Developer = "Meusesoft";
-                newitem.ID = Guid.Parse(Constants.TennisAppGuid);
-                newitem.File = "ms-appx:///Assets/tennis_icon.png";
-                newitem.Flags = 8;
-                newitem.SDKVersionMajor = 5;
-                newitem.SDKVersionMinor = 72;
-                newitem.VersionMajor = 1;
-                newitem.VersionMinor = 0;
-                newitem.Type = WatchItemType.WatchApp;
-
-                Add(newitem);*/
-            }
-//#endif
-
             try
             {
                 WatchItems _watchItems;
@@ -158,6 +136,9 @@ namespace Pebble_Time_Manager.WatchItems
 
                 if (this.Find(x => x.ID == Guid.Parse(Constants.TennisAppGuid)) == null)
                 {
+                    //WatchItem newitem = await WatchItem.Load("ms-appx:///Assets/Tennis.pbw");
+                    //Add(newitem);      
+
                     WatchItem newitem = new WatchItem();
                     newitem.Name = "Tennis";
                     newitem.Developer = "Meusesoft";

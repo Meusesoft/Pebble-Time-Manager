@@ -276,11 +276,11 @@ namespace P3bble
             try
             {
                 //#if NETFX_CORE && !WINDOWS_PHONE_APP
-                //                this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
+                //     this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
                 //#else
-//                this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
+                //      this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
                 this._protocol = await Protocol.CreateProtocolAsync(_blDevice);
-//#endif
+                //#endif
                 this._protocol.MessageReceived += this.ProtocolMessageReceived;
 
                 P3bbleMessage _receivedMsg;

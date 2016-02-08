@@ -190,6 +190,7 @@ namespace Pebble_Time_Manager
             _vmBinder.Tennis.vmMatch.Paused = false;
             _vmBinder.Tennis.vmMatch.InProgress = false;
             _vmBinder.Tennis.vmMatch.Completed = false;
+            _vmBinder.Tennis.OnStop += Tennis_OnStop;
 
             String JSON = await Tennis_Statistics.Helpers.LocalStorage.Load("tennismatchstate.json");
             if (JSON.Length > 0 && (_vmBinder.Tennis.TryInUse || _vmBinder.Tennis.Purchased))
@@ -454,7 +455,7 @@ namespace Pebble_Time_Manager
             localSettings.Values[Constants.TennisCommand] = "switch";
         }
 
-        private async void btnStop_Click(object sender, RoutedEventArgs e)
+        private async void Tennis_OnStop(object sender, EventArgs e)
         {
             MessageDialog msgBox = new MessageDialog("Are you sure you want to terminate this match?", "Confirmation");
             msgBox.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(this.StopCommandInvokedHandler)));

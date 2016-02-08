@@ -217,6 +217,7 @@
                             <AppBarButton x:Name="btnStop"
                               Label="Stop"
                               Icon="Stop"
+                              Command="{Binding Tennis.StopCommand}"
                               Visibility="{Binding Tennis.CommandStop, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton x:Name="btnSuspend"
                               Label="Suspend"
@@ -291,6 +292,7 @@
                         </CommandBar.PrimaryCommands>
                         <CommandBar.SecondaryCommands>
                             <AppBarButton x:Name="btnResync"
+                                          Visibility="{Binding Commands.Synchronize, Converter={StaticResource BoolToVisibilityConverter}}"
                                           Label="Resync Pebble Time" 
                                           Command="{Binding ResyncCommand}"/>
                         </CommandBar.SecondaryCommands>

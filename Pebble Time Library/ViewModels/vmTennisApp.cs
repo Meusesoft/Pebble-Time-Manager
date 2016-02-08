@@ -25,6 +25,7 @@ namespace Pebble_Time_Manager.ViewModels
 
             TryCommand = new RelayCommand(Try);
             SwitchCommand = new RelayCommand(Switch);
+            StopCommand = new RelayCommand(Stop);
         }
 
         #endregion
@@ -57,6 +58,11 @@ namespace Pebble_Time_Manager.ViewModels
         {
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             localSettings.Values[Constants.TennisCommand] = "switch";
+        }
+
+        private void Stop(object obj)
+        {
+            if (OnStop != null) OnStop(this, EventArgs.Empty);
         }
 
         #endregion
@@ -245,6 +251,24 @@ namespace Pebble_Time_Manager.ViewModels
             private set;
         }
 
+        public RelayCommand StopCommand
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+
+        #region Events
+
+        public delegate void StopEventHandler(object sender, EventArgs e);
+        public event StopEventHandler OnStop;
+
+        public delegate void ResumeEventHandler(object sender, EventArgs e);
+        public event ResumeEventHandler OnResume;
+
+        public delegate void PauseEventHandler(object sender, EventArgs e);
+        public event PauseEventHandler OnPause;
         #endregion
 
         #region INotifyPropertyChanged Members

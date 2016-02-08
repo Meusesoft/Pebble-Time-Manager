@@ -98,7 +98,7 @@
     <Content Include="Assets\BadgeLogo.scale-200.png" />
     <Content Include="Assets\BadgeLogo.scale-400.png" />
     <Content Include="Assets\ptm_icons.otf" />
-    <None Include="Assets\Tennis.pbw" />
+    <Content Include="Assets\Tennis.pbw" />
     <None Include="project.json" />
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>

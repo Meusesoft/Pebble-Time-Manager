@@ -123,6 +123,7 @@ namespace Pebble_Time_Manager.Connector
 
                         if (Result)
                         {
+                            _pebble.WatchItems.Load();
                             return newToken;
                         }
 
