@@ -412,7 +412,7 @@
                 <SymbolIcon  Grid.Column="2"
                                  Margin="0,0,40,0"
                                  Symbol="Favorite"
-                                 VerticalAlignment="Top"
+                                 VerticalAlignment="Center"
                                  Visibility="{Binding Active, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             </Grid>

@@ -26,6 +26,10 @@ namespace Pebble_Time_Manager.ViewModels
             TryCommand = new RelayCommand(Try);
             SwitchCommand = new RelayCommand(Switch);
             StopCommand = new RelayCommand(Stop);
+            DeleteCommand = new RelayCommand(Delete);
+            SuspendCommand = new RelayCommand(Suspend);
+            ResumeCommand = new RelayCommand(Resume);
+            ShareCommand = new RelayCommand(Share);
         }
 
         #endregion
@@ -63,6 +67,26 @@ namespace Pebble_Time_Manager.ViewModels
         private void Stop(object obj)
         {
             if (OnStop != null) OnStop(this, EventArgs.Empty);
+        }
+
+        private void Suspend(object obj)
+        {
+            if (OnSuspend != null) OnSuspend(this, EventArgs.Empty);
+        }
+
+        private void Resume(object obj)
+        {
+            if (OnResume != null) OnResume(this, EventArgs.Empty);
+        }
+
+        private void Share(object obj)
+        {
+            if (OnShare != null) OnShare(this, EventArgs.Empty);
+        }
+
+        private void Delete(object obj)
+        {
+            if (OnDelete != null) OnDelete(this, EventArgs.Empty);
         }
 
         #endregion
@@ -141,15 +165,20 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+        public void NotifyVisibility()
+        {
+            NotifyPropertyChanged("SwitchVisible");
+            NotifyPropertyChanged("ResumeVisible");
+            NotifyPropertyChanged("StopVisible");
+            NotifyPropertyChanged("SuspendVisible");
+            NotifyPropertyChanged("ExtendVisible");
+            NotifyPropertyChanged("DeleteVisible");
+            NotifyPropertyChanged("ShareVisible");
+        }
+
         private void _vmMatch_NewState(object sender, EventArgs e)
         {
-            NotifyPropertyChanged("CommandSwitch");
-            NotifyPropertyChanged("CommandResume");
-            NotifyPropertyChanged("CommandStop");
-            NotifyPropertyChanged("CommandSuspend");
-            NotifyPropertyChanged("CommandExtend");
-            NotifyPropertyChanged("CommandDelete");
-            NotifyPropertyChanged("CommandShare");
+            NotifyVisibility();
         }
 
         private bool _TennisVisible;
@@ -163,17 +192,11 @@ namespace Pebble_Time_Manager.ViewModels
             {
                 _TennisVisible = value;
                 NotifyPropertyChanged("TennisVisible");
-                NotifyPropertyChanged("CommandSwitch");
-                NotifyPropertyChanged("CommandResume");
-                NotifyPropertyChanged("CommandStop");
-                NotifyPropertyChanged("CommandSuspend");
-                NotifyPropertyChanged("CommandExtend");
-                NotifyPropertyChanged("CommandDelete");
-                NotifyPropertyChanged("CommandShare");
+                NotifyVisibility();
             }
         }
 
-        public bool CommandSwitch
+        public bool SwitchVisible
         {
             get
             {
@@ -182,7 +205,7 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        public bool CommandResume
+        public bool ResumeVisible
         {
             get
             {
@@ -191,7 +214,7 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        public bool CommandStop
+        public bool StopVisible
         {
             get
             {
@@ -200,16 +223,16 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        public bool CommandSuspend
+        public bool SuspendVisible
         {
             get
             {
                 if (vmMatch == null) return false;
-                return vmMatch.Stoppable && _TennisVisible;
+                return !vmMatch.Paused && _TennisVisible;
             }
         }
 
-        public bool CommandExtend
+        public bool ExtendVisible
         {
             get
             {
@@ -218,7 +241,7 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        public bool CommandDelete
+        public bool DeleteVisible
         {
             get
             {
@@ -226,7 +249,7 @@ namespace Pebble_Time_Manager.ViewModels
                 return vmMatch.Completed && _TennisVisible;
             }
         }
-        public bool CommandShare
+        public bool ShareVisible
         {
             get
             {
@@ -257,6 +280,36 @@ namespace Pebble_Time_Manager.ViewModels
             private set;
         }
 
+        public RelayCommand ResumeCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand ExtendCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand ShareCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand SuspendCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand DeleteCommand
+        {
+            get;
+            private set;
+        }
+
         #endregion
 
         #region Events
@@ -267,8 +320,18 @@ namespace Pebble_Time_Manager.ViewModels
         public delegate void ResumeEventHandler(object sender, EventArgs e);
         public event ResumeEventHandler OnResume;
 
-        public delegate void PauseEventHandler(object sender, EventArgs e);
-        public event PauseEventHandler OnPause;
+        public delegate void SuspendEventHandler(object sender, EventArgs e);
+        public event SuspendEventHandler OnSuspend;
+
+        public delegate void ShareEventHandler(object sender, EventArgs e);
+        public event ShareEventHandler OnShare;
+
+        public delegate void DeleteEventHandler(object sender, EventArgs e);
+        public event DeleteEventHandler OnDelete;
+
+        public delegate void ExtendEventHandler(object sender, EventArgs e);
+        public event ExtendEventHandler OnExtend;
+
         #endregion
 
         #region INotifyPropertyChanged Members

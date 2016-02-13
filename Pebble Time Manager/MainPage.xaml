@@ -207,34 +207,39 @@
 
                             <AppBarButton x:Name="btnSwitch"
                               Icon="Switch"
-                              Visibility="{Binding Tennis.CommandSwitch, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Visibility="{Binding Tennis.SwitchVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                               Command="{Binding Tennis.SwitchCommand}"
                               Label="Switch" />
                             <AppBarButton x:Name="btnResume"
                               Icon="Play"
-                              Label="Resume" 
-                              Visibility="{Binding Tennis.CommandResume, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                              Label="Resume"
+                              Command="{Binding Tennis.ResumeCommand}"
+                              Visibility="{Binding Tennis.ResumeVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton x:Name="btnStop"
                               Label="Stop"
                               Icon="Stop"
                               Command="{Binding Tennis.StopCommand}"
-                              Visibility="{Binding Tennis.CommandStop, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                              Visibility="{Binding Tennis.StopVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton x:Name="btnSuspend"
                               Label="Suspend"
                               Icon="Pause"
-                              Visibility="{Binding Tennis.CommandSuspend, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                              Command="{Binding Tennis.SuspendCommand}"            
+                              Visibility="{Binding Tennis.SuspendVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton x:Name="btnExtend"
                               Label="New set"
                               Icon="Add"
-                              Visibility="{Binding Tennis.CommandExtend, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                              Command="{Binding Tennis.ExtendCommand}"
+                              Visibility="{Binding Tennis.ExtendVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton x:Name="btnDelete"
                               Icon="Delete"
-                              Label="Delete" 
-                              Visibility="{Binding Tennis.CommandDelete, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                              Label="Delete"
+                              Command="{Binding Tennis.DeleteCommand}"
+                              Visibility="{Binding Tennis.DeleteVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton x:Name="btnShare"
                               Label="Share"
                               Icon="ReShare"
-                              Visibility="{Binding Tennis.CommandShare, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                              Command="{Binding Tennis.ShareCommand}"
+                              Visibility="{Binding Tennis.ShareVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             
                             <AppBarButton x:Name="btnDeleteFaces"
                               Icon="Delete"

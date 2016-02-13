@@ -395,6 +395,9 @@ namespace BackgroundTasks
                     case "switch":
 
                         TennisMatch.cmdSwitchServer.Execute(null);
+
+                        AddToLog("Tennis: switch command");
+
                         break;
 
                     case "stop":
@@ -402,6 +405,8 @@ namespace BackgroundTasks
                         TennisMatch.Terminate();
 
                         PebbleConnector.ClearBackgroundTaskRunningStatus(PebbleConnector.Initiator.Tennis);
+
+                        AddToLog("Tennis: stop command");
 
                         break;
 
@@ -411,11 +416,16 @@ namespace BackgroundTasks
 
                         PebbleConnector.ClearBackgroundTaskRunningStatus(PebbleConnector.Initiator.Tennis);
 
+                        AddToLog("Tennis: suspend command");
+
                         break;
 
                     case "extend":
 
                         TennisMatch.cmdExtendMatch.Execute(null);
+
+                        AddToLog("Tennis: extend command");
+
                         break;
                 }
 
@@ -446,6 +456,12 @@ namespace BackgroundTasks
                     AckMessage.TransactionId = _tennisMessage.TransactionId;
                     await _pc.Pebble._protocol.WriteMessage(AckMessage);
                     System.Diagnostics.Debug.WriteLine("TennisMessage Acknowledged");
+
+                    if (TennisMatch.Paused)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Match suspended; message ignored.");
+                        return;
+                    }
 
                     if (_tennisMessage.Content.ContainsKey(1))
                     {

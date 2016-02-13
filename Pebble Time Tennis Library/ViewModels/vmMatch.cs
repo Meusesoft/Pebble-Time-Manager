@@ -390,6 +390,17 @@ namespace Tennis_Statistics.ViewModels
             }
         }
 
+        /// <summary>
+        /// True if the game is paused
+        /// </summary>
+        public bool Paused
+        {
+            get
+            {
+                return !Match.Duration.SessionInProgress;
+            }
+        }
+
         #endregion
 
         #region INotifyPropertyChanged Members

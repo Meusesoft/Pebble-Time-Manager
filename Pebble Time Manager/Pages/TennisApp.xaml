@@ -1590,7 +1590,7 @@
                     </Grid>
                 </Grid>//-->
                 <Grid Background="#80FFFFFF"
-                      Visibility="{Binding Tennis.vmMatch.InProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=XOR}">
+                      Visibility="{Binding Tennis.vmMatch.CurrentPointDescription, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60*" />
@@ -1602,12 +1602,21 @@
                                    Grid.Column="0"
                                    Foreground="White"
                                    Margin="4,4,4,4" />
+                    </Grid>
+                </Grid>
+                <Grid Background="#80FFFFFF"
+                      Visibility="{Binding Tennis.vmMatch.InProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=XOR}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60*" />
+                            <ColumnDefinition Width="40*" />
+                        </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Tennis.vmMatch.Status}"
                                    FontSize="16"
                                    Grid.Column="0"
                                    Foreground="White"
                                    Margin="4,4,4,4" />
-                        <TextBlock Text="{Binding Tennis.vmMatch.Duration, Converter={StaticResource DateTimeConverter}, ConverterParameter='MATCH TIME: '}"
+                        <TextBlock Text="{Binding Tennis.vmMatch.Duration, Converter={StaticResource DateTimeConverter}, ConverterParameter='DURATION: '}"
                                    FontSize="16"
                                    Grid.Column="1"
                                    Foreground="White"

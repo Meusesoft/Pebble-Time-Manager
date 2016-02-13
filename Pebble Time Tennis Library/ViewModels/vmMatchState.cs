@@ -215,6 +215,7 @@ namespace Tennis_Statistics.ViewModels
             Winner = _CurrentMatch.Winner;
             InProgress = _CurrentMatch.InProgress;
             Completed = _CurrentMatch.Completed;
+            Paused = !_CurrentMatch.Match.Duration.SessionInProgress;
             IsExtendPossible = _CurrentMatch.IsExtendPossible;
             Undo = _CurrentMatch.Undo;
             Switch = _CurrentMatch.Switch;
@@ -245,6 +246,7 @@ namespace Tennis_Statistics.ViewModels
             Winner = _CurrentMatch.Winner;
             InProgress = _CurrentMatch.InProgress;
             Completed = _CurrentMatch.Completed;
+            Paused = _CurrentMatch.Paused;
             IsExtendPossible = _CurrentMatch.IsExtendPossible;
             Undo = _CurrentMatch.Undo;
             Switch = _CurrentMatch.Switch;
@@ -280,6 +282,7 @@ namespace Tennis_Statistics.ViewModels
             NotifyPropertyChanged("Completed");
             NotifyPropertyChanged("IsExtendPossible");
             NotifyPropertyChanged("Undo");
+            NotifyPropertyChanged("Paused");
             NotifyPropertyChanged("Switch");
             NotifyPropertyChanged("TotalSets");
             NotifyPropertyChanged("CurrentSetScore");

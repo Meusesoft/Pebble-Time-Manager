@@ -147,9 +147,18 @@ namespace Pebble_Time_Manager
             _dtm.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.DataRequested);
         }
 
-        private void ShareButton_Click(object sender, RoutedEventArgs e)
+        private void Tennis_OnShare(object sender, EventArgs e)
         {
-            Windows.ApplicationModel.DataTransfer.DataTransferManager.ShowShareUI();
+            try
+            {
+                Windows.ApplicationModel.DataTransfer.DataTransferManager.ShowShareUI();
+            }
+            catch (Exception exp)
+            {
+                MessageDialog msgBox = new MessageDialog(String.Format("An error occurred: {0}.", exp.Message), "Error");
+
+                msgBox.ShowAsync();
+            }
         }
         
         /// <summary>
@@ -165,9 +174,11 @@ namespace Pebble_Time_Manager
 
                 await _vmBinder.Tennis.vmMatch.PopulateDataRequest(request, false, true, true, true);
             }
-            catch (Exception)
+            catch (Exception exp)
             {
+                MessageDialog msgBox = new MessageDialog(String.Format("An error occurred: {0}.", exp.Message), "Error");
 
+                msgBox.ShowAsync();
             }
         }
 
@@ -190,7 +201,13 @@ namespace Pebble_Time_Manager
             _vmBinder.Tennis.vmMatch.Paused = false;
             _vmBinder.Tennis.vmMatch.InProgress = false;
             _vmBinder.Tennis.vmMatch.Completed = false;
+
             _vmBinder.Tennis.OnStop += Tennis_OnStop;
+            _vmBinder.Tennis.OnExtend += Tennis_OnExtend;
+            _vmBinder.Tennis.OnDelete += Tennis_OnDelete;
+            _vmBinder.Tennis.OnResume += Tennis_OnResume;
+            _vmBinder.Tennis.OnSuspend += Tennis_OnSuspend;
+            _vmBinder.Tennis.OnShare += Tennis_OnShare;
 
             String JSON = await Tennis_Statistics.Helpers.LocalStorage.Load("tennismatchstate.json");
             if (JSON.Length > 0 && (_vmBinder.Tennis.TryInUse || _vmBinder.Tennis.Purchased))
@@ -204,6 +221,11 @@ namespace Pebble_Time_Manager
             }
 
             RegisterShare();
+        }
+
+        private void Tennis_OnSuspend1(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void ReinitiateMatch()
@@ -251,7 +273,7 @@ namespace Pebble_Time_Manager
                         {
                             if ((bool)localSettings.Values[Constants.BackgroundCommunicatieIsRunning])
                             {
-                                _vmBinder.Tennis.vmMatch.Paused = !_vmBinder.Tennis.vmMatch.InProgress;
+                                //_vmBinder.Tennis.vmMatch.Paused = !_vmBinder.Tennis.vmMatch.InProgress;
                             }
                             else
                             {
@@ -265,6 +287,8 @@ namespace Pebble_Time_Manager
 
 
                         localSettings.Values.Remove(Constants.TennisState);
+
+                        _vmBinder.Tennis.NotifyVisibility();
 
                         //Show the match page
                         ShowPage(MatchGrid);
@@ -315,7 +339,7 @@ namespace Pebble_Time_Manager
 
         #region Actions and Buttons
 
-        private async void btnExtend_Click(object sender, RoutedEventArgs e)
+        private async void Tennis_OnExtend(object sender, EventArgs e)
         {
             MessageDialog msgBox = new MessageDialog("Are you sure you want to extend this match with additional sets?", "Confirmation");
             msgBox.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(this.ExtendCommandInvokedHandler)));
@@ -402,6 +426,7 @@ namespace Pebble_Time_Manager
 
             _vmBinder.Tennis.vmMatch = new vmMatchState();
             ApplicationData.Current.LocalSettings.Values.Remove(Constants.TennisState);
+            ApplicationData.Current.LocalSettings.Values.Remove(Constants.TennisCommand);
             //_vmBinder.vmMatch.Start(_vmBinder.vmNewMatch);
 
             ShowPage(ProgressRing);
@@ -426,10 +451,12 @@ namespace Pebble_Time_Manager
 
                 // Show the message dialog
                 messageDialog.ShowAsync();
+
+                ShowPage(NewMatchGrid);
             }
         }
 
-        private async void btnResume_Click(object sender, RoutedEventArgs e)
+        private async void Tennis_OnResume(object sender, EventArgs e)
         {
             PebbleConnector _pc = PebbleConnector.GetInstance();
 
@@ -449,11 +476,11 @@ namespace Pebble_Time_Manager
             }
         }
 
-        private void btnSwitch_Click(object sender, RoutedEventArgs e)
+        /*private void btnSwitch_Click(object sender, RoutedEventArgs e)
         {
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             localSettings.Values[Constants.TennisCommand] = "switch";
-        }
+        }*/
 
         private async void Tennis_OnStop(object sender, EventArgs e)
         {
@@ -473,7 +500,7 @@ namespace Pebble_Time_Manager
             }
         }
 
-        private async void btnDelete_Click(object sender, RoutedEventArgs e)
+        private async void Tennis_OnDelete(object sender, EventArgs e)
         {
             MessageDialog msgBox = new MessageDialog("Are you sure you want to delete this match?", "Confirmation");
             msgBox.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(this.DeleteCommandInvokedHandler)));
@@ -508,7 +535,7 @@ namespace Pebble_Time_Manager
         }
 
 
-        private async void btnSuspend_Click(object sender, RoutedEventArgs e)
+        private async void Tennis_OnSuspend(object sender, EventArgs e)
         {
             MessageDialog msgBox = new MessageDialog("Are you sure you suspend this match?", "Confirmation");
             msgBox.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(this.SuspendCommandInvokedHandler)));
@@ -517,7 +544,7 @@ namespace Pebble_Time_Manager
             await msgBox.ShowAsync();
         }
 
-        private async void SuspendCommandInvokedHandler(IUICommand command)
+        private void SuspendCommandInvokedHandler(IUICommand command)
         {
             PebbleConnector _pc = PebbleConnector.GetInstance();
 
