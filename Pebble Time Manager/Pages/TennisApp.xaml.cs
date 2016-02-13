@@ -210,8 +210,9 @@ namespace Pebble_Time_Manager
             _vmBinder.Tennis.OnShare += Tennis_OnShare;
 
             String JSON = await Tennis_Statistics.Helpers.LocalStorage.Load("tennismatchstate.json");
-            if (JSON.Length > 0 && (_vmBinder.Tennis.TryInUse || _vmBinder.Tennis.Purchased))
+            if (JSON.Length > 0 /*&& (_vmBinder.Tennis.TryInUse || _vmBinder.Tennis.Purchased)*/)
             {
+                _vmBinder.Tennis.TryCommand.Execute(null);
                 ReinitiateMatch();
             }
             else

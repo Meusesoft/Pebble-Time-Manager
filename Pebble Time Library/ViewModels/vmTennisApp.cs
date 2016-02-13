@@ -86,6 +86,10 @@ namespace Pebble_Time_Manager.ViewModels
 
         private void Delete(object obj)
         {
+            TryInUse = false;
+            NotifyPropertyChanged("Purchased");
+            NotifyPropertyChanged("TryLeft");
+
             if (OnDelete != null) OnDelete(this, EventArgs.Empty);
         }
 
@@ -228,7 +232,7 @@ namespace Pebble_Time_Manager.ViewModels
             get
             {
                 if (vmMatch == null) return false;
-                return !vmMatch.Paused && _TennisVisible;
+                return !vmMatch.Paused && vmMatch.Stoppable && _TennisVisible;
             }
         }
 
