@@ -52,6 +52,7 @@ namespace Pebble_Time_Manager.ViewModels
 
             NotifyPropertyChanged("Purchased");
             NotifyPropertyChanged("TryLeft");
+            NotifyPropertyChanged("TriesLeft");
         }
 
         /// <summary>
@@ -86,10 +87,6 @@ namespace Pebble_Time_Manager.ViewModels
 
         private void Delete(object obj)
         {
-            TryInUse = false;
-            NotifyPropertyChanged("Purchased");
-            NotifyPropertyChanged("TryLeft");
-
             if (OnDelete != null) OnDelete(this, EventArgs.Empty);
         }
 
@@ -141,13 +138,26 @@ namespace Pebble_Time_Manager.ViewModels
                 return Pebble_Time_Manager.Helper.Purchases.getReference().TryAvailable("pebble_tennis");
             }
         }
-        
+
         /// <summary>
         /// A try is in use
         /// </summary>
+        private bool _TryInUse;
         public bool TryInUse
         {
-            get; set;
+            get
+            {
+                return _TryInUse;
+            }
+
+            set
+            {
+                _TryInUse = value;
+
+                NotifyPropertyChanged("Purchased");
+                NotifyPropertyChanged("TryLeft");
+                NotifyPropertyChanged("TriesLeft");
+            }
         }
 
         private vmMatchState _vmMatch;
@@ -205,7 +215,7 @@ namespace Pebble_Time_Manager.ViewModels
             get
             {
                 if (vmMatch==null) return false;
-                return vmMatch.Switch && _TennisVisible;
+                return vmMatch.Switch && !vmMatch.Paused && _TennisVisible;
             }
         }
 
@@ -250,7 +260,7 @@ namespace Pebble_Time_Manager.ViewModels
             get
             {
                 if (vmMatch == null) return false;
-                return vmMatch.Completed && _TennisVisible;
+                return (vmMatch.Completed || vmMatch.Paused) && _TennisVisible;
             }
         }
         public bool ShareVisible

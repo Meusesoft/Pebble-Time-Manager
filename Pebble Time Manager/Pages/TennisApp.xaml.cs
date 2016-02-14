@@ -34,13 +34,13 @@ namespace Pebble_Time_Manager
 
             //ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 
-            ShowPage(NewMatchGrid);
-
             _vmBinder = vmBinder.GetInstance();
 
             DataContext = _vmBinder;
 
             Tennis_Statistics.Helpers.Purchases.getReference().Unlock(255);
+
+            ShowPage(null);
 
             Initialize();
         }
@@ -48,9 +48,11 @@ namespace Pebble_Time_Manager
         private void ShowPage(UIElement Page)
         {
             NewMatchGrid.Visibility = Page == NewMatchGrid ? Visibility.Visible : Visibility.Collapsed;
+            pnlPurchase.Visibility = Page == NewMatchGrid ? Visibility.Visible : Visibility.Collapsed;
             //BottomCommandBar.Visibility = Page != NewMatchGrid ? Visibility.Visible : Visibility.Collapsed;
             MatchGrid.Visibility = Page == MatchGrid ? Visibility.Visible : Visibility.Collapsed;
             ProgressRing.Visibility = Page == ProgressRing ? Visibility.Visible : Visibility.Collapsed;
+
             PRelement.IsActive = Page == ProgressRing;
         }
 
@@ -201,6 +203,7 @@ namespace Pebble_Time_Manager
             _vmBinder.Tennis.vmMatch.Paused = false;
             _vmBinder.Tennis.vmMatch.InProgress = false;
             _vmBinder.Tennis.vmMatch.Completed = false;
+            
 
             _vmBinder.Tennis.OnStop += Tennis_OnStop;
             _vmBinder.Tennis.OnExtend += Tennis_OnExtend;
@@ -212,13 +215,15 @@ namespace Pebble_Time_Manager
             String JSON = await Tennis_Statistics.Helpers.LocalStorage.Load("tennismatchstate.json");
             if (JSON.Length > 0 /*&& (_vmBinder.Tennis.TryInUse || _vmBinder.Tennis.Purchased)*/)
             {
-                _vmBinder.Tennis.TryCommand.Execute(null);
+                //_vmBinder.Tennis.TryCommand.Execute(null);
                 ReinitiateMatch();
             }
             else
             {
                 await LocalStorage.Delete("tennismatchstate.json");
                 await LocalStorage.Delete("tennis_pebble.xml");
+
+                ShowPage(NewMatchGrid);
             }
 
             RegisterShare();
@@ -229,14 +234,23 @@ namespace Pebble_Time_Manager
             throw new NotImplementedException();
         }
 
-        private void ReinitiateMatch()
+        private async void ReinitiateMatch()
         {
             _vmBinder.Tennis.vmMatch = new vmMatchState();
             _vmBinder.Tennis.vmMatch.Paused = false;
+            _vmBinder.Tennis.TryInUse = true;
 
             //_vmBinder.vmMatch.Start(_vmBinder.vmNewMatch);
             ApplicationData.Current.LocalSettings.Values[Constants.TennisState] = "1";
-            ApplicationData.Current.LocalSettings.Values[Constants.BackgroundCommunicatieIsRunning] = false;
+            //ApplicationData.Current.LocalSettings.Values[Constants.BackgroundCommunicatieIsRunning] = false;
+            PebbleConnector _pc = PebbleConnector.GetInstance();
+
+            if (!await _pc.IsBackgroundTaskRunning())
+            {
+                
+                
+                //await _pc.StartBackgroundTask(PebbleConnector.Initiator.Tennis);
+            }
 
             ShowPage(ProgressRing);
 
@@ -519,11 +533,6 @@ namespace Pebble_Time_Manager
                 await Tennis_Statistics.Helpers.LocalStorage.Delete("tennis_pebble.xml");
                 await Tennis_Statistics.Helpers.LocalStorage.Delete("tennismatchstate.json");
 
-                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-                localSettings.Values[Constants.BackgroundTennis] = false;
-
-                _pc.StopBackgroundTask(PebbleConnector.Initiator.Tennis);
-
                 //Show new match page
                 ShowPage(NewMatchGrid);
 
@@ -531,6 +540,7 @@ namespace Pebble_Time_Manager
                 _vmBinder.Tennis.vmMatch.Paused = false;
                 _vmBinder.Tennis.vmMatch.InProgress = false;
                 _vmBinder.Tennis.vmMatch.Completed = false;
+                _vmBinder.Tennis.TryInUse = false;
                 _vmBinder.Tennis.vmMatch.Notify();
             }
         }
@@ -560,7 +570,14 @@ namespace Pebble_Time_Manager
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            _vmBinder.Tennis.TennisVisible = false;    
+            _vmBinder.Tennis.TennisVisible = false;
+
+            _vmBinder.Tennis.OnStop -= Tennis_OnStop;
+            _vmBinder.Tennis.OnExtend -= Tennis_OnExtend;
+            _vmBinder.Tennis.OnDelete -= Tennis_OnDelete;
+            _vmBinder.Tennis.OnResume -= Tennis_OnResume;
+            _vmBinder.Tennis.OnSuspend -= Tennis_OnSuspend;
+            _vmBinder.Tennis.OnShare -= Tennis_OnShare;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

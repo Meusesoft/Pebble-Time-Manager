@@ -237,10 +237,13 @@
                               Visibility="{Binding Tennis.DeleteVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                             <AppBarButton x:Name="btnShare"
                               Label="Share"
-                              Icon="ReShare"
                               Command="{Binding Tennis.ShareCommand}"
-                              Visibility="{Binding Tennis.ShareVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                            
+                              Visibility="{Binding Tennis.ShareVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <AppBarButton.Icon>
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;"/>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+
                             <AppBarButton x:Name="btnDeleteFaces"
                               Icon="Delete"
                               Label="Delete" 

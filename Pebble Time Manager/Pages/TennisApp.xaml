@@ -2165,7 +2165,9 @@
         </StackPanel>
 
         <StackPanel
-            VerticalAlignment="Center">
+            VerticalAlignment="Center"
+            Visibility="Collapsed"
+            x:Name="pnlPurchase">
         <Button Content="Unlock"
                 Name="btnPurchase"
                 HorizontalAlignment="Center"
