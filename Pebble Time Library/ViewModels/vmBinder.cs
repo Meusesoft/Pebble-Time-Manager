@@ -276,6 +276,35 @@ namespace Pebble_Time_Manager.ViewModels
 
         public ObservableCollection<String> Log { get; set; }
 
+
+
+        public String Version
+        {
+            get
+            {
+                var PackageVersion = Windows.ApplicationModel.Package.Current.Id.Version;
+
+                String Result = String.Format("version {0}.{1}.{2}", PackageVersion.Major, PackageVersion.Minor, PackageVersion.Build);                 
+
+                return Result;
+            }
+        }
+
+        public String Publisher
+        {
+            get
+            {
+                return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
+            }
+        }
+
+        public String PackageDisplayName
+        {
+            get
+            {
+                return Windows.ApplicationModel.Package.Current.DisplayName;
+            }
+        }
         #endregion
 
         #region Commands
