@@ -467,6 +467,8 @@ namespace BackgroundTasks
                     {
                         int ActionCode = (int)_tennisMessage.Content[1];
 
+                        System.Diagnostics.Debug.WriteLine(String.Format("Tennis action: {0}", ActionCode));
+
                         switch (ActionCode)
                         {
                             case 0:
@@ -485,6 +487,8 @@ namespace BackgroundTasks
 
                                 TennisMatch.ProcessAction("CommandSecondServe");
 
+                                System.Diagnostics.Debug.WriteLine("CommandSecondServe");
+
                                 break;
 
                             case 3:
@@ -496,6 +500,8 @@ namespace BackgroundTasks
                             case 5:
 
                                 TennisMatch.ProcessAction("CommandDoubleFault");
+
+                                System.Diagnostics.Debug.WriteLine("CommandDoubleFault");
 
                                 break;
 

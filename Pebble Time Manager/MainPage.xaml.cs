@@ -46,7 +46,8 @@ namespace Pebble_Time_Manager
             }
             else
             {
-                FrameRight.Navigate(typeof(ConnectPage));
+                //FrameRight.Navigate(typeof(ConnectPage));
+                FrameRight.Navigate(typeof(JavascriptPage));
                 btnConnect.Visibility = Visibility.Collapsed;
             }
 

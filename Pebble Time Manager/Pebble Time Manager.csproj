@@ -123,6 +123,9 @@
     <Compile Include="Pages\HubPage.xaml.cs">
       <DependentUpon>HubPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\JavascriptPage.xaml.cs">
+      <DependentUpon>JavascriptPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\PaceApp.xaml.cs">
       <DependentUpon>PaceApp.xaml</DependentUpon>
     </Compile>
@@ -227,6 +230,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Pages\JavascriptPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\PaceApp.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -256,6 +263,10 @@
     <ProjectReference Include="..\Background Tasks\BackgroundTasks.csproj">
       <Project>{c139f5fd-ac82-4e2a-94d3-3bd56b6b33fa}</Project>
       <Name>BackgroundTasks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jint\Jint.csproj">
+      <Project>{678738da-f723-4920-b9e5-cad667104bda}</Project>
+      <Name>Jint</Name>
     </ProjectReference>
     <ProjectReference Include="..\Pebble Time Library\Pebble Time Library.csproj">
       <Project>{bf2df8f4-3167-49ba-8e69-c9515764fe44}</Project>

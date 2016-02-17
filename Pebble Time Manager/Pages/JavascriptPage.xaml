@@ -1,0 +1,16 @@
+﻿<Page
+    x:Class="Pebble_Time_Manager.Pages.JavascriptPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Pebble_Time_Manager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <TextBox x:Name="txtScript" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="var options = JSON.parse(localStorage.getItem('options'));" VerticalAlignment="Top" Height="368" Width="1004"/>
+        <Button x:Name="btnExecute" Content="Execute" HorizontalAlignment="Left" Margin="10,383,0,0" VerticalAlignment="Top" Click="btnExecute_Click"/>
+        <TextBox x:Name="txtResult" HorizontalAlignment="Left" Margin="11,421,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="209" Width="1003"/>
+
+    </Grid>
+</Page>
