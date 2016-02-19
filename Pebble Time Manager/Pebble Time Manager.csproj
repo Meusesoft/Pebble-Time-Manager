@@ -97,6 +97,7 @@
     <Content Include="Assets\BadgeLogo.scale-150.png" />
     <Content Include="Assets\BadgeLogo.scale-200.png" />
     <Content Include="Assets\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\javascript.txt" />
     <Content Include="Assets\ptm_icons.otf" />
     <Content Include="Assets\Tennis.pbw" />
     <None Include="project.json" />
