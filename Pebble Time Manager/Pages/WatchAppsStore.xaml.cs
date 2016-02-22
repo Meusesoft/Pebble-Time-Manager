@@ -312,6 +312,7 @@ namespace Pebble_Time_Manager
                 await HandleDownloadImageAsync(download, true);
 
                 //Download binary
+                System.Diagnostics.Debug.WriteLine(String.Format("Download binary: {0}", File));
                 destinationFile = await LocalFolder.CreateFileAsync(PackageID + ".zip", CreationCollisionOption.ReplaceExisting);
                 download = downloader.CreateDownload(new Uri(File), destinationFile);
 

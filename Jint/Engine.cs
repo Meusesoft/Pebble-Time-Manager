@@ -117,6 +117,7 @@ namespace Jint
             EnterExecutionContext(GlobalEnvironment, GlobalEnvironment, Global);
 
             Options = new Options();
+            Options.DebugMode(true);
 
             if (options != null)
             {

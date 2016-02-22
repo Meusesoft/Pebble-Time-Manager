@@ -433,6 +433,7 @@ namespace Jint.Runtime
             {
                 c = new Completion(Completion.Throw, v.Error, null);
                 c.Location = s.Location;
+                if (v.Location != null) c.Location = v.Location;
                 return c;
             }
 

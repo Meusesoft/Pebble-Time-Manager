@@ -75,8 +75,8 @@ if (options === null) options = { "use_gps" : "true",
 function getWeatherFromLatLong(latitude, longitude) {
   var response;
   var woeid = -1;
-  var query = encodeURI("select woeid from geo.placefinder where text=\""+latitude+","+longitude + "\" and gflags=\"R\"");
-  var url = "http://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json";
+  var url = 'http://nominatim.openstreetmap.org/reverse?format=json&lat=' + latitude + '&lon=' + longitude;
+  
   var req = new XMLHttpRequest();
   req.open('GET', url, true);
   req.onload = function(e) {
@@ -84,8 +84,30 @@ function getWeatherFromLatLong(latitude, longitude) {
       if (req.status == 200) {
         response = JSON.parse(req.responseText);
         if (response) {
-          woeid = response.query.results.Result.woeid;
-          getWeatherFromWoeid(woeid);
+          var location = response.display_name;
+          console.log("Found location: " + location);
+          //now use this location to get the yahoor woeid
+          var yahooUrl = 'https://query.yahooapis.com/v1/public/yql?q=' +
+            encodeURIComponent('select woeid from geo.places(1) where text="' + location + '"') + '&format=json';
+          var yahooReq = new XMLHttpRequest();
+          yahooReq.open('GET', yahooUrl, true);
+          yahooReq.onload = function(e) {
+            if (yahooReq.readyState == 4) {
+              if (yahooReq.status == 200) {
+                var yahoorResponse = JSON.parse(yahooReq.responseText);
+                if (yahoorResponse) {
+                  console.log("Found " + yahoorResponse.query.count + " results");
+                  woeid = yahoorResponse.query.results.place.woeid;
+                  console.log("Woeid found: " + woeid);
+                  //and use woeid to get weather
+                  getWeatherFromWoeid(woeid);
+                }
+              } else {
+                console.log("Error");
+              }
+            }
+          };
+          yahooReq.send(null);
         }
       } else {
         console.log("Error");
