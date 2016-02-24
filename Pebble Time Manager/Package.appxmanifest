@@ -27,7 +27,9 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="pebblejs" />
+          <uap:Protocol Name="pebblejs">
+            <uap:DisplayName>Pebble</uap:DisplayName>
+          </uap:Protocol>
         </uap:Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.BackgroundSynchronizer">
           <BackgroundTasks>

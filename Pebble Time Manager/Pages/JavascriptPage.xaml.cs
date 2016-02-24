@@ -59,6 +59,8 @@ namespace Pebble_Time_Manager.Pages
 
             try
             {
+                _Pebble.webView = webConfig;
+
                 _JintEngine = new Engine()
                     .SetValue("log", new Action<object>(Debug))
                     .SetValue("localStorage", new LocalStorage())
@@ -92,8 +94,14 @@ namespace Pebble_Time_Manager.Pages
 
         private class LocalStorage
         {
-            public object getItem(String obj)
+            public object getItem(String item)
             {
+                return "null";
+            }
+
+            public object setItem(String item, string value)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("LocalStorage.setItem: {0}", value));
                 return "null";
             }
         }
@@ -359,6 +367,9 @@ namespace Pebble_Time_Manager.Pages
 
     private class Pebble
         {
+
+            public WebView webView { get; set; }
+
             public void addEventListener(String Event, object function)
             { 
                 System.Diagnostics.Debug.WriteLine(String.Format("addEventListener(Event = {0}, Function = {1})", Event, function.ToString()));
@@ -370,6 +381,13 @@ namespace Pebble_Time_Manager.Pages
             public void openURL(String URL)
             {
                 System.Diagnostics.Debug.WriteLine(String.Format("openURL(URL={0})",URL));
+
+                if (webView!=null) webView.Navigate(new Uri(URL));
+            }
+
+            public string getAccountToken()
+            {
+                return "account";
             }
 
             public void sendAppMessage(ExpandoObject data)
@@ -409,22 +427,6 @@ namespace Pebble_Time_Manager.Pages
 
                 byte[] package = _am.ToBuffer();
                 System.Diagnostics.Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package).Replace("-", ":"));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             }
 
             private Dictionary<String, object> _EventListeners;
@@ -446,11 +448,6 @@ namespace Pebble_Time_Manager.Pages
                 var jsfunction = _Pebble.EventListeners["appmessage"];
 
                 System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
-
-                AppMessage AM = new AppMessage();
-                AM.payload = new Payload();
-                AM.payload.requestweather = true;
-                AM.payload.request_weather = true;
 
                 Jint.Native.JsValue A = new JsValue(1);
                 Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
@@ -486,15 +483,88 @@ namespace Pebble_Time_Manager.Pages
             return Jint.Runtime.Debugger.StepMode.Into;
         }
 
-        public class AppMessage
+
+        private void btnConfig_Click(object sender, RoutedEventArgs e)
         {
-            public Payload payload { get; set; }
+            try
+            {
+                var jsfunction = _Pebble.EventListeners["showConfiguration"];
+
+                System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
+
+                Jint.Native.JsValue A = new JsValue(1);
+                Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
+
+                Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
+                Jint.Native.JsValue _eValue = _jsp.Parse("{}");
+
+                B[0] = _eValue;
+
+                _JintEngine.Step += _JintEngine_Step;
+
+                App.Activated += App_Activated;
+
+
+                Jint.Native.JsValue C = _func.Invoke(A, B);
+            }
+            catch (Jint.Runtime.JavaScriptException exp)
+            {
+                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}",
+                    exp.Message,
+                    exp.LineNumber,
+                    JavascriptFile[exp.LineNumber - 1]);
+
+                txtResult.Text = Exception;
+            }
         }
 
-        public class Payload
+
+        private void App_Activated(object sender, string e)
         {
-            public Boolean request_weather { get; set; }
-            public bool requestweather { get; set; }
+            try
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+
+                webConfig.NavigateToString("_blank");
+
+                App.Activated -= App_Activated;
+
+                var jsfunction = _Pebble.EventListeners["webviewclosed"];
+
+                String Argument = e;
+
+                String[] Result = e.Split("#".ToCharArray());
+                if (Result.Count() > 1)
+                {
+                    Argument = Result[1];
+                }
+
+                System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
+
+                Jint.Native.JsValue A = new JsValue(1);
+                Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
+
+                Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
+                String JSON = String.Format("{{\"response\":\"{0}\"}}", Uri.EscapeUriString(Uri.UnescapeDataString(Argument)));
+                Jint.Native.JsValue _eValue = _jsp.Parse(JSON);
+
+                B[0] = _eValue;
+
+                Jint.Native.JsValue C = _func.Invoke(A, B);
+            }
+            catch (Jint.Runtime.JavaScriptException exp)
+            {
+                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}",
+                    exp.Message,
+                    exp.LineNumber,
+                    JavascriptFile[exp.LineNumber - 1]);
+
+                txtResult.Text = Exception;
+            }
+            catch (Exception exp)
+            {
+                txtResult.Text = exp.Message;
+            }
         }
     }
 }
