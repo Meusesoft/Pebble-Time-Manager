@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Navigation;
 using System.Net;
 using Windows.Devices.Geolocation;
 using System.Dynamic;
+using Pebble_Time_Manager.Connector;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -126,6 +127,8 @@ namespace Pebble_Time_Manager.Pages
 
                 public async void getCurrentPosition(object funcSuccess, object funcError, object options)
                 {
+                    System.Diagnostics.Debug.WriteLine("GeoLocation.getCurrentPosition");
+
                     _funcSuccess = funcSuccess; 
                     _funcError = funcError;
 
@@ -133,6 +136,8 @@ namespace Pebble_Time_Manager.Pages
                     {
                         geoLocator.DesiredAccuracy = PositionAccuracy.Default;
                         Geoposition _pos = await geoLocator.GetGeopositionAsync();
+
+                        ExecuteSuccess(_pos);
                     }
                     catch (Exception e)
                     {
@@ -146,6 +151,8 @@ namespace Pebble_Time_Manager.Pages
                 {
                     try
                     {
+                        System.Diagnostics.Debug.WriteLine("GeoLocation.ExecuteSuccess");
+
                         System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = _funcSuccess as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
                         Jint.Native.Function.ScriptFunctionInstance JintScript = _func.Target as Jint.Native.Function.ScriptFunctionInstance;
                         Jint.Engine _JintEngine = JintScript.Engine;
@@ -176,6 +183,8 @@ namespace Pebble_Time_Manager.Pages
                 {
                     try
                     {
+                        System.Diagnostics.Debug.WriteLine("GeoLocation.ExecuteError");
+
                         System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = _funcError as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
                         Jint.Native.Function.ScriptFunctionInstance JintScript = _func.Target as Jint.Native.Function.ScriptFunctionInstance;
                         Jint.Engine _JintEngine = JintScript.Engine;
@@ -367,10 +376,55 @@ namespace Pebble_Time_Manager.Pages
             {
                 System.Diagnostics.Debug.WriteLine(String.Format("sendAppMessage(data={0})", data.ToString()));
 
+                P3bble.Messages.AppMessage _am = new P3bble.Messages.AppMessage(P3bble.Constants.Endpoint.ApplicationMessage);
+                uint iKey = 0;
+
+                _am.Content = new Dictionary<int, object>(data.Count());
+
                 foreach (var element in data)
                 {
-                    System.Diagnostics.Debug.WriteLine(String.Format("  key: {0}, value: {1}, type: {2}", element.Key, element.Value, element.Value.GetType().ToString()));
+                    Type VariableType = element.Value.GetType();
+                    System.Diagnostics.Debug.WriteLine(String.Format("  key: {0}, value: {1}, type: {2}", element.Key, element.Value, VariableType.ToString()));
+
+                    if (VariableType == typeof(String))
+                    {
+                        String Value = (String)element.Value;
+                        //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.String, System.Text.Encoding.UTF8.GetBytes(Value));
+                        _am.Content.Add((int)iKey, Value);
+                    }
+
+                    if (VariableType == typeof(Double))
+                    {
+                        double dValue = (double)element.Value;
+                        int iValue = (int)dValue;
+                        byte[] bytes = BitConverter.GetBytes(iValue);
+                        //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.Int, bytes);
+                        _am.Content.Add((int)iKey, iValue);
+                    }
+
+                    iKey++;
                 }
+
+                PebbleConnector _pc = PebbleConnector.GetInstance();
+
+                byte[] package = _am.ToBuffer();
+                System.Diagnostics.Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package).Replace("-", ":"));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
 
             private Dictionary<String, object> _EventListeners;
