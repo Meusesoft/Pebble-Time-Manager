@@ -47,6 +47,8 @@ namespace Pebble_Time_Manager.WatchItems
         [DataMember]
         public uint IconResourceID { get; set; }
         #endregion
+        [DataMember]
+        public bool Configurable { get; set; }
 
         #region Methods
 
@@ -81,6 +83,15 @@ namespace Pebble_Time_Manager.WatchItems
             _newItem.SDKVersionMinor = _Bundle.Application.SdkMinorVersion;
             _newItem.Flags = (byte)_Bundle.Application.Flags;
             _newItem.IconResourceID = (byte)_Bundle.Application.IconResourceID;
+            _newItem.Configurable = false;
+
+            try
+            {
+                _newItem.Configurable = _Bundle.AppInfo.Capabilities.Contains("configurable");
+            }
+            catch (Exception) { }
+
+            
 
             _newItem.Type = WatchItemType.WatchApp;
             if ((_newItem.Flags & 1) == 1) _newItem.Type = WatchItemType.WatchFace;

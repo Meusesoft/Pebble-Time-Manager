@@ -397,6 +397,15 @@
                         VerticalAlignment="Center"
                         Source="{Binding Image}" Width="40" Height="40"                        
                         />
+                <SymbolIcon  Grid.Column="0"
+                             Margin="-5,0,0,0"
+                             Symbol="Favorite"
+                             VerticalAlignment="Top"
+                             HorizontalAlignment="Left"
+                             Opacity="0.8"
+                             Foreground="Yellow"
+                             Visibility="{Binding Active, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
                 <StackPanel Grid.Column="1">
                     <TextBlock Text="{Binding Name}"
                                    VerticalAlignment="Center"
@@ -409,7 +418,14 @@
                                     >
                     </TextBlock>
                 </StackPanel>
-                <SymbolIcon  Grid.Column="2"
+
+                <Button Grid.Column="2"
+                        Visibility="{Binding Configurable, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Command="{Binding ConfigureCommand}">
+                    <SymbolIcon Symbol="Setting"/>
+                </Button>                
+                
+                <SymbolIcon  Grid.Column="3"
                                  Margin="0,0,40,0"
                                  Symbol="Favorite"
                                  VerticalAlignment="Center"

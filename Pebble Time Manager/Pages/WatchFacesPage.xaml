@@ -16,7 +16,7 @@
             <converters:BooleanToSelectionModeConverter x:Name="BooleanToSelectionModeConverter" />
             <converters:BooleanXOR x:Name="BooleanXOR"/>
 
-            <DataTemplate x:Key="Standard200x180TileItemTemplate">
+            <!--<DataTemplate x:Key="Standard200x180TileItemTemplate">
                 <Grid Margin="0,0,9.5,9.5"
                       Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}">
                     <Image Source="{Binding ImagePath}"
@@ -86,7 +86,7 @@
                                     />
                     </StackPanel>
                 </Grid>
-            </DataTemplate>
+            </DataTemplate>-->
         </ResourceDictionary>
     </Page.Resources>
 

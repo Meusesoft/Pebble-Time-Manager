@@ -32,5 +32,7 @@ namespace Pebble_Time_Manager.WatchItems
 
         uint IconResourceID { get; set; }
 
+        bool Configurable { get; set; }
+
     }
 }

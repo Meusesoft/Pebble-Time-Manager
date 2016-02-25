@@ -214,6 +214,7 @@ namespace Pebble_Time_Manager.ViewModels
                             _newWatchFace.Editable = true;
                             _newWatchFace.Active = (CurrentWatchFace == item.ID);
                             _newWatchFace.ImageFile = item.File.Replace(".zip", ".gif");
+                            _newWatchFace.Configurable = item.Configurable;
                             WatchFaces.Add(_newWatchFace);
                             LoadImage(_newWatchFace);
 

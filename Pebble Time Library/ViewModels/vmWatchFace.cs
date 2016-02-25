@@ -20,6 +20,8 @@ namespace Pebble_Time_Manager.ViewModels
         public vmWatchFace()
         {
             Editable = true;
+
+            ConfigureCommand = new RelayCommand(Configure);
         }
 
         #endregion
@@ -122,6 +124,23 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         /// <summary>
+        /// True if the watchface can be configured
+        /// </summary>
+        private bool _Configurable;
+        public bool Configurable
+        {
+            get
+            {
+                return _Configurable;
+            }
+            set
+            {
+                _Configurable = value;
+                NotifyPropertyChanged("Configurable");
+            }
+        }
+
+        /// <summary>
         /// The Guid of the watch face
         /// </summary>
         public Guid Model { get; set; }
@@ -144,6 +163,26 @@ namespace Pebble_Time_Manager.ViewModels
         public String ImageFile { get; set; }
 
         #endregion
+
+        #region Methods
+
+        public void Configure(object obj)
+        {
+
+        }
+
+        #endregion
+
+        #region Commands
+
+        public RelayCommand ConfigureCommand
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+
 
         #region INotifyPropertyChanged Members
 

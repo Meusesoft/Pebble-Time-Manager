@@ -92,6 +92,8 @@ namespace P3bble.Types
         /// </value>
         public ApplicationMetadata Application { get; private set; }
 
+        public BundleAppinfo AppInfo { get; private set; }
+
         internal byte[] BinaryContent { get; private set; }
 
         internal byte[] Resources { get; private set; }
@@ -180,7 +182,17 @@ namespace P3bble.Types
             this._bundle = ZipArchive.Open(await file.OpenStreamForReadAsync());
 
             bool Basalt = true;
-            
+
+            var appinfoEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "appinfo.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+            if (appinfoEntry != null)
+            {
+                using (Stream jsonstream = appinfoEntry.OpenEntryStream())
+                {
+                    var serializer = new DataContractJsonSerializer(typeof(BundleAppinfo));
+                    AppInfo = serializer.ReadObject(jsonstream) as BundleAppinfo;
+                }
+            }
+
             var manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "basalt/manifest.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
             if (manifestEntry == null)
             {
