@@ -1,66 +1,56 @@
 ﻿using Jint;
-using Jint.Runtime.Interop;
 using Jint.Native;
+using Jint.Runtime.Interop;
+using Pebble_Time_Manager.Connector;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using System.Net;
 using Windows.Devices.Geolocation;
-using System.Dynamic;
-using Pebble_Time_Manager.Connector;
+using Windows.UI.Xaml.Controls;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
-namespace Pebble_Time_Manager.Pages
+namespace Pebble_Time_Library.Javascript
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class JavascriptPage : Page
+    public class PebbleJS
     {
-        public JavascriptPage()
-        {
-            this.InitializeComponent();
+        #region Constructors
 
-            LoadText();
+        public PebbleJS()
+        {
+            _Pebble = new Pebble();
         }
 
-        private String[] JavascriptFile;
+        #endregion
 
-        private async void LoadText()
-        {
-            string filepath = @"Assets\javascript.txt";
-            StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            StorageFile file = await folder.GetFileAsync(filepath); // error here
-            var Lines = await Windows.Storage.FileIO.ReadTextAsync(file);
+        #region Fields
 
-            txtScript.Text = Lines;
-
-            JavascriptFile = Lines.Split((char)13);
-        }
-
-        private Pebble _Pebble = new Pebble();
+        private Pebble _Pebble;
         private Engine _JintEngine;
 
-        private void btnExecute_Click(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region Properties
+
+        public Engine JintEngine
+        {
+            get
+            {
+                return _JintEngine;
+            }
+        }
+
+
+        #endregion
+
+        #region Methods
+
+        public void Initialise()
         {
 
             try
             {
-                _Pebble.webView = webConfig;
-
                 _JintEngine = new Engine()
                     .SetValue("log", new Action<object>(Debug))
                     .SetValue("localStorage", new LocalStorage())
@@ -71,24 +61,31 @@ namespace Pebble_Time_Manager.Pages
 
                 _JintEngine.SetValue("XMLHttpRequest", TypeReference.CreateTypeReference(_JintEngine, typeof(XMLHttpRequest)));
 
-                _JintEngine.Execute(txtScript.Text);
             }
             catch (Exception exp)
             {
-                txtResult.Text = exp.Message;
+                throw exp;
             }
         }
 
         private void Debug(object text)
         {
-            txtResult.Text = text.ToString();
+            System.Diagnostics.Debug.WriteLine(String.Format("log: {0}", text.ToString()));
         }
 
-        public class Console
+        #endregion
+
+        #region private classes
+
+        private class Console
         {
             public void log(String value)
             {
                 System.Diagnostics.Debug.WriteLine(String.Format("log: {0}", value));
+            }
+            public void warn(String value)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("warn: {0}", value));
             }
         }
 
@@ -128,7 +125,7 @@ namespace Pebble_Time_Manager.Pages
                 {
                     get
                     {
-                        if (_geoLocator== null) _geoLocator = new Geolocator();
+                        if (_geoLocator == null) _geoLocator = new Geolocator();
                         return _geoLocator;
                     }
                 }
@@ -137,7 +134,7 @@ namespace Pebble_Time_Manager.Pages
                 {
                     System.Diagnostics.Debug.WriteLine("GeoLocation.getCurrentPosition");
 
-                    _funcSuccess = funcSuccess; 
+                    _funcSuccess = funcSuccess;
                     _funcError = funcError;
 
                     try
@@ -306,7 +303,7 @@ namespace Pebble_Time_Manager.Pages
                 {
                     System.Diagnostics.Debug.WriteLine(String.Format("XMLHttpRequest.send data={0}", data == null ? "null" : data.ToString()));
                     _httpWebRequest.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586";
-                    
+
 
                     //_httpWebRequest.Accept = "text/html, application/json";
                     /*
@@ -319,7 +316,7 @@ namespace Pebble_Time_Manager.Pages
                    */
 
                     _response = await _httpWebRequest.GetResponseAsync();
-                    
+
                     Stream _stream = _response.GetResponseStream();
                     StreamReader _tr = new StreamReader(_stream);
                     String Response = _tr.ReadToEnd();
@@ -351,7 +348,7 @@ namespace Pebble_Time_Manager.Pages
                 {
                     System.Diagnostics.Debug.WriteLine("Exception " + e.Message);
                 }
-               finally
+                finally
                 {
                     //_response.Close;
                 }
@@ -364,205 +361,82 @@ namespace Pebble_Time_Manager.Pages
         }
 
         private class Pebble
+        {
+
+            public WebView webView { get; set; }
+
+            public void addEventListener(String Event, object function)
             {
+                System.Diagnostics.Debug.WriteLine(String.Format("addEventListener(Event = {0}, Function = {1})", Event, function.ToString()));
 
-                public WebView webView { get; set; }
+                if (EventListeners.ContainsKey(Event)) EventListeners.Remove(Event);
+                EventListeners.Add(Event, function);
+            }
 
-                public void addEventListener(String Event, object function)
-                { 
-                    System.Diagnostics.Debug.WriteLine(String.Format("addEventListener(Event = {0}, Function = {1})", Event, function.ToString()));
+            public void openURL(String URL)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("openURL(URL={0})", URL));
 
-                    if (EventListeners.ContainsKey(Event)) EventListeners.Remove(Event);
-                    EventListeners.Add(Event, function);
-                }
+                if (webView != null) webView.Navigate(new Uri(URL));
+            }
 
-                public void openURL(String URL)
+            public string getAccountToken()
+            {
+                return "account";
+            }
+
+            public void sendAppMessage(ExpandoObject data)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("sendAppMessage(data={0})", data.ToString()));
+
+                P3bble.Messages.AppMessage _am = new P3bble.Messages.AppMessage(P3bble.Constants.Endpoint.ApplicationMessage);
+                uint iKey = 0;
+
+                _am.Content = new Dictionary<int, object>(data.Count());
+
+                foreach (var element in data)
                 {
-                    System.Diagnostics.Debug.WriteLine(String.Format("openURL(URL={0})",URL));
+                    Type VariableType = element.Value.GetType();
+                    System.Diagnostics.Debug.WriteLine(String.Format("  key: {0}, value: {1}, type: {2}", element.Key, element.Value, VariableType.ToString()));
 
-                    if (webView!=null) webView.Navigate(new Uri(URL));
-                }
-
-                public string getAccountToken()
-                {
-                    return "account";
-                }
-
-                public void sendAppMessage(ExpandoObject data)
-                {
-                    System.Diagnostics.Debug.WriteLine(String.Format("sendAppMessage(data={0})", data.ToString()));
-
-                    P3bble.Messages.AppMessage _am = new P3bble.Messages.AppMessage(P3bble.Constants.Endpoint.ApplicationMessage);
-                    uint iKey = 0;
-
-                    _am.Content = new Dictionary<int, object>(data.Count());
-
-                    foreach (var element in data)
+                    if (VariableType == typeof(String))
                     {
-                        Type VariableType = element.Value.GetType();
-                        System.Diagnostics.Debug.WriteLine(String.Format("  key: {0}, value: {1}, type: {2}", element.Key, element.Value, VariableType.ToString()));
-
-                        if (VariableType == typeof(String))
-                        {
-                            String Value = (String)element.Value;
-                            //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.String, System.Text.Encoding.UTF8.GetBytes(Value));
-                            _am.Content.Add((int)iKey, Value);
-                        }
-
-                        if (VariableType == typeof(Double))
-                        {
-                            double dValue = (double)element.Value;
-                            int iValue = (int)dValue;
-                            byte[] bytes = BitConverter.GetBytes(iValue);
-                            //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.Int, bytes);
-                            _am.Content.Add((int)iKey, iValue);
-                        }
-
-                        iKey++;
+                        String Value = (String)element.Value;
+                        //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.String, System.Text.Encoding.UTF8.GetBytes(Value));
+                        _am.Content.Add((int)iKey, Value);
                     }
 
-                    PebbleConnector _pc = PebbleConnector.GetInstance();
-
-                    byte[] package = _am.ToBuffer();
-                    System.Diagnostics.Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package).Replace("-", ":"));
-                }
-
-                private Dictionary<String, object> _EventListeners;
-
-                public Dictionary<String, object> EventListeners
-                {
-                    get
+                    if (VariableType == typeof(Double))
                     {
-                        if (_EventListeners == null) _EventListeners = new Dictionary<string, object>();
-                        return _EventListeners;
+                        double dValue = (double)element.Value;
+                        int iValue = (int)dValue;
+                        byte[] bytes = BitConverter.GetBytes(iValue);
+                        //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.Int, bytes);
+                        _am.Content.Add((int)iKey, iValue);
                     }
+
+                    iKey++;
                 }
+
+                PebbleConnector _pc = PebbleConnector.GetInstance();
+
+                byte[] package = _am.ToBuffer();
+                System.Diagnostics.Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package).Replace("-", ":"));
             }
 
-        private void btnAppMesssage_Click(object sender, RoutedEventArgs e)
-        {
-            try
+            private Dictionary<String, object> _EventListeners;
+
+            public Dictionary<String, object> EventListeners
             {
-                var jsfunction = _Pebble.EventListeners["appmessage"];
-
-                System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
-
-                Jint.Native.JsValue A = new JsValue(1);
-                Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
-
-                Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
-                Jint.Native.JsValue _eValue = _jsp.Parse("{\"payload\":{\"request_weather\":\"true\"}}");
-
-                B[0] = _eValue;
-               // B[1] = new Jint.Native.JsValue(1);
-
-               // _JintEngine.SetValue("eValue", _eValue);
-
-                _JintEngine.Step += _JintEngine_Step;
-               
-
-                Jint.Native.JsValue C = _func.Invoke(A, B);
-            }
-            catch (Jint.Runtime.JavaScriptException exp)
-            {
-                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}", 
-                    exp.Message, 
-                    exp.LineNumber,
-                    JavascriptFile[exp.LineNumber - 1]);
-
-                txtResult.Text =  Exception;
-            }
-        }
-
-        private Jint.Runtime.Debugger.StepMode _JintEngine_Step(object sender, Jint.Runtime.Debugger.DebugInformation e)
-        {
-            System.Diagnostics.Debug.WriteLine(e.CurrentStatement.ToString());
-
-            return Jint.Runtime.Debugger.StepMode.Into;
-        }
-
-
-        private void btnConfig_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var jsfunction = _Pebble.EventListeners["showConfiguration"];
-
-                System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
-
-                Jint.Native.JsValue A = new JsValue(1);
-                Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
-
-                Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
-                Jint.Native.JsValue _eValue = _jsp.Parse("{}");
-
-                B[0] = _eValue;
-
-                _JintEngine.Step += _JintEngine_Step;
-
-                App.Activated += App_Activated;
-
-
-                Jint.Native.JsValue C = _func.Invoke(A, B);
-            }
-            catch (Jint.Runtime.JavaScriptException exp)
-            {
-                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}",
-                    exp.Message,
-                    exp.LineNumber,
-                    JavascriptFile[exp.LineNumber - 1]);
-
-                txtResult.Text = Exception;
-            }
-        }
-
-
-        private void App_Activated(object sender, string e)
-        {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine(e);
-
-                webConfig.NavigateToString("_blank");
-
-                App.Activated -= App_Activated;
-
-                var jsfunction = _Pebble.EventListeners["webviewclosed"];
-
-                String Argument = e;
-
-                String[] Result = e.Split("#".ToCharArray());
-                if (Result.Count() > 1)
+                get
                 {
-                    Argument = Result[1];
+                    if (_EventListeners == null) _EventListeners = new Dictionary<string, object>();
+                    return _EventListeners;
                 }
-
-                System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
-
-                Jint.Native.JsValue A = new JsValue(1);
-                Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
-
-                Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
-                String JSON = String.Format("{{\"response\":\"{0}\"}}", Uri.EscapeUriString(Uri.UnescapeDataString(Argument)));
-                Jint.Native.JsValue _eValue = _jsp.Parse(JSON);
-
-                B[0] = _eValue;
-
-                Jint.Native.JsValue C = _func.Invoke(A, B);
-            }
-            catch (Jint.Runtime.JavaScriptException exp)
-            {
-                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}",
-                    exp.Message,
-                    exp.LineNumber,
-                    JavascriptFile[exp.LineNumber - 1]);
-
-                txtResult.Text = Exception;
-            }
-            catch (Exception exp)
-            {
-                txtResult.Text = exp.Message;
             }
         }
+        #endregion
+
+
     }
 }

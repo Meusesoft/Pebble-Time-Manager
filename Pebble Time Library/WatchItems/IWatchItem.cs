@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Pebble_Time_Manager.WatchItems
 {
     public enum WatchItemType { Undefined, WatchFace, WatchApp};
-    
+
     public interface IWatchItem
     {
         Guid ID { get; set; }
@@ -18,7 +18,7 @@ namespace Pebble_Time_Manager.WatchItems
 
         String File { get; set; }
 
-        WatchItemType Type { get; set;}
+        WatchItemType Type { get; set; }
 
         byte VersionMajor { get; set; }
 
@@ -33,6 +33,10 @@ namespace Pebble_Time_Manager.WatchItems
         uint IconResourceID { get; set; }
 
         bool Configurable { get; set; }
+
+        List<String> Platforms { get; set; }
+
+        Dictionary<String, int> AppKeys {get; set;}
 
     }
 }

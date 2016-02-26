@@ -9,6 +9,7 @@ using P3bble.Helper;
 using SharpCompress.Archive;
 using SharpCompress.Archive.Zip;
 using Windows.Storage;
+using Windows.Data.Json;
 
 namespace P3bble.Types
 {
@@ -190,6 +191,30 @@ namespace P3bble.Types
                 {
                     var serializer = new DataContractJsonSerializer(typeof(BundleAppinfo));
                     AppInfo = serializer.ReadObject(jsonstream) as BundleAppinfo;
+                }
+
+                using (Stream jsonstream = appinfoEntry.OpenEntryStream())
+                {
+                    using (StreamReader reader = new StreamReader(jsonstream))
+                    {
+                        string contents = reader.ReadToEnd();
+                        JsonObject A = JsonObject.Parse(contents);
+
+                        foreach (var item in A)
+                        {
+                            if (item.Key == "appKeys")
+                            {
+                                AppInfo.AppKeys = new System.Collections.Generic.Dictionary<string, int>();
+
+                                JsonObject B = JsonObject.Parse(item.Value.Stringify());
+                                    
+                                foreach (var item2 in B)
+                                {
+                                    AppInfo.AppKeys.Add(item2.Key, Convert.ToInt32(item2.Value.GetNumber()));
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

@@ -49,7 +49,10 @@ namespace Pebble_Time_Manager.WatchItems
         #endregion
         [DataMember]
         public bool Configurable { get; set; }
-
+        [DataMember]
+        public List<String> Platforms { get; set; }
+        [DataMember]
+        public Dictionary<String, int> AppKeys { get; set; }
         #region Methods
 
         /// <summary>
@@ -91,7 +94,23 @@ namespace Pebble_Time_Manager.WatchItems
             }
             catch (Exception) { }
 
-            
+            try
+            {
+                _newItem.Platforms = new List<string>();
+                _newItem.Platforms.AddRange(_Bundle.AppInfo.TargetPlatforms);
+            }
+            catch (Exception) { }
+
+            try
+            {
+                _newItem.AppKeys = new Dictionary<string, int>();
+
+                foreach (var item in _Bundle.AppInfo.AppKeys)
+                {
+                    _newItem.AppKeys.Add(item.Key, item.Value);
+                }
+            }
+            catch (Exception) { }
 
             _newItem.Type = WatchItemType.WatchApp;
             if ((_newItem.Flags & 1) == 1) _newItem.Type = WatchItemType.WatchFace;

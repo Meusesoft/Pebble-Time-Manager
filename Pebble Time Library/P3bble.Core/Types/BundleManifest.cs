@@ -50,15 +50,6 @@ namespace P3bble.Types
         [DataMember(Name = "targetPlatforms")]
         public List<String> TargetPlatforms { get; private set; }
 
-        [DataMember(Name = "appKeys")]
-        public List<AppKey> AppKeys { get; private set; }
-    }
-
-
-    [DataContract]
-    public class AppKey
-    {
-        public string name { get; private set; }
-        public int id { get; private set; }
+        public Dictionary<string, int> AppKeys { get; set; }
     }
 }

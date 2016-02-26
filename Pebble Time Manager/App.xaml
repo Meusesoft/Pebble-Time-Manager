@@ -425,11 +425,11 @@
                     <SymbolIcon Symbol="Setting"/>
                 </Button>                
                 
-                <SymbolIcon  Grid.Column="3"
+                <!--<SymbolIcon  Grid.Column="3"
                                  Margin="0,0,40,0"
                                  Symbol="Favorite"
                                  VerticalAlignment="Center"
-                                 Visibility="{Binding Active, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                 Visibility="{Binding Active, Converter={StaticResource BooleanToVisibilityConverter}}"/>-->
 
             </Grid>
         </DataTemplate>
