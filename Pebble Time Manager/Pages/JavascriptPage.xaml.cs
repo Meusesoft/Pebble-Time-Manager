@@ -48,7 +48,8 @@ namespace Pebble_Time_Manager.Pages
 
             txtScript.Text = Lines;
 
-            JavascriptFile = Lines.Split((char)13);
+            JavascriptFile = Lines.Split("\n\r".ToCharArray());
+
         }
 
         private Pebble _Pebble = new Pebble();

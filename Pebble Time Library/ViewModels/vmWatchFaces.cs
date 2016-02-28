@@ -212,6 +212,7 @@ namespace Pebble_Time_Manager.ViewModels
                             _newWatchFace.Developer = item.Developer;
                             _newWatchFace.Model = item.ID;
                             _newWatchFace.Editable = true;
+                            _newWatchFace.Item = item;
                             _newWatchFace.Active = (CurrentWatchFace == item.ID);
                             _newWatchFace.ImageFile = item.File.Replace(".zip", ".gif");
                             _newWatchFace.Configurable = item.Configurable;

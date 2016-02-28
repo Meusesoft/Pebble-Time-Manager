@@ -9,6 +9,8 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media;
+using Pebble_Time_Library.Javascript;
+using P3bble.Types;
 
 
 namespace Pebble_Time_Manager.ViewModels
@@ -148,7 +150,6 @@ namespace Pebble_Time_Manager.ViewModels
         private Windows.UI.Xaml.Media.Imaging.BitmapImage _Image;
         public Windows.UI.Xaml.Media.Imaging.BitmapImage Image
         {
-
             get
             {
                 return _Image;
@@ -162,13 +163,15 @@ namespace Pebble_Time_Manager.ViewModels
 
         public String ImageFile { get; set; }
 
+        public Pebble_Time_Manager.WatchItems.IWatchItem Item { get; set; }
+
         #endregion
 
         #region Methods
 
         public void Configure(object obj)
         {
-
+            Item.ShowConfiguration();
         }
 
         #endregion
@@ -182,14 +185,6 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         #endregion
-
-        #region Javascript
-
-
-
-
-        #endregion
-
 
         #region INotifyPropertyChanged Members
 

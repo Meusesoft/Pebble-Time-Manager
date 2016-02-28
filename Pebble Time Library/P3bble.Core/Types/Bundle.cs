@@ -101,6 +101,8 @@ namespace P3bble.Types
 
         internal BundleManifest Manifest { get; private set; }
 
+        public String Javascript { get; private set; }
+
         /// <summary>
         /// Loads a bundle from ApplicationData.Current.LocalFolder.
         /// </summary>
@@ -169,9 +171,9 @@ namespace P3bble.Types
             }
 
             //StorageFile _resource2 = await StorageFile.GetFileFromApplicationUriAsync(new System.Uri("ms-appx:///Assets/tennis.pbw"));
-           // await _resource2.CopyAsync(ApplicationData.Current.LocalFolder, "temp.zip", NameCollisionOption.ReplaceExisting);
+            // await _resource2.CopyAsync(ApplicationData.Current.LocalFolder, "temp.zip", NameCollisionOption.ReplaceExisting);
 
-           // this._path = "temp.zip";
+            // this._path = "temp.zip";
 
             StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(this._path);
             if (file == null)
@@ -207,7 +209,7 @@ namespace P3bble.Types
                                 AppInfo.AppKeys = new System.Collections.Generic.Dictionary<string, int>();
 
                                 JsonObject B = JsonObject.Parse(item.Value.Stringify());
-                                    
+
                                 foreach (var item2 in B)
                                 {
                                     AppInfo.AppKeys.Add(item2.Key, Convert.ToInt32(item2.Value.GetNumber()));
@@ -259,6 +261,18 @@ namespace P3bble.Types
             if (this.HasResources)
             {
                 this.Resources = await this.ReadFileToArray(Basalt ? "basalt/" + this.Manifest.Resources.Filename : this.Manifest.Resources.Filename, this.Manifest.Resources.Size);
+            }
+
+            var javascriptEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "pebble-js-app.js", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+            if (javascriptEntry != null)
+            {
+                using (Stream jsonstream = javascriptEntry.OpenEntryStream())
+                {
+                    using (StreamReader reader = new StreamReader(jsonstream))
+                    {
+                        Javascript = reader.ReadToEnd();
+                    }
+                }
             }
         }
 

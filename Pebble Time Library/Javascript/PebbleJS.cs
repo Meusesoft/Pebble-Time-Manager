@@ -2,6 +2,8 @@
 using Jint.Native;
 using Jint.Runtime.Interop;
 using Pebble_Time_Manager.Connector;
+using Pebble_Time_Manager.ViewModels;
+using Pebble_Time_Manager.WatchItems;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -17,9 +19,12 @@ namespace Pebble_Time_Library.Javascript
     {
         #region Constructors
 
-        public PebbleJS()
+        public PebbleJS(IWatchItem ParentItem)
         {
-            _Pebble = new Pebble();
+            _ParentItem = ParentItem;
+            _Pebble = new Pebble(_ParentItem);
+
+            Initialise();
         }
 
         #endregion
@@ -28,6 +33,8 @@ namespace Pebble_Time_Library.Javascript
 
         private Pebble _Pebble;
         private Engine _JintEngine;
+        private String[] _JavascriptLines;
+        private IWatchItem _ParentItem;
 
         #endregion
 
@@ -46,14 +53,14 @@ namespace Pebble_Time_Library.Javascript
 
         #region Methods
 
-        public void Initialise()
+        private void Initialise()
         {
 
             try
             {
                 _JintEngine = new Engine()
                     .SetValue("log", new Action<object>(Debug))
-                    .SetValue("localStorage", new LocalStorage())
+                    .SetValue("localStorage", new LocalStorage(_ParentItem))
                     .SetValue("console", new Console())
                     .SetValue("Pebble", _Pebble)
                     .SetValue("navigator", new Navigator())
@@ -68,9 +75,118 @@ namespace Pebble_Time_Library.Javascript
             }
         }
 
+        public void Execute(String Javascript)
+        {
+            try
+            {
+                _JavascriptLines = Javascript.Split("\n\r".ToCharArray());
+
+                _JintEngine.Execute(Javascript);
+            }
+            catch (Jint.Runtime.JavaScriptException exp)
+            {
+                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}",
+                    exp.Message,
+                    exp.LineNumber,
+                    _JavascriptLines[exp.LineNumber - 1]);
+
+                throw new System.Exception(Exception);
+            }
+            catch (Exception exp)
+            {
+                throw exp;
+            }
+        }
+
+        public void ShowConfiguration(IWatchItem item)
+        {
+            try
+            {
+                var jsfunction = _Pebble.EventListeners["showConfiguration"];
+
+                System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
+
+                Jint.Native.JsValue A = new JsValue(1);
+                Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
+
+                Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
+                B[0] = _jsp.Parse("{}");
+
+                Jint.Native.JsValue C = _func.Invoke(A, B);
+            }
+            catch (Jint.Runtime.JavaScriptException exp)
+            {
+                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}",
+                    exp.Message,
+                    exp.LineNumber,
+                    _JavascriptLines[exp.LineNumber - 1]);
+
+                throw new System.Exception(Exception);
+            }
+            catch (Exception exp)
+            {
+                throw exp;
+            }
+        }
+
+        public void WebViewClosed(String Data)
+        {
+            try
+            {
+                var jsfunction = _Pebble.EventListeners["webviewclosed"];
+
+                String Argument = Data;
+
+                String[] Result = Data.Split("#".ToCharArray());
+                if (Result.Count() > 1)
+                {
+                    Argument = Result[1];
+
+                    System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
+
+                    Jint.Native.JsValue A = new JsValue(1);
+                    Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
+
+                    Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
+                    String JSON = String.Format("{{\"response\":\"{0}\"}}", Uri.EscapeUriString(Uri.UnescapeDataString(Argument)));
+                    Jint.Native.JsValue _eValue = _jsp.Parse(JSON);
+
+                    B[0] = _eValue;
+
+                    Jint.Native.JsValue C = _func.Invoke(A, B);
+                }
+            }
+            catch (Jint.Runtime.JavaScriptException exp)
+            {
+                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}",
+                    exp.Message,
+                    exp.LineNumber,
+                    _JavascriptLines[exp.LineNumber - 1]);
+
+                throw new System.Exception(Exception);
+            }
+            catch (Exception exp)
+            {
+                throw exp;
+            }
+        }
+
         private void Debug(object text)
         {
             System.Diagnostics.Debug.WriteLine(String.Format("log: {0}", text.ToString()));
+        }
+
+        #endregion
+
+        #region Events
+
+        public delegate void OpenURLEventHandler(object sender, EventArgs e);
+        public static event OpenURLEventHandler OpenURL;
+
+        public class URLEventArgs : EventArgs
+        {
+            public String URL;
+            public IWatchItem WatchItem;
         }
 
         #endregion
@@ -91,15 +207,48 @@ namespace Pebble_Time_Library.Javascript
 
         private class LocalStorage
         {
+            public LocalStorage(IWatchItem _ParentItem)
+            {
+                ParentItem = _ParentItem;
+            }
+
+            private IWatchItem ParentItem;
+
+
             public object getItem(String item)
             {
+                if (ParentItem.StoredItems == null)
+                {
+                    ParentItem.StoredItems = new Dictionary<string, string>();
+                }
+
+                if (ParentItem.StoredItems.ContainsKey(item))
+                {
+                    return ParentItem.StoredItems[item];
+                }
+
                 return "null";
             }
 
             public object setItem(String item, string value)
             {
+                if (ParentItem.StoredItems == null)
+                {
+                    ParentItem.StoredItems = new Dictionary<string, string>();
+                }
+
+                if (ParentItem.StoredItems.ContainsKey(item))
+                {
+                    ParentItem.StoredItems[item] = value;
+                }
+                else
+                {
+                    ParentItem.StoredItems.Add(item, value);
+                }
+
                 System.Diagnostics.Debug.WriteLine(String.Format("LocalStorage.setItem: {0}", value));
-                return "null";
+
+                return value;
             }
         }
 
@@ -362,8 +511,13 @@ namespace Pebble_Time_Library.Javascript
 
         private class Pebble
         {
+            public Pebble(IWatchItem _ParentItem)
+            {
+                ParentItem = _ParentItem;
+            }
 
-            public WebView webView { get; set; }
+            private IWatchItem ParentItem;
+
 
             public void addEventListener(String Event, object function)
             {
@@ -377,7 +531,11 @@ namespace Pebble_Time_Library.Javascript
             {
                 System.Diagnostics.Debug.WriteLine(String.Format("openURL(URL={0})", URL));
 
-                if (webView != null) webView.Navigate(new Uri(URL));
+                //Fire URL event
+                URLEventArgs _uea = new URLEventArgs();
+                _uea.URL = URL;
+                _uea.WatchItem = ParentItem;
+                if (PebbleJS.OpenURL != null) PebbleJS.OpenURL(this, _uea);
             }
 
             public string getAccountToken()
@@ -436,7 +594,5 @@ namespace Pebble_Time_Library.Javascript
             }
         }
         #endregion
-
-
     }
 }

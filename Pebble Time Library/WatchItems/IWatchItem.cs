@@ -38,5 +38,10 @@ namespace Pebble_Time_Manager.WatchItems
 
         Dictionary<String, int> AppKeys {get; set;}
 
+        Dictionary<String, String> StoredItems { get; set; }
+
+        void ShowConfiguration();
+
+        void WebViewClosed(string Data);
     }
 }
