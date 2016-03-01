@@ -6,7 +6,7 @@ using P3bble.PCL;
 
 namespace P3bble.Messages
 {
-    internal class WatchFaceMessage : BaseMessage
+    public class WatchFaceMessage : BaseMessage
     {
         public Guid CurrentWatchFace;
 

@@ -175,6 +175,9 @@ namespace Pebble_Time_Manager.ViewModels
                             _newWatchApp.Model = item.ID;
                             _newWatchApp.Developer = item.Developer;
                             _newWatchApp.ImageFile = item.File.Replace(".zip", ".gif");
+                            _newWatchApp.Configurable = item.Configurable;
+                            _newWatchApp.Item = item;
+                            
                             WatchApps.Add(_newWatchApp);
                             LoadImage(_newWatchApp);
 

@@ -139,7 +139,7 @@ namespace Pebble_Time_Manager.WatchItems
 
                 _PebbleJS = new PebbleJS(this);
                 
-                _PebbleJS.Execute(_Bundle.Javascript);
+                await _PebbleJS.Execute(_Bundle.Javascript);
             }
         }
 

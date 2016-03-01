@@ -6,7 +6,7 @@ using P3bble.PCL;
 
 namespace P3bble.Messages
 {
-    internal class WatchFaceSelectMessage : BaseMessage
+    public class WatchFaceSelectMessage : BaseMessage
     {
         private byte[] _cookie;
 

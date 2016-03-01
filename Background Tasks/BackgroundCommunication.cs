@@ -8,6 +8,7 @@ using Tennis_Statistics.ViewModels;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using System.Collections.Generic;
+using P3bble.Messages;
 
 namespace BackgroundTasks
 {
@@ -66,6 +67,7 @@ namespace BackgroundTasks
                         _pc.Pebble.Log = Log;
                         _pc.StartReceivingMessages();
                         _pc.disconnectEventHandler += _pc_disconnectEventHandler;
+                        _pc.Pebble._protocol.MessageReceived += AppMessageReceived;
 
                         bool Continue = true;
 
@@ -113,6 +115,8 @@ namespace BackgroundTasks
 
                         localSettings.Values[Constants.BackgroundTennis] = false;
                         localSettings.Values[Constants.BackgroundPace] = false;
+
+                        _pc.Pebble._protocol.MessageReceived -= AppMessageReceived;
                     }
                     else
                     {
@@ -159,6 +163,37 @@ namespace BackgroundTasks
             AddToLog("Connection lost with Pebble Time. Retrying in 10 seconds.");
 
             ReconnectDelay = 10000;
+        }
+
+        /// <summary>
+        /// Process the tennis message
+        /// </summary>
+        /// <param name="message"></param>
+        private void AppMessageReceived(P3bbleMessage message)
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+
+            switch (message.Endpoint)
+            {
+                case P3bble.Constants.Endpoint.WatchFaceSelect:
+
+                    WatchFaceMessage _watchFaceMessage = (WatchFaceMessage)message;
+
+                    System.Diagnostics.Debug.WriteLine("WatchFaceMessage received: " + _watchFaceMessage.CurrentWatchFace.ToString());
+
+                    break;
+
+                case P3bble.Constants.Endpoint.ApplicationMessage:
+
+                    P3bble.Messages.AppMessage _appMessage = (P3bble.Messages.AppMessage)message;
+
+                    if (_appMessage.AppUuid != Guid.Parse("51a56b50-f87d-ce41-a0ff-30d03a88fa8d"))
+                    {
+                        System.Diagnostics.Debug.WriteLine("AppMessage received: " + _appMessage.AppUuid.ToString());
+                    }
+
+                    break;
+            }
         }
 
         private async Task Reconnect()

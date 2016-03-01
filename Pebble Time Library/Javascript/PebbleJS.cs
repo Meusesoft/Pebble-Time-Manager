@@ -10,8 +10,11 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.UI.Xaml.Controls;
+using Pebble_Time_Manager.Common;
+using System.Runtime.Serialization;
 
 namespace Pebble_Time_Library.Javascript
 {
@@ -24,7 +27,6 @@ namespace Pebble_Time_Library.Javascript
             _ParentItem = ParentItem;
             _Pebble = new Pebble(_ParentItem);
 
-            Initialise();
         }
 
         #endregion
@@ -53,14 +55,17 @@ namespace Pebble_Time_Library.Javascript
 
         #region Methods
 
-        private void Initialise()
+        private async Task Initialise()
         {
 
             try
             {
+                LocalStorage _ls = new LocalStorage(_ParentItem);
+                await _ls.Load();
+
                 _JintEngine = new Engine()
                     .SetValue("log", new Action<object>(Debug))
-                    .SetValue("localStorage", new LocalStorage(_ParentItem))
+                    .SetValue("localStorage", _ls)
                     .SetValue("console", new Console())
                     .SetValue("Pebble", _Pebble)
                     .SetValue("navigator", new Navigator())
@@ -75,10 +80,12 @@ namespace Pebble_Time_Library.Javascript
             }
         }
 
-        public void Execute(String Javascript)
+        public async Task Execute(String Javascript)
         {
             try
             {
+                if (_JintEngine == null) await Initialise();
+
                 _JavascriptLines = Javascript.Split("\n\r".ToCharArray());
 
                 _JintEngine.Execute(Javascript);
@@ -205,19 +212,30 @@ namespace Pebble_Time_Library.Javascript
             }
         }
 
+        [DataContract]
         private class LocalStorage
         {
-            public LocalStorage(IWatchItem _ParentItem)
+            public LocalStorage()
             {
-                ParentItem = _ParentItem;
             }
 
-            private IWatchItem ParentItem;
+            public LocalStorage(IWatchItem ParentItem)
+            {
+                StorageContainer = new Dictionary<Guid, Dictionary<string, string>>();
+                _ParentItem = ParentItem;
+            }
+
+            private IWatchItem _ParentItem;
+
+            [DataMember]
+            public Dictionary<Guid, Dictionary<String, String>> StorageContainer { get; set; }
 
 
             public object getItem(String item)
             {
-                if (ParentItem.StoredItems == null)
+                String value = "null";
+                
+                /*if (ParentItem.StoredItems == null)
                 {
                     ParentItem.StoredItems = new Dictionary<string, string>();
                 }
@@ -225,14 +243,26 @@ namespace Pebble_Time_Library.Javascript
                 if (ParentItem.StoredItems.ContainsKey(item))
                 {
                     return ParentItem.StoredItems[item];
+                }*/
+
+                if (StorageContainer.ContainsKey(_ParentItem.ID))
+                {
+                    Dictionary<String, String> ItemStorageContainer = StorageContainer[_ParentItem.ID];
+
+                    if (ItemStorageContainer.ContainsKey(item))
+                    {
+                        value = ItemStorageContainer[item];
+                    }
                 }
 
-                return "null";
+                System.Diagnostics.Debug.WriteLine(String.Format("LocalStorage.getItem: {0}={1}", item, value));
+
+                return value;
             }
 
-            public object setItem(String item, string value)
+            public async Task<object> setItem(String item, string value)
             {
-                if (ParentItem.StoredItems == null)
+                /*if (ParentItem.StoredItems == null)
                 {
                     ParentItem.StoredItems = new Dictionary<string, string>();
                 }
@@ -244,11 +274,77 @@ namespace Pebble_Time_Library.Javascript
                 else
                 {
                     ParentItem.StoredItems.Add(item, value);
+                }*/
+
+                if (!StorageContainer.ContainsKey(_ParentItem.ID))
+                {
+                    StorageContainer.Add(_ParentItem.ID, new Dictionary<string, string>());
                 }
 
-                System.Diagnostics.Debug.WriteLine(String.Format("LocalStorage.setItem: {0}", value));
+                if (StorageContainer.ContainsKey(_ParentItem.ID))
+                {
+                    Dictionary<String, String> ItemStorageContainer = StorageContainer[_ParentItem.ID];
+
+                    if (ItemStorageContainer.ContainsKey(item))
+                    {
+                        ItemStorageContainer[item] = value;
+                    }
+                    else
+                    {
+                        ItemStorageContainer.Add(item, value);
+                    }
+
+                    await Save();
+                }
+
+                System.Diagnostics.Debug.WriteLine(String.Format("LocalStorage.setItem: {0}<={1}", item, value));
 
                 return value;
+            }
+
+            public async Task Save()
+            {
+                try
+                {
+                    String List = Serializer.Serialize(this);
+                    await Pebble_Time_Manager.Common.LocalStorage.Save(List, "pebblejs_storage.xml", false);
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(String.Format("PebbleJS.LocalStorage.Save exception: {0}", e.Message));
+                }
+            }
+
+            public async Task Load()
+            {
+                try
+                {
+                    LocalStorage _temp;
+
+                    String List = await Pebble_Time_Manager.Common.LocalStorage.Load("pebblejs_storage.xml");
+
+                    if (List.Length == 0)
+                    {
+                        //try backup
+                        System.Diagnostics.Debug.WriteLine("Try backup pebblejs_storage.xml");
+                        List = await Pebble_Time_Manager.Common.LocalStorage.Load("pebblejs_storage.bak");
+                    }
+
+                    if (List.Length > 0)
+                    {
+                        //Make backup of xml storage file
+                        Pebble_Time_Manager.Common.LocalStorage.Copy("watchtems.xml", "watchitems.bak");
+
+                        //Deserialize
+                        _temp = (LocalStorage)Pebble_Time_Manager.Common.Serializer.Deserialize(List, typeof(LocalStorage));
+                        StorageContainer = _temp.StorageContainer;
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(String.Format("PebbleJS.LocalStorage.Load exception: {0}", e.Message));
+                }
             }
         }
 
