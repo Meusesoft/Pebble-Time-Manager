@@ -169,6 +169,20 @@ namespace Pebble_Time_Manager.WatchItems
             }
         }
 
+        public async void Ready()
+        {
+            try
+            {
+                await LoadJavascript();
+
+                _PebbleJS.Ready();
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine(exp);
+            }
+        }
+
         #endregion
 
     }

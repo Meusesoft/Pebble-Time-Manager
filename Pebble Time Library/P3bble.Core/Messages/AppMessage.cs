@@ -171,7 +171,7 @@ namespace P3bble.Messages
                 List<byte> data = new List<byte>();
 
                 // Add a transaction id:
-                data.Add(0);
+                data.Add(TransactionId);
 
                 // Add the app id:
                 data.AddRange(this.AppUuid.ToByteArray());
