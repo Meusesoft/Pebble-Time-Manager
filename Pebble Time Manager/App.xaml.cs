@@ -35,7 +35,11 @@ namespace Pebble_Time_Manager
             this.Suspending += OnSuspending;
         }
 
-        public static string ProtocolArguments;
+        public static String ActivationArguments { get; set; }
+
+        public delegate void ActivationEventHandler(object sender, String e);
+        public static event ActivationEventHandler Activated;
+
 
         protected override void OnActivated(IActivatedEventArgs args)
         {
@@ -43,11 +47,13 @@ namespace Pebble_Time_Manager
 
             if (args.Kind == ActivationKind.Protocol)
             {
-                ProtocolActivatedEventArgs _pargs = args as ProtocolActivatedEventArgs;
-                ProtocolArguments = _pargs.Uri.ToString();
+                var pArgs = args as ProtocolActivatedEventArgs;
+                ActivationArguments = pArgs.Uri.ToString();
+
+                if (Activated != null) Activated(this, ActivationArguments);
             }
 
-            CreateAndLaunch("");
+            CreateAndActivateWindows(null);
         }
 
         /// <summary>
@@ -57,17 +63,18 @@ namespace Pebble_Time_Manager
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            CreateAndLaunch(e.Arguments);
+            CreateAndActivateWindows(e.Arguments);
         }
 
-        private void CreateAndLaunch(String arguments)
+        private void CreateAndActivateWindows(string arguments)
         {
-#if DEBUG
+
+            #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
-#endif
+            #endif
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -81,10 +88,10 @@ namespace Pebble_Time_Manager
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-      //          if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-        //        {
+                //if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                //{
                     //TODO: Load state from previously suspended application
-          //      }
+                //}
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
@@ -97,9 +104,9 @@ namespace Pebble_Time_Manager
                 // parameter
                 rootFrame.Navigate(typeof(MainPage), arguments);
             }
+
             // Ensure the current window is active
             Window.Current.Activate();
-
         }
 
         /// <summary>
