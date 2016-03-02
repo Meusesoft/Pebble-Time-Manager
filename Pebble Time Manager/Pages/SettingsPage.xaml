@@ -271,6 +271,7 @@
                 <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding PackageDisplayName}"/>
                 <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding Publisher}" Foreground="Gray"/>
                 <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding Version}" Foreground="Gray"/>
+                <TextBlock Margin="0,5,0,0" FontSize="16" Text="Includes P3bble and Jint C# libraries." Foreground="Gray"/>
             </StackPanel>
         </ScrollViewer>
 
