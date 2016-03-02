@@ -328,7 +328,7 @@ namespace P3bble.Messages
 
                 switch (value.GetType().ToString())
                 {
-                    case "Sytem.Int":
+                    case "System.Int32":
 
                         Result.Add(0x03);
 
@@ -347,14 +347,14 @@ namespace P3bble.Messages
                         Result.Add(0x01);
 
                         string sValue = (string)value;
-                        Int16 sLength = (short)sValue.Length;
+                        Int16 sLength = (short)(sValue.Length + 1);
                         byte[] bsValueLength = BitConverter.GetBytes(sLength);
 
                         Result.AddRange(bsValueLength);
 
                         byte[] bsValue = System.Text.Encoding.UTF8.GetBytes(sValue);
                         Result.AddRange(bsValue);
-
+                        Result.Add(0x00);
 
                         break;
 

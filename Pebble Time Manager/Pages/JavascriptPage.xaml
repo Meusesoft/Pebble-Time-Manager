@@ -8,10 +8,16 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBox x:Name="txtScript" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="var options = JSON.parse(localStorage.getItem('options'));" VerticalAlignment="Top" Height="368" Width="1004"/>
-        <Button x:Name="btnExecute" Content="Execute" HorizontalAlignment="Left" Margin="10,383,0,0" VerticalAlignment="Top" Click="btnExecute_Click"/>
-        <TextBox x:Name="txtResult" HorizontalAlignment="Left" Margin="11,421,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="209" Width="1003"/>
-        <Button x:Name="btnAppMesssage" Content="AppMessage" HorizontalAlignment="Left" Margin="100,383,0,0" VerticalAlignment="Top" Click="btnAppMesssage_Click" />
-        <Button x:Name="btnReady" Content="Ready" HorizontalAlignment="Left" Margin="226,383,0,0" VerticalAlignment="Top" />
+        <StackPanel>
+        <TextBox x:Name="txtScript" HorizontalAlignment="Left" TextWrapping="Wrap" Text="var options = JSON.parse(localStorage.getItem('options'));" VerticalAlignment="Top" Height="298" Width="500"/>
+            <StackPanel Orientation="Horizontal">
+            <Button x:Name="btnExecute" Content="Execute" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnExecute_Click"/>
+            <Button x:Name="btnAppMesssage" Content="AppMessage" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnAppMesssage_Click" />
+            <Button x:Name="btnReady" Content="Ready" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <Button x:Name="btnConfig" Content="Config" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnConfig_Click" />
+            </StackPanel>
+            <TextBox x:Name="txtResult" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="52" Width="500"/>
+            <WebView x:Name="webConfig" Width="500" Height="500"/>
+        </StackPanel>
     </Grid>
 </Page>

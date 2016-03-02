@@ -9,6 +9,8 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media;
+using Pebble_Time_Library.Javascript;
+using P3bble.Types;
 
 
 namespace Pebble_Time_Manager.ViewModels
@@ -20,6 +22,8 @@ namespace Pebble_Time_Manager.ViewModels
         public vmWatchFace()
         {
             Editable = true;
+
+            ConfigureCommand = new RelayCommand(Configure);
         }
 
         #endregion
@@ -122,6 +126,23 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         /// <summary>
+        /// True if the watchface can be configured
+        /// </summary>
+        private bool _Configurable;
+        public bool Configurable
+        {
+            get
+            {
+                return _Configurable;
+            }
+            set
+            {
+                _Configurable = value;
+                NotifyPropertyChanged("Configurable");
+            }
+        }
+
+        /// <summary>
         /// The Guid of the watch face
         /// </summary>
         public Guid Model { get; set; }
@@ -129,7 +150,6 @@ namespace Pebble_Time_Manager.ViewModels
         private Windows.UI.Xaml.Media.Imaging.BitmapImage _Image;
         public Windows.UI.Xaml.Media.Imaging.BitmapImage Image
         {
-
             get
             {
                 return _Image;
@@ -142,6 +162,27 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         public String ImageFile { get; set; }
+
+        public Pebble_Time_Manager.WatchItems.IWatchItem Item { get; set; }
+
+        #endregion
+
+        #region Methods
+
+        public void Configure(object obj)
+        {
+            Item.ShowConfiguration();
+        }
+
+        #endregion
+
+        #region Commands
+
+        public RelayCommand ConfigureCommand
+        {
+            get;
+            private set;
+        }
 
         #endregion
 

@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Json;
 using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using P3bble.Types;
+using Pebble_Time_Library.Javascript;
 
 namespace Pebble_Time_Manager.WatchItems
 {
@@ -23,7 +24,6 @@ namespace Pebble_Time_Manager.WatchItems
         #endregion
 
         #region Properties
-
         [DataMember]
         public Guid ID { get; set; }
         [DataMember]
@@ -46,6 +46,20 @@ namespace Pebble_Time_Manager.WatchItems
         public uint Flags { get; set; }
         [DataMember]
         public uint IconResourceID { get; set; }
+        [DataMember]
+        public bool Configurable { get; set; }
+        [DataMember]
+        public List<String> Platforms { get; set; }
+        [DataMember]
+        public Dictionary<String, int> AppKeys { get; set; }
+        [DataMember]
+        public Dictionary<String, String> StoredItems { get; set; }
+        #endregion
+
+        #region Fields
+
+        private PebbleJS _PebbleJS;
+
         #endregion
 
         #region Methods
@@ -81,11 +95,78 @@ namespace Pebble_Time_Manager.WatchItems
             _newItem.SDKVersionMinor = _Bundle.Application.SdkMinorVersion;
             _newItem.Flags = (byte)_Bundle.Application.Flags;
             _newItem.IconResourceID = (byte)_Bundle.Application.IconResourceID;
+            _newItem.Configurable = false;
+
+            try
+            {
+                _newItem.Configurable = _Bundle.AppInfo.Capabilities.Contains("configurable");
+            }
+            catch (Exception) { }
+
+            try
+            {
+                _newItem.Platforms = new List<string>();
+                _newItem.Platforms.AddRange(_Bundle.AppInfo.TargetPlatforms);
+            }
+            catch (Exception) { }
+
+            try
+            {
+                _newItem.AppKeys = new Dictionary<string, int>();
+
+                foreach (var item in _Bundle.AppInfo.AppKeys)
+                {
+                    _newItem.AppKeys.Add(item.Key, item.Value);
+                }
+            }
+            catch (Exception) { }
 
             _newItem.Type = WatchItemType.WatchApp;
             if ((_newItem.Flags & 1) == 1) _newItem.Type = WatchItemType.WatchFace;
 
             return _newItem;
+        }
+
+        #endregion
+
+        #region Javascript
+
+        private async Task LoadJavascript()
+        {
+            if (_PebbleJS == null)
+            {
+                Bundle _Bundle = await Bundle.LoadFromLocalStorageAsync(File);
+
+                _PebbleJS = new PebbleJS(this);
+                
+                await _PebbleJS.Execute(_Bundle.Javascript);
+            }
+        }
+
+        public async void ShowConfiguration()
+        {
+            try
+            {
+                await LoadJavascript();
+
+                _PebbleJS.ShowConfiguration(this);
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine(exp);
+            }
+        }
+
+        public void WebViewClosed(string Data)
+        {
+            try
+            {
+                _PebbleJS.WebViewClosed(Data);
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine(exp);
+            }
         }
 
         #endregion

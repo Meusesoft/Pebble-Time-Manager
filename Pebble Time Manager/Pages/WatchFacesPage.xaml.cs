@@ -14,7 +14,9 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Pebble_Time_Library.Javascript;
 using Windows.UI.Xaml.Navigation;
+using Pebble_Time_Manager.WatchItems;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,6 +30,7 @@ namespace Pebble_Time_Manager.Pages
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
         private Connector.TimeLineSynchronizer _TimeLineSynchronizer;
         private vmBinder _vmBinder;
+        private IWatchItem _WatchFaceConfig;
 
         public WatchFacesPage()
         {
@@ -38,6 +41,25 @@ namespace Pebble_Time_Manager.Pages
             _TimeLineSynchronizer = _vmBinder.TimeLineSynchronizer;
 
             DataContext = _vmBinder;
+        }
+
+        private void App_Activated(object sender, string e)
+        {
+            ConfigWebView.Visibility = Visibility.Collapsed;
+
+            if (_WatchFaceConfig != null)
+            {
+                _WatchFaceConfig.WebViewClosed(e);
+            }
+        }
+
+        private void PebbleJS_OpenURL(object sender, EventArgs e)
+        {
+            PebbleJS.URLEventArgs _uea = (PebbleJS.URLEventArgs)e;
+            _WatchFaceConfig = _uea.WatchItem;
+
+            ConfigWebView.Navigate(new Uri(_uea.URL));
+            ConfigWebView.Visibility = Visibility.Visible;
         }
 
         /// <summary>
@@ -79,6 +101,9 @@ namespace Pebble_Time_Manager.Pages
         {
             _vmBinder.Commands.EditFaces = true;
             _vmBinder.Commands.DeleteFaces = false;
+
+            PebbleJS.OpenURL += PebbleJS_OpenURL;
+            App.Activated += App_Activated;
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -86,6 +111,9 @@ namespace Pebble_Time_Manager.Pages
             _vmBinder.Commands.EditFaces = false;
             _vmBinder.Commands.DeleteFaces = false;
             _vmBinder.WatchFaces.EditMode = false;
+
+            PebbleJS.OpenURL -= PebbleJS_OpenURL;
+            App.Activated -= App_Activated;
         }
     }
 }

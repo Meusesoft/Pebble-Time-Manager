@@ -116,6 +116,7 @@
     <Compile Include="Connector\PaceHandler.cs" />
     <Compile Include="Connector\PebbleConnector.cs" />
     <Compile Include="Connector\TimeLineSynchronizer.cs" />
+    <Compile Include="Javascript\PebbleJS.cs" />
     <Compile Include="P3bble.Core\AsyncLock.cs" />
     <Compile Include="P3bble.Core\BundleUpload.cs" />
     <Compile Include="P3bble.Core\Communication\Protocol.cs" />
@@ -215,6 +216,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jint\Jint.csproj">
+      <Project>{678738da-f723-4920-b9e5-cad667104bda}</Project>
+      <Name>Jint</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Pebble Time Tennis Library\Pebble Time Tennis Library.csproj">
       <Project>{97c2684e-9904-445a-9995-649bed3e0356}</Project>
       <Name>Pebble Time Tennis Library</Name>

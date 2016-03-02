@@ -9,6 +9,7 @@ using P3bble.Helper;
 using SharpCompress.Archive;
 using SharpCompress.Archive.Zip;
 using Windows.Storage;
+using Windows.Data.Json;
 
 namespace P3bble.Types
 {
@@ -92,11 +93,15 @@ namespace P3bble.Types
         /// </value>
         public ApplicationMetadata Application { get; private set; }
 
+        public BundleAppinfo AppInfo { get; private set; }
+
         internal byte[] BinaryContent { get; private set; }
 
         internal byte[] Resources { get; private set; }
 
         internal BundleManifest Manifest { get; private set; }
+
+        public String Javascript { get; private set; }
 
         /// <summary>
         /// Loads a bundle from ApplicationData.Current.LocalFolder.
@@ -166,9 +171,9 @@ namespace P3bble.Types
             }
 
             //StorageFile _resource2 = await StorageFile.GetFileFromApplicationUriAsync(new System.Uri("ms-appx:///Assets/tennis.pbw"));
-           // await _resource2.CopyAsync(ApplicationData.Current.LocalFolder, "temp.zip", NameCollisionOption.ReplaceExisting);
+            // await _resource2.CopyAsync(ApplicationData.Current.LocalFolder, "temp.zip", NameCollisionOption.ReplaceExisting);
 
-           // this._path = "temp.zip";
+            // this._path = "temp.zip";
 
             StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(this._path);
             if (file == null)
@@ -180,7 +185,41 @@ namespace P3bble.Types
             this._bundle = ZipArchive.Open(await file.OpenStreamForReadAsync());
 
             bool Basalt = true;
-            
+
+            var appinfoEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "appinfo.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+            if (appinfoEntry != null)
+            {
+                using (Stream jsonstream = appinfoEntry.OpenEntryStream())
+                {
+                    var serializer = new DataContractJsonSerializer(typeof(BundleAppinfo));
+                    AppInfo = serializer.ReadObject(jsonstream) as BundleAppinfo;
+                }
+
+                using (Stream jsonstream = appinfoEntry.OpenEntryStream())
+                {
+                    using (StreamReader reader = new StreamReader(jsonstream))
+                    {
+                        string contents = reader.ReadToEnd();
+                        JsonObject A = JsonObject.Parse(contents);
+
+                        foreach (var item in A)
+                        {
+                            if (item.Key == "appKeys")
+                            {
+                                AppInfo.AppKeys = new System.Collections.Generic.Dictionary<string, int>();
+
+                                JsonObject B = JsonObject.Parse(item.Value.Stringify());
+
+                                foreach (var item2 in B)
+                                {
+                                    AppInfo.AppKeys.Add(item2.Key, Convert.ToInt32(item2.Value.GetNumber()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             var manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "basalt/manifest.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
             if (manifestEntry == null)
             {
@@ -222,6 +261,18 @@ namespace P3bble.Types
             if (this.HasResources)
             {
                 this.Resources = await this.ReadFileToArray(Basalt ? "basalt/" + this.Manifest.Resources.Filename : this.Manifest.Resources.Filename, this.Manifest.Resources.Size);
+            }
+
+            var javascriptEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "pebble-js-app.js", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+            if (javascriptEntry != null)
+            {
+                using (Stream jsonstream = javascriptEntry.OpenEntryStream())
+                {
+                    using (StreamReader reader = new StreamReader(jsonstream))
+                    {
+                        Javascript = reader.ReadToEnd();
+                    }
+                }
             }
         }
 

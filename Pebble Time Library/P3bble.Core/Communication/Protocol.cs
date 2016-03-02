@@ -45,7 +45,6 @@ namespace P3bble.Communication
         }
 
         public delegate void MessageReceivedHandler(P3bbleMessage message);
-
         public MessageReceivedHandler MessageReceived { get; set; }
 
         /// <summary>

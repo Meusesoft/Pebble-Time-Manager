@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using P3bble.Helper;
+using System.Collections.Generic;
 
 namespace P3bble.Types
 {
@@ -35,5 +36,20 @@ namespace P3bble.Types
 
         [DataMember(Name = "generatedAt", IsRequired = true)]
         internal int GeneratedAtInternal { get; set; }
+    }
+
+    [DataContract]
+    public class BundleAppinfo
+    {
+        [DataMember(Name = "shortName", IsRequired = true)]
+        public string ShortName { get; private set; }
+
+        [DataMember(Name = "capabilities")]
+        public List<String> Capabilities { get; private set; }
+
+        [DataMember(Name = "targetPlatforms")]
+        public List<String> TargetPlatforms { get; private set; }
+
+        public Dictionary<string, int> AppKeys { get; set; }
     }
 }
