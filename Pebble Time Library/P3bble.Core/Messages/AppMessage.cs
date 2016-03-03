@@ -347,12 +347,11 @@ namespace P3bble.Messages
                         Result.Add(0x01);
 
                         string sValue = (string)value;
-                        Int16 sLength = (short)(sValue.Length + 1);
+                        byte[] bsValue = System.Text.Encoding.UTF8.GetBytes(sValue);
+                        Int16 sLength = (short)(bsValue.Length + 1);
                         byte[] bsValueLength = BitConverter.GetBytes(sLength);
 
                         Result.AddRange(bsValueLength);
-
-                        byte[] bsValue = System.Text.Encoding.UTF8.GetBytes(sValue);
                         Result.AddRange(bsValue);
                         Result.Add(0x00);
 
