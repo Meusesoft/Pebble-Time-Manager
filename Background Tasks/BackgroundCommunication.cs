@@ -9,6 +9,8 @@ using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using System.Collections.Generic;
 using P3bble.Messages;
+using Pebble_Time_Library.Javascript;
+using P3bble.Types;
 
 namespace BackgroundTasks
 {
@@ -28,6 +30,7 @@ namespace BackgroundTasks
         private List<DelayDisconnect> _DelayDisonnect = new List<DelayDisconnect>();
         private int Handler;
         private int ReconnectDelay;
+        private Pebble_Time_Library.Javascript.PebbleJS _PebbleJS;
 
         /// <summary>
         /// Main thread for communication with pebble on a background task.
@@ -181,6 +184,13 @@ namespace BackgroundTasks
 
                     System.Diagnostics.Debug.WriteLine("WatchFaceMessage received: " + _watchFaceMessage.CurrentWatchFace.ToString());
 
+                    var WatchItem = _pc.WatchItems.FindLast(x => x.ID == _watchFaceMessage.CurrentWatchFace);
+
+                    if (WatchItem != null)
+                    {
+                        WatchItem.Ready();
+                    }
+
                     break;
 
                 case P3bble.Constants.Endpoint.ApplicationMessage:
@@ -196,7 +206,8 @@ namespace BackgroundTasks
             }
         }
 
-        private async Task Reconnect()
+
+    private async Task Reconnect()
         {
             ReconnectDelay -= 500;
 

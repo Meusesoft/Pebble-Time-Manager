@@ -43,5 +43,7 @@ namespace Pebble_Time_Manager.WatchItems
         void ShowConfiguration();
 
         void WebViewClosed(string Data);
+
+        void Ready();
     }
 }
