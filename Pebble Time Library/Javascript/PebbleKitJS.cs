@@ -68,11 +68,11 @@ namespace Pebble_Time_Library.Javascript
                     .SetValue("localStorage", _ls)
                     .SetValue("console", new Console())
                     .SetValue("Pebble", _Pebble)
+                    .SetValue("window", new Window())
                     .SetValue("navigator", new Navigator())
                 ;
 
                 _JintEngine.SetValue("XMLHttpRequest", TypeReference.CreateTypeReference(_JintEngine, typeof(XMLHttpRequest)));
-
             }
             catch (Exception exp)
             {
@@ -600,9 +600,6 @@ namespace Pebble_Time_Library.Javascript
             }
 
             #endregion
-
-
-
         }
 
         private class Pebble
@@ -688,6 +685,32 @@ namespace Pebble_Time_Library.Javascript
                     return _EventListeners;
                 }
             }
+        }
+
+        private class Window
+        {
+            #region Methods
+
+            public int setTimeout(object function, double milliSeconds)
+            {
+                return -1;
+            }
+
+            public void clearTimeout(int id)
+            {
+
+            }
+
+            public int setInterval(object function, double milliSeconds)
+            {
+                return -1;
+            }
+
+            public void clearInterval(int id)
+            {
+
+            }
+            #endregion
         }
         #endregion
     }
