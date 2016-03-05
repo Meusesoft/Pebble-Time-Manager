@@ -631,21 +631,23 @@ namespace Pebble_Time_Manager.Connector
                 // {
                 syncBackgroundTaskTrigger = new DeviceUseTrigger();
 
-                    // Create background task to write 
-                    var backgroundTaskBuilder = new BackgroundTaskBuilder();
+                // Create background task to write 
+                var backgroundTaskBuilder = new BackgroundTaskBuilder();
 
-                    backgroundTaskBuilder.Name = "abc";
-                    backgroundTaskBuilder.TaskEntryPoint = Constants.BackgroundCommunicationTaskEntry;
-                    backgroundTaskBuilder.SetTrigger(syncBackgroundTaskTrigger);
-                    backgroundSyncTaskRegistration = backgroundTaskBuilder.Register();
-
-                
+                backgroundTaskBuilder.Name = "abc";
+                backgroundTaskBuilder.TaskEntryPoint = Constants.BackgroundCommunicationTaskEntry;
+                backgroundTaskBuilder.SetTrigger(syncBackgroundTaskTrigger);
+                backgroundSyncTaskRegistration = backgroundTaskBuilder.Register();
                // }
 
 
                 try
                 {
-                    var device = (await DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.FromUuid(new Guid(Constants.PebbleGuid))))).FirstOrDefault(y => y.Name.ToLower().Contains("pebble"));
+                    var PebbleRfCommID = RfcommServiceId.FromUuid(new Guid(Constants.PebbleGuid));
+                    var PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
+                    var PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
+
+                    var device = PebbleDevices.FirstOrDefault(y => y.Name.ToLower().Contains("pebble"));
 
                     if (device == null) throw new OperationCanceledException("Is bluetooth enabled and the Pebble Time paired?");
 
@@ -675,7 +677,6 @@ namespace Pebble_Time_Manager.Connector
         public void StopBackgroundTask(Initiator InitiatedBy)
         {
             PebbleConnector.ClearBackgroundTaskRunningStatus(InitiatedBy);
-
         }
 
         public static void SetBackgroundTaskRunningStatus(Initiator InitiatedBy)

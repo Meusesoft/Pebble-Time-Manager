@@ -175,7 +175,7 @@ namespace Pebble_Time_Manager.WatchItems
             {
                 await LoadJavascript();
 
-                _PebbleJS.Ready();
+                //_PebbleJS.Ready();
             }
             catch (Exception exp)
             {
