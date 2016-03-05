@@ -58,7 +58,7 @@ namespace Pebble_Time_Manager.WatchItems
 
         #region Fields
 
-        private PebbleJS _PebbleJS;
+        private PebbleKitJS _PebbleKitJS;
 
         #endregion
 
@@ -133,13 +133,13 @@ namespace Pebble_Time_Manager.WatchItems
 
         private async Task LoadJavascript()
         {
-            if (_PebbleJS == null)
+            if (_PebbleKitJS == null)
             {
                 Bundle _Bundle = await Bundle.LoadFromLocalStorageAsync(File);
 
-                _PebbleJS = new PebbleJS(this);
+                _PebbleKitJS = new PebbleKitJS(this);
                 
-                await _PebbleJS.Execute(_Bundle.Javascript);
+                await _PebbleKitJS.Execute(_Bundle.Javascript);
             }
         }
 
@@ -149,7 +149,7 @@ namespace Pebble_Time_Manager.WatchItems
             {
                 await LoadJavascript();
 
-                _PebbleJS.ShowConfiguration(this);
+                _PebbleKitJS.ShowConfiguration(this);
             }
             catch (Exception exp)
             {
@@ -161,7 +161,7 @@ namespace Pebble_Time_Manager.WatchItems
         {
             try
             {
-                _PebbleJS.WebViewClosed(Data);
+                _PebbleKitJS.WebViewClosed(Data);
             }
             catch (Exception exp)
             {
