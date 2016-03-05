@@ -57,6 +57,7 @@ namespace P3bble
         private async Task Initialise()
         {
             await WatchItems.Load();
+            LastError = "";
         }
 
         #endregion
@@ -326,6 +327,7 @@ namespace P3bble
             }
             catch(Exception e)
             {
+                LastError = e.Message;
                 ServiceLocator.Logger.WriteLine("Error connecting to pebble " + e.Message);
                 Debug.WriteLine("Can't connect to Pebble Time; is it already connected to another device?");
                 this.IsConnected = false;
@@ -333,6 +335,8 @@ namespace P3bble
 
             return this.IsConnected;
         }
+
+        public String LastError;
 
 
         /// <summary>
@@ -1073,8 +1077,9 @@ namespace P3bble
             {
 #if NETFX_CORE && !WINDOWS_PHONE_APP
 
-                var devices = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelector());
+                String BTSelector = BluetoothDevice.GetDeviceSelector();
                 //if (Devices.Count <= 0) return;
+                var devices = await DeviceInformation.FindAllAsync(BTSelector);
 
 //                var selector = BluetoothDevice.GetDeviceSelector();
 //                var devices = await DeviceInformation.FindAllAsync(selector);

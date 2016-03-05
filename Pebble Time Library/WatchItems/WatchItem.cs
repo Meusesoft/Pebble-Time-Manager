@@ -153,7 +153,7 @@ namespace Pebble_Time_Manager.WatchItems
             }
             catch (Exception exp)
             {
-                System.Diagnostics.Debug.WriteLine(exp);
+                System.Diagnostics.Debug.WriteLine(exp.Message);
             }
         }
 
@@ -165,11 +165,13 @@ namespace Pebble_Time_Manager.WatchItems
             }
             catch (Exception exp)
             {
-                System.Diagnostics.Debug.WriteLine(exp);
+                System.Diagnostics.Debug.WriteLine(exp.Message);
             }
         }
 
-        public async void Ready()
+        public async 
+        Task
+Ready()
         {
             try
             {
@@ -179,7 +181,9 @@ namespace Pebble_Time_Manager.WatchItems
             }
             catch (Exception exp)
             {
-                System.Diagnostics.Debug.WriteLine(exp);
+                System.Diagnostics.Debug.WriteLine(exp.Message);
+
+                throw exp;
             }
         }
 

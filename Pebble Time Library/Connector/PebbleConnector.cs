@@ -128,6 +128,12 @@ namespace Pebble_Time_Manager.Connector
                         }
 
                         LastError = "Connect to Pebble Time failed; is it already connected?";
+                        if (_pebble.LastError.Length > 0)
+                        {
+                            LastError += " Error: ";
+                            LastError += _pebble.LastError;
+                            _pebble.LastError = "";
+                        }
                         // _pebble._protocol.StartRun();
                     }
                     else
@@ -142,9 +148,9 @@ namespace Pebble_Time_Manager.Connector
                 }
 
             }
-            catch (Exception)
+            catch (Exception exp)
             {
-
+                LastError = "Exception: " + exp.Message;
             }
 
             ReleaseConnectionToken(newToken);

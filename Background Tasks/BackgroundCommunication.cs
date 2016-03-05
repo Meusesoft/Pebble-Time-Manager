@@ -172,37 +172,45 @@ namespace BackgroundTasks
         /// Process the tennis message
         /// </summary>
         /// <param name="message"></param>
-        private void AppMessageReceived(P3bbleMessage message)
+        private async void AppMessageReceived(P3bbleMessage message)
         {
-            var localSettings = ApplicationData.Current.LocalSettings;
-
-            switch (message.Endpoint)
+            try
             {
-                case P3bble.Constants.Endpoint.WatchFaceSelect:
 
-                    WatchFaceMessage _watchFaceMessage = (WatchFaceMessage)message;
+                var localSettings = ApplicationData.Current.LocalSettings;
 
-                    System.Diagnostics.Debug.WriteLine("WatchFaceMessage received: " + _watchFaceMessage.CurrentWatchFace.ToString());
+                switch (message.Endpoint)
+                {
+                    case P3bble.Constants.Endpoint.WatchFaceSelect:
 
-                    var WatchItem = _pc.WatchItems.FindLast(x => x.ID == _watchFaceMessage.CurrentWatchFace);
+                        WatchFaceMessage _watchFaceMessage = (WatchFaceMessage)message;
 
-                    if (WatchItem != null)
-                    {
-                        WatchItem.Ready();
-                    }
+                        System.Diagnostics.Debug.WriteLine("WatchFaceMessage received: " + _watchFaceMessage.CurrentWatchFace.ToString());
 
-                    break;
+                        var WatchItem = _pc.WatchItems.FindLast(x => x.ID == _watchFaceMessage.CurrentWatchFace);
 
-                case P3bble.Constants.Endpoint.ApplicationMessage:
+                        if (WatchItem != null)
+                        {
+                            await WatchItem.Ready();
+                        }
 
-                    P3bble.Messages.AppMessage _appMessage = (P3bble.Messages.AppMessage)message;
+                        break;
 
-                    if (_appMessage.AppUuid != Guid.Parse("51a56b50-f87d-ce41-a0ff-30d03a88fa8d"))
-                    {
-                        System.Diagnostics.Debug.WriteLine("AppMessage received: " + _appMessage.AppUuid.ToString());
-                    }
+                    case P3bble.Constants.Endpoint.ApplicationMessage:
 
-                    break;
+                        P3bble.Messages.AppMessage _appMessage = (P3bble.Messages.AppMessage)message;
+
+                        if (_appMessage.AppUuid != Guid.Parse("51a56b50-f87d-ce41-a0ff-30d03a88fa8d"))
+                        {
+                            System.Diagnostics.Debug.WriteLine("AppMessage received: " + _appMessage.AppUuid.ToString());
+                        }
+
+                        break;
+                }
+            }
+            catch (Exception exp)
+            {
+                AddToLog(exp.Message);
             }
         }
 
@@ -749,7 +757,7 @@ namespace BackgroundTasks
 
                 Log += Message + Environment.NewLine;
 
-                if (Log.Length > 512)
+                if (Log.Length > 2048)
                 {
                     Log = "";
 
@@ -763,7 +771,7 @@ namespace BackgroundTasks
                         Log += Environment.NewLine;
                         i--;
                     }
-                    while (Log.Length < 512 && i>0);
+                    while (Log.Length < 2048 && i>0);
                 }
 
                 localSettings.Values[Constants.BackgroundCommunicatieLog] = Log;
