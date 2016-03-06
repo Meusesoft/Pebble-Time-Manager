@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using P3bble.Messages;
 using Pebble_Time_Library.Javascript;
 using P3bble.Types;
+using Windows.Devices.Bluetooth.Rfcomm;
+using Windows.Devices.Enumeration;
+using Windows.Devices.Bluetooth;
 
 namespace BackgroundTasks
 {
@@ -30,7 +33,7 @@ namespace BackgroundTasks
         private List<DelayDisconnect> _DelayDisonnect = new List<DelayDisconnect>();
         private int Handler;
         private int ReconnectDelay;
-        private Pebble_Time_Library.Javascript.PebbleJS _PebbleJS;
+        private Pebble_Time_Library.Javascript.PebbleKitJS _PebbleKitJS;
 
         /// <summary>
         /// Main thread for communication with pebble on a background task.
@@ -43,115 +46,110 @@ namespace BackgroundTasks
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
             var def = taskInstance.GetDeferral();
+
             var localSettings = ApplicationData.Current.LocalSettings;
 
             Handler = -1;
             localSettings.Values[Constants.BackgroundCommunicatieError] = (int)BCState.OK;
 
+            try
             {
-                try
+                System.Diagnostics.Debug.WriteLine("Start BackgroundCommunication");
+
+                //Connect
+                _pc = PebbleConnector.GetInstance();
+                Handler = await _pc.Connect(-1);
+
+                if (_pc.IsConnected)
                 {
-                    System.Diagnostics.Debug.WriteLine("Start BackgroundCommunication");
+                    AddToLog("Connection made with Pebble Time");
 
-                    /*DeviceUseDetails details = (DeviceUseDetails)taskInstance.TriggerDetails;
-                    System.Diagnostics.Debug.WriteLine("BackgroundCommunication Arguments: " + details.Arguments);
-                    System.Diagnostics.Debug.WriteLine("BackgroundCommunication DeviceId: " + details.DeviceId);*/
+                    Log = new ObservableCollection<string>();
+                    Log.CollectionChanged += Log_CollectionChanged;
+                    _pc.Pebble.Log = Log;
+                    _pc.StartReceivingMessages();
+                    _pc.disconnectEventHandler += _pc_disconnectEventHandler;
+                    _pc.Pebble._protocol.MessageReceived += AppMessageReceived;
 
-                    //Connect
-                    _pc = PebbleConnector.GetInstance();
-                    Handler = await _pc.Connect(-1);
+                    bool Continue = true;
 
-                    if (_pc.IsConnected)
+                    //initialise settings
+
+                    while (Continue)
                     {
-                        AddToLog("Connection made with Pebble Time");
-
-                        Log = new ObservableCollection<string>();
-                        Log.CollectionChanged += Log_CollectionChanged;
-                        _pc.Pebble.Log = Log;
-                        _pc.StartReceivingMessages();
-                        _pc.disconnectEventHandler += _pc_disconnectEventHandler;
-                        _pc.Pebble._protocol.MessageReceived += AppMessageReceived;
-
-                        bool Continue = true;
-
-                        //initialise settings
-
-                        while (Continue)
+                        try
                         {
-                            try
+                            localSettings.Values[Constants.BackgroundCommunicatieIsRunning] = true;
+
+                            if (_pc.IsConnected)
                             {
-                                localSettings.Values[Constants.BackgroundCommunicatieIsRunning] = true;
+                                await PaceHandler();
 
-                                if (_pc.IsConnected)
-                                {
-                                    await PaceHandler();
+                                await TennisHandler();
 
-                                    await TennisHandler();
+                                await Wipe();
 
-                                    await Wipe();
+                                await Synchronize();
 
-                                    await Synchronize();
+                                await Select();
 
-                                    await Select();
+                                await Launch();
 
-                                    await Launch();
-
-                                    await AddItem();
-                                }
-                                else
-                                {
-                                    await Reconnect();
-                                }
+                                await AddItem();
                             }
-                            catch (Exception e)
+                            else
                             {
-                                System.Diagnostics.Debug.WriteLine(e.Message + e.StackTrace);
+                                await Reconnect();
                             }
-
-                            await ProcessDelay();
-
-                            //Check if continue
-                            Continue = ((int)localSettings.Values[Constants.BackgroundCommunicatieContinue] != 0);
+                        }
+                        catch (Exception e)
+                        {
+                            System.Diagnostics.Debug.WriteLine(e.Message + e.StackTrace);
                         }
 
-                        await PaceHandlerCleanup();
+                        await ProcessDelay();
 
-                        localSettings.Values[Constants.BackgroundTennis] = false;
-                        localSettings.Values[Constants.BackgroundPace] = false;
-
-                        _pc.Pebble._protocol.MessageReceived -= AppMessageReceived;
+                        //Check if continue
+                        Continue = ((int)localSettings.Values[Constants.BackgroundCommunicatieContinue] != 0);
                     }
-                    else
-                    {
-                        AddToLog("Connection with Pebble Time Failed.");
-                        localSettings.Values[Constants.BackgroundCommunicatieError] = (int)BCState.ConnectionFailed;
 
-                        if (_pc.LastError.Length > 0)
-                        {
-                            AddToLog(_pc.LastError);
-                        }
-                    }
+                    await PaceHandlerCleanup();
+
+                    localSettings.Values[Constants.BackgroundTennis] = false;
+                    localSettings.Values[Constants.BackgroundPace] = false;
+
+                    _pc.Pebble._protocol.MessageReceived -= AppMessageReceived;
                 }
-                catch (Exception e)
+                else
                 {
-                    System.Diagnostics.Debug.WriteLine("Exception BackgroundCommunication: " + e.Message);
-                    localSettings.Values[Constants.BackgroundCommunicatieError] = (int)BCState.ExceptionOccurred;
-                }
-                finally
-                {
-                    localSettings.Values[Constants.BackgroundCommunicatieIsRunning] = false;
-                    
-                    //Disconnect
-                    if (_pc.IsConnected)
-                    {
-                        _pc.Disconnect(Handler);
+                    AddToLog("Connection with Pebble Time Failed.");
+                    localSettings.Values[Constants.BackgroundCommunicatieError] = (int)BCState.ConnectionFailed;
 
-                        AddToLog("Disconnected from Pebble Time");
+                    if (_pc.LastError.Length > 0)
+                    {
+                        AddToLog(_pc.LastError);
                     }
                 }
-
-                System.Diagnostics.Debug.WriteLine("End BackgroundCommunication");
             }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("Exception BackgroundCommunication: " + e.Message);
+                localSettings.Values[Constants.BackgroundCommunicatieError] = (int)BCState.ExceptionOccurred;
+            }
+            finally
+            {
+                localSettings.Values[Constants.BackgroundCommunicatieIsRunning] = false;
+                    
+                //Disconnect
+                if (_pc.IsConnected)
+                {
+                    _pc.Disconnect(Handler);
+
+                    AddToLog("Disconnected from Pebble Time");
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine("End BackgroundCommunication");
 
             def.Complete();
         }

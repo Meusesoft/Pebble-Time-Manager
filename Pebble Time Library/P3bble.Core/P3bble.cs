@@ -1077,14 +1077,20 @@ namespace P3bble
             {
 #if NETFX_CORE && !WINDOWS_PHONE_APP
 
-                String BTSelector = BluetoothDevice.GetDeviceSelector();
+                var PebbleRfCommID = RfcommServiceId.FromUuid(new Guid("00000000-deca-fade-deca-deafdecacaff"));
+                var PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
+                var PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
+
+
+                //String BTSelector = BluetoothDevice.GetDeviceSelector();
                 //if (Devices.Count <= 0) return;
-                var devices = await DeviceInformation.FindAllAsync(BTSelector);
+                //var devices = await DeviceInformation.FindAllAsync(BTSelector);
 
-//                var selector = BluetoothDevice.GetDeviceSelector();
-//                var devices = await DeviceInformation.FindAllAsync(selector);
+                //                var selector = BluetoothDevice.GetDeviceSelector();
+                //                var devices = await DeviceInformation.FindAllAsync(selector);
+                string s = BluetoothDevice.GetDeviceSelector();
 
-                foreach (var device in devices)
+                foreach (var device in PebbleDevices)
                 {
                     if (device.Name.ToLower().Contains("pebble"))
                     {

@@ -55,7 +55,7 @@ namespace Pebble_Time_Manager.Pages
 
         private void PebbleJS_OpenURL(object sender, EventArgs e)
         {
-            PebbleJS.URLEventArgs _uea = (PebbleJS.URLEventArgs)e;
+            PebbleKitJS.URLEventArgs _uea = (PebbleKitJS.URLEventArgs)e;
             _WatchFaceConfig = _uea.WatchItem;
 
             ConfigWebView.Navigate(new Uri(_uea.URL));
@@ -102,7 +102,7 @@ namespace Pebble_Time_Manager.Pages
             _vmBinder.Commands.EditFaces = true;
             _vmBinder.Commands.DeleteFaces = false;
 
-            PebbleJS.OpenURL += PebbleJS_OpenURL;
+            PebbleKitJS.OpenURL += PebbleJS_OpenURL;
             App.Activated += App_Activated;
         }
 
@@ -112,7 +112,7 @@ namespace Pebble_Time_Manager.Pages
             _vmBinder.Commands.DeleteFaces = false;
             _vmBinder.WatchFaces.EditMode = false;
 
-            PebbleJS.OpenURL -= PebbleJS_OpenURL;
+            PebbleKitJS.OpenURL -= PebbleJS_OpenURL;
             App.Activated -= App_Activated;
         }
     }

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="5d92efb7-cbed-4edc-bd88-d35d39a73216" Publisher="CN=Meusesoft" Version="1.0.0.0" />
+  <Identity Name="5d92efb7-cbed-4edc-bd88-d35d39a73216" Publisher="CN=Meusesoft" Version="1.0.1.0" />
   <mp:PhoneIdentity PhoneProductId="5d92efb7-cbed-4edc-bd88-d35d39a73216" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Pebble Time Manager</DisplayName>
@@ -26,22 +26,22 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0088FF" />
       </uap:VisualElements>
       <Extensions>
-        <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="pebblejs">
-            <uap:DisplayName>Pebble</uap:DisplayName>
-          </uap:Protocol>
-        </uap:Extension>
-        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.BackgroundSynchronizer">
-          <BackgroundTasks>
-            <Task Type="timer" />
-          </BackgroundTasks>
-        </Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.BackgroundCommunication">
           <BackgroundTasks>
             <Task Type="deviceUse" />
             <Task Type="bluetooth" />
           </BackgroundTasks>
         </Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.BackgroundSynchronizer">
+          <BackgroundTasks>
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="pebblejs">
+            <uap:DisplayName>Pebble</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>
