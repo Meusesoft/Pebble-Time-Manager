@@ -19,7 +19,7 @@ namespace BackgroundTasks
             Pebble_Time_Manager.Connector.TimeLineSynchronizer _TimeLineSynchronizer = new TimeLineSynchronizer();
             await _TimeLineSynchronizer.Synchronize();
 
-            System.Diagnostics.Debug.WriteLine("Start BackgroundSynchronizer");
+            System.Diagnostics.Debug.WriteLine("End BackgroundSynchronizer");
 
             def.Complete();
         }
