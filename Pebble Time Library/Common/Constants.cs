@@ -15,7 +15,7 @@ namespace Pebble_Time_Manager.Common
     {
         public const string PebbleGuid = "00000000-deca-fade-deca-deafdecacaff";
 
-        public const String BackgroundCommunicationTaskName = "BackgroundCommunication";
+        public const String BackgroundCommunicationTaskName = "Pebble Background Communication";
         public const String BackgroundCommunicationTaskEntry = "BackgroundTasks.BackgroundCommunication";
         public const String BackgroundCommunicatieIsRunning = "BCIR";
         public const String BackgroundCommunicatieError = "BCIE";

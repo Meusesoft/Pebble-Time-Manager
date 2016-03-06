@@ -602,7 +602,7 @@ namespace Pebble_Time_Manager.Connector
         {
             foreach (var backgroundTask in BackgroundTaskRegistration.AllTasks.Values)
             {
-                if (backgroundTask.Name == "PTMBC")
+                if (backgroundTask.Name == "abcd")
                 {
                     return (BackgroundTaskRegistration)backgroundTask;
                 }
@@ -640,33 +640,32 @@ namespace Pebble_Time_Manager.Connector
                 // Create background task to write 
                 var backgroundTaskBuilder = new BackgroundTaskBuilder();
 
-                backgroundTaskBuilder.Name = "PTMBC";
+                backgroundTaskBuilder.Name = "abcd";
                 backgroundTaskBuilder.TaskEntryPoint = Constants.BackgroundCommunicationTaskEntry;
                 backgroundTaskBuilder.SetTrigger(syncBackgroundTaskTrigger);
                 backgroundSyncTaskRegistration = backgroundTaskBuilder.Register();
-               // }
+
+
+                // }
+
 
                 try
                 {
-                    var PebbleRfCommID = RfcommServiceId.FromUuid(new Guid(Constants.PebbleGuid));
-                    var PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
-                    var PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
-
-                    var device = PebbleDevices.FirstOrDefault(y => y.Name.ToLower().Contains("pebble"));
+                    var device = (await DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.FromUuid(new Guid(Constants.PebbleGuid))))).FirstOrDefault(y => y.Name.ToLower().Contains("pebble"));
 
                     if (device == null) throw new OperationCanceledException("Is bluetooth enabled and the Pebble Time paired?");
 
                     //DeviceTriggerResult x = await syncBackgroundTaskTrigger.RequestAsync(device.Id);
 
                     var abc = syncBackgroundTaskTrigger.RequestAsync(device.Id).AsTask();
-                    var x = await abc;
+                     var x = await abc;
 
                     System.Diagnostics.Debug.WriteLine("DeviceTriggerResult: " + x.ToString());
 
                     if (x != DeviceTriggerResult.Allowed)
                     {
                         throw new Exception(x.ToString());
-                     }
+                    }
                 }
                 catch (Exception exc)
                 {
