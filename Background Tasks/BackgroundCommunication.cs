@@ -33,7 +33,6 @@ namespace BackgroundTasks
         private List<DelayDisconnect> _DelayDisonnect = new List<DelayDisconnect>();
         private int Handler;
         private int ReconnectDelay;
-        private Pebble_Time_Library.Javascript.PebbleKitJS _PebbleKitJS;
 
         /// <summary>
         /// Main thread for communication with pebble on a background task.
@@ -174,7 +173,6 @@ namespace BackgroundTasks
         {
             try
             {
-
                 var localSettings = ApplicationData.Current.LocalSettings;
 
                 switch (message.Endpoint)
