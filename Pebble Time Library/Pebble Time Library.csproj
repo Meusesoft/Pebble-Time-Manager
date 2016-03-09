@@ -110,6 +110,7 @@
     <Compile Include="Calender\Calender.cs" />
     <Compile Include="Calender\CalenderItem.cs" />
     <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\EventArgs.cs" />
     <Compile Include="Common\LocalStorage.cs" />
     <Compile Include="Common\Serializer.cs" />
     <None Include="Connector\NotificationsHandler.cs" />

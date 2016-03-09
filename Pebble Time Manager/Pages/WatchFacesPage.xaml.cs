@@ -18,6 +18,7 @@ using Pebble_Time_Library.Javascript;
 using Windows.UI.Xaml.Navigation;
 using Pebble_Time_Manager.WatchItems;
 using Pebble_Time_Manager.Common;
+using Windows.UI.Popups;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -72,6 +73,16 @@ namespace Pebble_Time_Manager.Pages
             ConfigWebView.Visibility = Visibility.Visible;
         }
 
+        private void VmWatchFace_OnException(object sender, EventArgs e)
+        {
+            ErrorEventArgs eea = (ErrorEventArgs)e;
+
+            MessageDialog msgBox = new MessageDialog(eea.Error, "Error");
+            msgBox.Commands.Add(new UICommand("Ok"));
+
+            msgBox.ShowAsync();
+        }
+
         /// <summary>
         /// Process selection change in watch faces during edit mode
         /// </summary>
@@ -113,7 +124,8 @@ namespace Pebble_Time_Manager.Pages
             _vmBinder.Commands.DeleteFaces = false;
 
             //PebbleKitJS.OpenURL += PebbleJS_OpenURL;
-            vmWatchFace.OpenConfiguration += PebbleJS_OpenURL;
+            vmWatchFace.OnOpenConfiguration += PebbleJS_OpenURL;
+            vmWatchFace.OnException += VmWatchFace_OnException;
             App.Activated += App_Activated;
         }
 
@@ -124,7 +136,8 @@ namespace Pebble_Time_Manager.Pages
             _vmBinder.WatchFaces.EditMode = false;
 
             //PebbleKitJS.OpenURL -= PebbleJS_OpenURL;
-            vmWatchFace.OpenConfiguration -= PebbleJS_OpenURL;
+            vmWatchFace.OnOpenConfiguration -= PebbleJS_OpenURL;
+            vmWatchFace.OnException -= VmWatchFace_OnException;
             App.Activated -= App_Activated;
         }
     }

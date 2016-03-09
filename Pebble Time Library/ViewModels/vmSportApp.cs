@@ -56,10 +56,9 @@ namespace Pebble_Time_Manager.ViewModels
                 _Timer.Start();
             }
 
-            var roamingSettings = ApplicationData.Current.RoamingSettings;
-            if (roamingSettings.Values.Keys.Contains(Constants.Miles))
+            if (localSettings.Values.Keys.Contains(Constants.Miles))
             {
-                Miles = (bool)roamingSettings.Values[Constants.Miles];
+                Miles = (bool)localSettings.Values[Constants.Miles];
             }
             else
             {
@@ -246,14 +245,14 @@ namespace Pebble_Time_Manager.ViewModels
                 _Miles = value;
 
                 //save setting
-                var roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
-                if (roamingSettings.Values.Keys.Contains(Constants.Miles))
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                if (localSettings.Values.Keys.Contains(Constants.Miles))
                 {
-                    roamingSettings.Values[Constants.Miles] = _Miles;
+                    localSettings.Values[Constants.Miles] = _Miles;
                 }
                 else
                 {
-                    roamingSettings.Values.Add(Constants.Miles, _Miles);
+                    localSettings.Values.Add(Constants.Miles, _Miles);
                 }
 
                 NotifyPropertyChanged("Miles");

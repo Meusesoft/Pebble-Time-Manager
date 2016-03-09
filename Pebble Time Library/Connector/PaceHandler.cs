@@ -112,7 +112,6 @@ namespace Pebble_Time_Manager.Connector
 
         #endregion
 
-
         #region Methods
 
         /// <summary>
@@ -395,9 +394,10 @@ namespace Pebble_Time_Manager.Connector
                 try
                 {
                     double meters_per_second = (1000 * paceDistance) / paceDuration.TotalSeconds;
-                    double seconds_per_kilometer = 1000 / meters_per_second;
+                    double seconds_per_unit = 1000 / meters_per_second; //km
+                    if (Miles) seconds_per_unit = 1609 / meters_per_second; //miles
 
-                    pace = TimeSpan.FromSeconds(seconds_per_kilometer);
+                    pace = TimeSpan.FromSeconds(seconds_per_unit);
                 }
                 catch (Exception)
                 {

@@ -422,9 +422,20 @@
                 <Button Grid.Column="2"
                         Visibility="{Binding Configurable, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Command="{Binding ConfigureCommand}">
-                    <SymbolIcon Symbol="Setting"/>
+                    <Grid>
+                    <SymbolIcon 
+                        Symbol="Setting" 
+                        Visibility="{Binding Configuring, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=XOR}"
+                        />
+                    <ProgressRing 
+                        Background="{x:Null}" 
+                        Foreground="White"
+                        IsActive="{Binding Configuring}"
+                        Visibility="{Binding Configuring, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        />
+                    </Grid>
                 </Button>                
-                
+
                 <!--<SymbolIcon  Grid.Column="3"
                                  Margin="0,0,40,0"
                                  Symbol="Favorite"

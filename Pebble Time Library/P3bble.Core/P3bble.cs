@@ -282,6 +282,10 @@ namespace P3bble
                 //      this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
                 this._protocol = await Protocol.CreateProtocolAsync(_blDevice);
                 //#endif
+                if (this._protocol == null)
+                {
+                    throw new Exception("Could not initiate bluetooth protocol with Pebble Time.");
+                }
                 this._protocol.MessageReceived += this.ProtocolMessageReceived;
 
                 P3bbleMessage _receivedMsg;
