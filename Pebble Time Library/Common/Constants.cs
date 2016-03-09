@@ -26,8 +26,8 @@ namespace Pebble_Time_Manager.Common
         public const String BackgroundCommunicatieDownloadedItem = "BCDI";
 
         public const String BackgroundPace = "BackgroundPace";
-        public const String PaceDuration = "PaceDuration";
-        public const String PaceDistance = "PaceDistance";
+        public const String PaceDuration = "PDu";
+        public const String PaceDistance = "PDi";
         public const String PacePace = "PacePace";
         public const String PacePaused = "PacePaused";
         public const String PaceSwitchPaused = "SwitchPaused";
@@ -39,5 +39,9 @@ namespace Pebble_Time_Manager.Common
         public const String TennisAppGuid = "506ba551-7df8-41ce-a0ff-30d03a88fa8d";
         public const String TennisState = "TennisState";
         public const String TennisCommand = "TennisCommand";
+
+        public const String PebbleWatchItem = "PWI";
+        public const String PebbleShowConfiguration = "PSC";
+        public const String PebbleWebViewClosed = "PWVC";
     }
 }

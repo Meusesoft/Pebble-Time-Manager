@@ -40,9 +40,9 @@ namespace Pebble_Time_Manager.WatchItems
 
         Dictionary<String, String> StoredItems { get; set; }
 
-        void ShowConfiguration();
+        Task ShowConfiguration();
 
-        void WebViewClosed(string Data);
+        Task WebViewClosed(string Data);
 
         Task Ready();
     }

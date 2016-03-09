@@ -178,6 +178,37 @@ namespace Pebble_Time_Library.Javascript
             }
         }
 
+        public void Ready()
+        {
+            try
+            {
+                var jsfunction = _Pebble.EventListeners["ready"];
+
+                System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
+
+                Jint.Native.JsValue A = new JsValue(1);
+                Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
+
+                Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
+                B[0] = _jsp.Parse("{}");
+
+                Jint.Native.JsValue C = _func.Invoke(A, B);
+            }
+            catch (Jint.Runtime.JavaScriptException exp)
+            {
+                String Exception = String.Format("{0}" + Environment.NewLine + "Line: {1}" + Environment.NewLine + "Source: {2}",
+                    exp.Message,
+                    exp.LineNumber,
+                    _JavascriptLines[exp.LineNumber - 1]);
+
+                throw new System.Exception(Exception);
+            }
+            catch (Exception exp)
+            {
+                throw exp;
+            }
+        }
+
         private void Debug(object text)
         {
             System.Diagnostics.Debug.WriteLine(String.Format("log: {0}", text.ToString()));
@@ -636,43 +667,65 @@ namespace Pebble_Time_Library.Javascript
                 return "account";
             }
 
-            public void sendAppMessage(ExpandoObject data)
+            public async void sendAppMessage(ExpandoObject data)
             {
-                System.Diagnostics.Debug.WriteLine(String.Format("sendAppMessage(data={0})", data.ToString()));
-
-                P3bble.Messages.AppMessage _am = new P3bble.Messages.AppMessage(P3bble.Constants.Endpoint.ApplicationMessage);
-                uint iKey = 0;
-
-                _am.Content = new Dictionary<int, object>(data.Count());
-
-                foreach (var element in data)
-                {
-                    Type VariableType = element.Value.GetType();
-                    System.Diagnostics.Debug.WriteLine(String.Format("  key: {0}, value: {1}, type: {2}", element.Key, element.Value, VariableType.ToString()));
-
-                    if (VariableType == typeof(String))
-                    {
-                        String Value = (String)element.Value;
-                        //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.String, System.Text.Encoding.UTF8.GetBytes(Value));
-                        _am.Content.Add((int)iKey, Value);
-                    }
-
-                    if (VariableType == typeof(Double))
-                    {
-                        double dValue = (double)element.Value;
-                        int iValue = (int)dValue;
-                        byte[] bytes = BitConverter.GetBytes(iValue);
-                        //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.Int, bytes);
-                        _am.Content.Add((int)iKey, iValue);
-                    }
-
-                    iKey++;
-                }
-
                 PebbleConnector _pc = PebbleConnector.GetInstance();
 
-                byte[] package = _am.ToBuffer();
-                System.Diagnostics.Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package).Replace("-", ":"));
+                int newToken = await _pc.Connect(-1);
+
+                try
+                {
+                    if (_pc.IsConnected)
+                    {
+                        System.Diagnostics.Debug.WriteLine(String.Format("sendAppMessage(data={0})", data.ToString()));
+
+                        P3bble.Messages.AppMessage _am = new P3bble.Messages.AppMessage(P3bble.Constants.Endpoint.ApplicationMessage);
+                        uint iKey = 0;
+
+                        _am.Content = new Dictionary<int, object>(data.Count());
+                        _am.Command = P3bble.Messages.AppCommand.Push;
+                        _am.AppUuid = ParentItem.ID;
+                        _am.TransactionId = (byte)_pc.GetNextMessageIdentifier();
+
+                        foreach (var element in data)
+                        {
+                            Type VariableType = element.Value.GetType();
+                            System.Diagnostics.Debug.WriteLine(String.Format("  key: {0}, value: {1}, type: {2}", element.Key, element.Value, VariableType.ToString()));
+
+                            if (VariableType == typeof(String))
+                            {
+                                String Value = (String)element.Value;
+                                //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.String, System.Text.Encoding.UTF8.GetBytes(Value));
+                                _am.Content.Add((int)iKey, Value);
+                            }
+
+                            if (VariableType == typeof(Double))
+                            {
+                                double dValue = (double)element.Value;
+                                int iValue = (int)dValue;
+                                byte[] bytes = BitConverter.GetBytes(iValue);
+                                //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.Int, bytes);
+                                _am.Content.Add((int)iKey, iValue);
+                            }
+
+                            iKey++;
+                        }
+
+
+                        //byte[] package = _am.ToBuffer();
+                        //System.Diagnostics.Debug.WriteLine("<< PAYLOAD: " + BitConverter.ToString(package).Replace("-", ":"));
+
+                        await _pc.Pebble._protocol.WriteMessage(_am);
+                    }
+                }
+                catch (Exception exp)
+                {
+                    System.Diagnostics.Debug.WriteLine(exp.Message);
+                }
+                finally
+                {
+                    _pc.Disconnect(newToken);
+                }
             }
 
             private Dictionary<String, object> _EventListeners;

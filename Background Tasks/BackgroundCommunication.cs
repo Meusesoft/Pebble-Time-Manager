@@ -95,6 +95,8 @@ namespace BackgroundTasks
                                 await Launch();
 
                                 await AddItem();
+
+                                await PebbleKitExecution();
                             }
                             else
                             {
@@ -693,6 +695,56 @@ namespace BackgroundTasks
 
                 AddProcessDelay(30000, PebbleConnector.Initiator.Select);
             }
+        }
+
+        private async Task PebbleKitExecution()
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+
+            if (PebbleConnector.IsBackgroundTaskRunningStatusSet(PebbleConnector.Initiator.PebbleShowConfiguration))
+            {
+                PebbleConnector.ClearBackgroundTaskRunningStatus(PebbleConnector.Initiator.PebbleShowConfiguration);
+
+                String _watchItem = (string)localSettings.Values[Constants.PebbleWatchItem];
+
+                var WatchItem = _pc.WatchItems.FindLast(x => x.ID.ToString() == _watchItem);
+
+                if (WatchItem != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("PebbleShowConfiguration: " + WatchItem.Name);
+
+                    PebbleKitJS.OpenURL += PebbleKitJS_OpenURL;
+                    await WatchItem.ShowConfiguration();
+                }
+            }
+
+            if (PebbleConnector.IsBackgroundTaskRunningStatusSet(PebbleConnector.Initiator.PebbleWebViewClosed))
+            {
+                PebbleConnector.ClearBackgroundTaskRunningStatus(PebbleConnector.Initiator.PebbleWebViewClosed);
+
+                String _watchItem = (string)localSettings.Values[Constants.PebbleWatchItem];
+                String _value = (string)localSettings.Values[Constants.PebbleWebViewClosed];
+
+                var WatchItem = _pc.WatchItems.FindLast(x => x.ID.ToString() == _watchItem);
+
+                if (WatchItem != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("PebbleWebViewClosed: " + WatchItem.Name);
+
+                    WatchItem.WebViewClosed(_value);
+                }
+            }
+        }
+
+        private void PebbleKitJS_OpenURL(object sender, EventArgs e)
+        {
+            PebbleKitJS.URLEventArgs _uea = (PebbleKitJS.URLEventArgs)e;
+            String URL = _uea.URL;
+
+            var localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values[Constants.PebbleShowConfiguration] = URL;
+
+            PebbleKitJS.OpenURL -= PebbleKitJS_OpenURL;
         }
 
         private async Task Launch()

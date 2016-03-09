@@ -11,7 +11,8 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media;
 using Pebble_Time_Library.Javascript;
 using P3bble.Types;
-
+using Pebble_Time_Manager.Common;
+using Pebble_Time_Manager.Connector;
 
 namespace Pebble_Time_Manager.ViewModels
 {
@@ -169,9 +170,46 @@ namespace Pebble_Time_Manager.ViewModels
 
         #region Methods
 
-        public void Configure(object obj)
+        public delegate void OpenConfigurationEventHandler(object sender, EventArgs e);
+        public static event OpenConfigurationEventHandler OpenConfiguration;
+
+        private DispatcherTimer _timer;
+        private int _timerCycles;
+
+
+        public async void Configure(object obj)
         {
-            Item.ShowConfiguration();
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values[Constants.PebbleWatchItem] = Item.ID.ToString();
+            localSettings.Values[Constants.PebbleShowConfiguration] = "" ;
+
+            PebbleConnector _pc = PebbleConnector.GetInstance();
+            await _pc.StartBackgroundTask(PebbleConnector.Initiator.PebbleShowConfiguration);
+            _timer = new DispatcherTimer();
+            _timer.Interval = new TimeSpan(250);
+            _timer.Tick += _timer_Tick;
+            _timer.Start();
+
+            _timerCycles = 0;
+        }
+
+        private void _timer_Tick(object sender, object e)
+        {
+            _timerCycles++;
+
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            String URL = (String)localSettings.Values[Constants.PebbleShowConfiguration];
+            if (URL.Length > 0)
+            {
+                PebbleKitJS.URLEventArgs _uea = new PebbleKitJS.URLEventArgs();
+                _uea.URL = URL;
+                _uea.WatchItem = Item;
+                if (OpenConfiguration != null) OpenConfiguration(this, _uea);
+
+                _timer.Stop();
+            }
+
+           // if (_timerCycles > 40) _timer.Stop();
         }
 
         #endregion

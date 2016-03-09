@@ -515,8 +515,12 @@ namespace Pebble_Time_Manager.Connector
             AddItem = 0x0040,
             Pace = 0x0100,
             Tennis = 0x0200,
-            Reserved1 = 0x0400,
-            Reserved2 = 0x0800
+            PebbleShowConfiguration = 0x0400,
+            PebbleWebViewClosed = 0x0800,
+            Reserved1 = 0x1000,
+            Reserved2 = 0x2000,
+            Reserved3 = 0x4000,
+            Reserved4 = 0x8000
         }
 
         /// <summary>

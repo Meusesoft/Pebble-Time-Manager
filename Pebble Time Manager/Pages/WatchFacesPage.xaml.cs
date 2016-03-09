@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Pebble_Time_Library.Javascript;
 using Windows.UI.Xaml.Navigation;
 using Pebble_Time_Manager.WatchItems;
+using Pebble_Time_Manager.Common;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -47,10 +48,19 @@ namespace Pebble_Time_Manager.Pages
         {
             ConfigWebView.Visibility = Visibility.Collapsed;
 
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values[Constants.PebbleWebViewClosed] = e;
+
             if (_WatchFaceConfig != null)
             {
-                _WatchFaceConfig.WebViewClosed(e);
+                //_WatchFaceConfig.WebViewClosed(e);
+                localSettings.Values[Constants.PebbleWatchItem] = _WatchFaceConfig.ID.ToString();
             }
+
+            //Process the pebble webviewclosed in the background
+
+            PebbleConnector _pc = PebbleConnector.GetInstance();
+            _pc.StartBackgroundTask(PebbleConnector.Initiator.PebbleWebViewClosed);
         }
 
         private void PebbleJS_OpenURL(object sender, EventArgs e)
@@ -102,7 +112,8 @@ namespace Pebble_Time_Manager.Pages
             _vmBinder.Commands.EditFaces = true;
             _vmBinder.Commands.DeleteFaces = false;
 
-            PebbleKitJS.OpenURL += PebbleJS_OpenURL;
+            //PebbleKitJS.OpenURL += PebbleJS_OpenURL;
+            vmWatchFace.OpenConfiguration += PebbleJS_OpenURL;
             App.Activated += App_Activated;
         }
 
@@ -112,7 +123,8 @@ namespace Pebble_Time_Manager.Pages
             _vmBinder.Commands.DeleteFaces = false;
             _vmBinder.WatchFaces.EditMode = false;
 
-            PebbleKitJS.OpenURL -= PebbleJS_OpenURL;
+            //PebbleKitJS.OpenURL -= PebbleJS_OpenURL;
+            vmWatchFace.OpenConfiguration -= PebbleJS_OpenURL;
             App.Activated -= App_Activated;
         }
     }

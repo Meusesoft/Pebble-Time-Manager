@@ -143,7 +143,7 @@ namespace Pebble_Time_Manager.WatchItems
             }
         }
 
-        public async void ShowConfiguration()
+        public async Task ShowConfiguration()
         {
             try
             {
@@ -157,10 +157,12 @@ namespace Pebble_Time_Manager.WatchItems
             }
         }
 
-        public void WebViewClosed(string Data)
+        public async Task WebViewClosed(string Data)
         {
             try
             {
+                await LoadJavascript();
+
                 _PebbleKitJS.WebViewClosed(Data);
             }
             catch (Exception exp)
@@ -169,15 +171,13 @@ namespace Pebble_Time_Manager.WatchItems
             }
         }
 
-        public async 
-        Task
-Ready()
+        public async Task Ready()
         {
             try
             {
                 await LoadJavascript();
 
-                //_PebbleJS.Ready();
+                _PebbleKitJS.Ready();
             }
             catch (Exception exp)
             {
