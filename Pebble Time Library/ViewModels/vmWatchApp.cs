@@ -9,7 +9,9 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media;
-
+using Pebble_Time_Manager.Connector;
+using Pebble_Time_Manager.Common;
+using Pebble_Time_Library.Javascript;
 
 namespace Pebble_Time_Manager.ViewModels
 {
@@ -138,10 +140,10 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+        private bool _Configurable;
         /// <summary>
         /// True if the watchface can be configured
         /// </summary>
-        private bool _Configurable;
         public bool Configurable
         {
             get
@@ -152,6 +154,33 @@ namespace Pebble_Time_Manager.ViewModels
             {
                 _Configurable = value;
                 NotifyPropertyChanged("Configurable");
+                NotifyPropertyChanged("ShowConfigureOption");
+            }
+        }
+
+        public bool ShowConfigureOption
+        {
+            get
+            {
+                return _Configurable && !_Configuring;
+            }
+        }
+
+        private bool _Configuring;
+        /// <summary>
+        /// True if configure webpage is being started
+        /// </summary>
+        public bool Configuring
+        {
+            get
+            {
+                return _Configuring && Configurable;
+            }
+            set
+            {
+                _Configuring = value;
+                NotifyPropertyChanged("Configuring");
+                NotifyPropertyChanged("ShowConfigureOption");
             }
         }
 
@@ -161,11 +190,83 @@ namespace Pebble_Time_Manager.ViewModels
 
         #endregion
 
+        #region Events
+
+        public delegate void OpenConfigurationEventHandler(object sender, EventArgs e);
+        public static event OpenConfigurationEventHandler OnOpenConfiguration;
+
+        public delegate void ExceptionEventHandler(object sender, EventArgs e);
+        public static event ExceptionEventHandler OnException;
+
+        #endregion
+
         #region Methods
 
-        public void Configure(object obj)
+        private DispatcherTimer _timer;
+        private int _timerCycles;
+
+        public async void Configure(object obj)
         {
-            Item.ShowConfiguration();
+            Configuring = true;
+
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values[Constants.PebbleWatchItem] = Item.ID.ToString();
+            localSettings.Values[Constants.PebbleShowConfiguration] = "";
+
+            PebbleConnector _pc = PebbleConnector.GetInstance();
+            await _pc.StartBackgroundTask(PebbleConnector.Initiator.PebbleShowConfiguration);
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(250);
+            _timer.Tick += _timer_Tick;
+            _timer.Start();
+
+            _timerCycles = 0;
+        }
+
+        private void _timer_Tick(object sender, object e)
+        {
+            _timerCycles++;
+
+            //Check for result
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            String URL = (String)localSettings.Values[Constants.PebbleShowConfiguration];
+            if (URL.Length > 0)
+            {
+                PebbleKitJS.URLEventArgs _uea = new PebbleKitJS.URLEventArgs();
+                _uea.URL = URL;
+                _uea.WatchItem = Item;
+                if (OnOpenConfiguration != null) OnOpenConfiguration(this, _uea);
+
+                Configuring = false;
+                _timer.Stop();
+            }
+
+            //Check if error occurred
+            if (localSettings.Values.Keys.Contains(Constants.BackgroundCommunicatieError) &&
+                (int)localSettings.Values[Constants.BackgroundCommunicatieError] == (int)BCState.ConnectionFailed)
+            {
+                localSettings.Values[Constants.BackgroundCommunicatieError] = (int)BCState.OK;
+
+                ErrorEventArgs ea = new ErrorEventArgs();
+                ea.Error = "Connection failed with Pebble Time.";
+
+                if (OnException != null) OnException(this, ea);
+
+                Configuring = false;
+                _timer.Stop();
+            }
+
+            //Check for time out
+            if (_timerCycles > 40)
+            {
+                Configuring = false;
+                _timer.Stop();
+
+                ErrorEventArgs ea = new ErrorEventArgs();
+                ea.Error = "Time out occurred while opening the settings window.";
+
+                if (OnException != null) OnException(this, ea);
+            }
         }
 
         #endregion

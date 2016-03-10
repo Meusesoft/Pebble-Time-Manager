@@ -60,6 +60,12 @@ namespace Pebble_Time_Library.Javascript
 
             try
             {
+                var e = new Engine(c => c.AllowClr());
+                e.SetValue("setTimeout", new Func<Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>, double, int>(__setTimeout__));
+                e.SetValue("clearTimeout", new Action<int>(__clearTimeout__));
+                //e.SetValue("setInterval", new Func<Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>, double, int>(__setInterval__));
+                //e.SetValue("clearInterval", new Action<int>(__clearInterval__));
+
                 LocalStorage _ls = new LocalStorage(_ParentItem);
                 await _ls.Load();
 
@@ -70,7 +76,11 @@ namespace Pebble_Time_Library.Javascript
                     .SetValue("Pebble", _Pebble)
                     .SetValue("window", new Window())
                     .SetValue("navigator", new Navigator())
-                ;
+                    .SetValue("setTimeout", new Func<Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>, double, int>(__setTimeout__))
+                    .SetValue("clearTimeout", new Action<int>(__clearTimeout__))
+                    .SetValue("setInterval", new Func<Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>, double, int>(__setInterval__))
+                    .SetValue("clearInterval", new Action<int>(__clearInterval__));
+
 
                 _JintEngine.SetValue("XMLHttpRequest", TypeReference.CreateTypeReference(_JintEngine, typeof(XMLHttpRequest)));
             }
@@ -78,6 +88,111 @@ namespace Pebble_Time_Library.Javascript
             {
                 throw exp;
             }
+        }
+
+        /// <summary> 
+        /// https://developer.mozilla.org/en-US/docs/Web/API/Window.setTimeout 
+        /// </summary> 
+        /// <param name="callBackFunction"></param> 
+        /// <param name="delay"></param> 
+        /// <returns></returns> 
+        private int __setTimeout__(Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> callBackFunction, double delay)
+        {
+            _timeoutID++;
+
+            TimeOut _to = new TimeOut();
+            _to.Delay = delay;
+            _to.Function = callBackFunction;
+            _to.ID = _timeoutID;
+
+            TimeOutList.Add(_to);
+
+            if (_dt == null)
+            {
+                _dt = new Windows.UI.Xaml.DispatcherTimer();
+                _dt.Interval = TimeSpan.FromMilliseconds(100);
+                _dt.Tick += _dt_Tick;
+                _dt.Start();
+            }
+
+            return _timeoutID;
+
+            // return this._eventQueue.Enqueue(new CallBackEvent(callBackFunction, delay, CallBackType.TimeOut)).Id; 
+        }
+
+        private void _dt_Tick(object sender, object e)
+        {
+            foreach (var item in TimeOutList)
+            {
+                item.Delay -= 100;
+                if (item.Delay < 0)
+                {
+                    item.Delay = 1000000;
+
+                    List<JsValue> parameters = new List<JsValue>();
+                    JsValue r = item.Function.Invoke( // Call the callback function 
+                        JsValue.Undefined,               // Pass this as undefined 
+                        parameters.ToArray()             // Pass the parameter data 
+                        );
+                }
+            }
+        }
+
+        private Windows.UI.Xaml.DispatcherTimer _dt;
+        private int _timeoutID;
+        internal class TimeOut
+        {
+            public int ID;
+            public Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> Function;
+            public double Delay;
+        }
+
+        private List<TimeOut> _TimeOutList;
+        private List<TimeOut> TimeOutList
+        {
+            get
+            {
+                if (_TimeOutList == null) _TimeOutList = new List<TimeOut>();
+                return _TimeOutList;
+            }
+        }
+
+
+         /// <summary> 
+         /// https://developer.mozilla.org/en-US/docs/Web/API/window.clearTimeout 
+         /// </summary> 
+         /// <param name="id"></param> 
+        private void __clearTimeout__(int id)
+        {
+            // return this._eventQueue.Enqueue(new CallBackEvent(callBackFunction, delay, CallBackType.TimeOut)).Id; 
+            TimeOut _to = TimeOutList.Find(x => x.ID == id);
+
+            if (_to != null)
+            {
+                TimeOutList.Remove(_to);
+            }
+        }
+
+        /// <summary> 
+        /// https://developer.mozilla.org/en-US/docs/Web/API/Window.setTimeout 
+        /// </summary> 
+        /// <param name="callBackFunction"></param> 
+        /// <param name="delay"></param> 
+        /// <returns></returns> 
+        private int __setInterval__(Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> callBackFunction, double delay)
+        {
+            return -1;
+
+            // return this._eventQueue.Enqueue(new CallBackEvent(callBackFunction, delay, CallBackType.TimeOut)).Id; 
+        }
+
+        /// <summary> 
+        /// https://developer.mozilla.org/en-US/docs/Web/API/window.clearTimeout 
+        /// </summary> 
+        /// <param name="id"></param> 
+        private void __clearInterval__(int id)
+        {
+            // return this._eventQueue.Enqueue(new CallBackEvent(callBackFunction, delay, CallBackType.TimeOut)).Id; 
         }
 
         public async Task Execute(String Javascript)

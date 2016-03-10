@@ -43,7 +43,6 @@ namespace Pebble_Time_Manager.ViewModels
             if (localSettings.Values.Keys.Contains(Constants.BackgroundCommunicatieIsRunning)) IsRunning = (bool)localSettings.Values[Constants.BackgroundCommunicatieIsRunning];
             if (localSettings.Values.Keys.Contains(Constants.PaceGPX)) Shareable = (bool)localSettings.Values[Constants.PaceGPX];
 
-
             //Initialise timer
             _Timer = new DispatcherTimer();
             _Timer.Interval = TimeSpan.FromSeconds(1);

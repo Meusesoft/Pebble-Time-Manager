@@ -110,6 +110,9 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
+        <WebView x:Name="ConfigWebView"
+                 Margin="0"
+                 Visibility="Collapsed"/>
 
     </Grid>
 </Page>

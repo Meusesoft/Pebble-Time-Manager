@@ -65,6 +65,7 @@ namespace BackgroundTasks
 
                     Log = new ObservableCollection<string>();
                     Log.CollectionChanged += Log_CollectionChanged;
+
                     _pc.Pebble.Log = Log;
                     _pc.StartReceivingMessages();
                     _pc.disconnectEventHandler += _pc_disconnectEventHandler;
@@ -703,8 +704,6 @@ namespace BackgroundTasks
 
             if (PebbleConnector.IsBackgroundTaskRunningStatusSet(PebbleConnector.Initiator.PebbleShowConfiguration))
             {
-                PebbleConnector.ClearBackgroundTaskRunningStatus(PebbleConnector.Initiator.PebbleShowConfiguration);
-
                 String _watchItem = (string)localSettings.Values[Constants.PebbleWatchItem];
 
                 var WatchItem = _pc.WatchItems.FindLast(x => x.ID.ToString() == _watchItem);
@@ -715,13 +714,13 @@ namespace BackgroundTasks
 
                     PebbleKitJS.OpenURL += PebbleKitJS_OpenURL;
                     await WatchItem.ShowConfiguration();
+
+                    AddProcessDelay(180000, PebbleConnector.Initiator.PebbleShowConfiguration);
                 }
             }
 
             if (PebbleConnector.IsBackgroundTaskRunningStatusSet(PebbleConnector.Initiator.PebbleWebViewClosed))
             {
-                PebbleConnector.ClearBackgroundTaskRunningStatus(PebbleConnector.Initiator.PebbleWebViewClosed);
-
                 String _watchItem = (string)localSettings.Values[Constants.PebbleWatchItem];
                 String _value = (string)localSettings.Values[Constants.PebbleWebViewClosed];
 
@@ -732,6 +731,8 @@ namespace BackgroundTasks
                     System.Diagnostics.Debug.WriteLine("PebbleWebViewClosed: " + WatchItem.Name);
 
                     WatchItem.WebViewClosed(_value);
+
+                    AddProcessDelay(30000, PebbleConnector.Initiator.PebbleWebViewClosed);
                 }
             }
         }
