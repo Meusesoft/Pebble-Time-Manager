@@ -112,6 +112,7 @@
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\EventArgs.cs" />
     <Compile Include="Common\LocalStorage.cs" />
+    <Compile Include="Common\OneDrive.cs" />
     <Compile Include="Common\Serializer.cs" />
     <None Include="Connector\NotificationsHandler.cs" />
     <Compile Include="Connector\PaceHandler.cs" />
@@ -211,6 +212,10 @@
     <Content Include="P3bble.PCL\P3bble.PCL.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Live, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft SDKs\Live\v5.6\Windows Store app XAML\References\CommonConfiguration\Neutral\Microsoft.Live.dll</HintPath>
+    </Reference>
     <Reference Include="SharpCompress, Version=0.10.3.0, Culture=neutral, PublicKeyToken=beaf6f427e128133, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Pebble Time Connect\Pebble Time Connect\Pebble Time Connect.WindowsPhone\bin\Release\SharpCompress.dll</HintPath>

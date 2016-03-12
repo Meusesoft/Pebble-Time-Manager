@@ -102,7 +102,6 @@ namespace Pebble_Time_Manager
         #endif
         }
 
-
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)
         {
             MySplitView.IsPaneOpen = !MySplitView.IsPaneOpen;

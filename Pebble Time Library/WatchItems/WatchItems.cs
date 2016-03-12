@@ -10,6 +10,11 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using System.Collections.Specialized;
 using Pebble_Time_Manager.Common;
+using Pebble_Time_Library.Common;
+using System.IO;
+using System.IO.Compression;
+using System.IO.IsolatedStorage;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Pebble_Time_Manager.WatchItems
 {
@@ -177,6 +182,130 @@ namespace Pebble_Time_Manager.WatchItems
 
             return false;
         }
+
+        /// <summary>
+        /// Backup the watch items to OneDrive
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> Backup()
+        {
+            try
+            {
+                string CompressedFile = "pebble_time_manager_backup.zip";
+
+                // Retrieve files to compress
+                IReadOnlyList<IStorageFile> filesToCompress = await LocalStorage.Files();
+
+                // Created new file to store compressed files
+                //This will create a file under the selected folder in the name   “Compressed.zip”
+
+                Windows.Storage.StorageFolder LocalFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                StorageFile zipFile = await LocalFolder.CreateFileAsync(CompressedFile, CreationCollisionOption.ReplaceExisting);
+
+                using (MemoryStream zipMemoryStream = new MemoryStream())
+                {
+                    // Create zip archive
+                    using (ZipArchive zipArchive = new ZipArchive(zipMemoryStream, ZipArchiveMode.Create))
+                    {
+                        // For each file to compress...
+                        foreach (StorageFile fileToCompress in filesToCompress)
+                        {
+                            if (fileToCompress.Name != CompressedFile)
+                            {
+                                //Read the contents of the file
+                                byte[] buffer = WindowsRuntimeBufferExtensions.ToArray(await FileIO.ReadBufferAsync(fileToCompress));
+                                // Create a zip archive entry
+                                ZipArchiveEntry entry = zipArchive.CreateEntry(fileToCompress.Name);
+                                // And write the contents to it
+                                using (Stream entryStream = entry.Open())
+                                {
+                                    await entryStream.WriteAsync(buffer, 0, buffer.Length);
+                                }
+                            }
+                        }
+                    }
+
+                    using (IRandomAccessStream zipStream = await zipFile.OpenAsync(FileAccessMode.ReadWrite))
+                    {
+                        // Write compressed data from memory to file
+                        using (Stream outstream = zipStream.AsStreamForWrite())
+                        {
+                            byte[] buffer = zipMemoryStream.ToArray();
+                            outstream.Write(buffer, 0, buffer.Length);
+                            outstream.Flush();
+                        }
+                    }
+                }
+
+                //Backup to OneDrive
+                await OneDrive.UploadFileAsync("Backup", CompressedFile);
+                System.Diagnostics.Debug.WriteLine("Backup: " + CompressedFile);
+
+                //Remove zip file
+                await LocalStorage.Delete(CompressedFile);
+
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine("Backup exception: " + exp.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Restore the watch items from OneDrive
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> Restore()
+        {
+            try
+            {
+                string CompressedFile = "pebble_time_manager_backup.zip";
+
+                //Get backup file
+                await OneDrive.DownloadAsync("Backup", CompressedFile);
+
+                Windows.Storage.StorageFolder LocalFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                Stream FileStream = await LocalFolder.OpenStreamForReadAsync(CompressedFile);
+
+                using (ZipArchive zipArchive = new ZipArchive(FileStream, ZipArchiveMode.Read))
+                {
+                    foreach (ZipArchiveEntry entry in zipArchive.Entries)
+                    {
+                        using (Stream entryStream = entry.Open())
+                        {
+                            byte[] buffer = new byte[entry.Length];
+                            entryStream.Read(buffer, 0, buffer.Length);
+                            // Create a file to store the contents 
+                            StorageFile uncompressedFile = await LocalFolder.CreateFileAsync(entry.Name, CreationCollisionOption.ReplaceExisting);
+
+                            // Store the contents 
+                            using (IRandomAccessStream uncompressedFileStream =
+                            await uncompressedFile.OpenAsync(FileAccessMode.ReadWrite))
+                            {
+                                using (Stream outstream = uncompressedFileStream.AsStreamForWrite())
+                                {
+                                    outstream.Write(buffer, 0, buffer.Length);
+                                    outstream.Flush();
+                                }
+                            }
+
+                            System.Diagnostics.Debug.WriteLine("Restore exception: " + entry.Name);
+                        }
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine("Restore exception: " + exp.Message);
+                return false;
+            }
+
+            return true;
+        }
+
 
         #endregion
     }

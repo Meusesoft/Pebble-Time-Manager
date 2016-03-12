@@ -1,4 +1,5 @@
-﻿using Pebble_Time_Manager.Common;
+﻿using Pebble_Time_Library.Common;
+using Pebble_Time_Manager.Common;
 using Pebble_Time_Manager.WatchItems;
 using System;
 using System.Collections.Generic;
@@ -121,7 +122,6 @@ namespace Pebble_Time_Manager.ViewModels
 
                 return false;
             }
-
         }
 
         #endregion
@@ -143,6 +143,7 @@ namespace Pebble_Time_Manager.ViewModels
 
             EditCommand = new RelayCommand(EditSwitch);
             DeleteCommand = new RelayCommand(Delete);
+            BackupCommand = new RelayCommand(Backup);
         }
 
         private void EditSwitch(object obj)
@@ -360,6 +361,13 @@ namespace Pebble_Time_Manager.ViewModels
             DeleteSelectedItems();
         }
 
+        private async void Backup(object obj)
+        {
+            Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
+            await _pc.WatchItems.Backup();
+            //await _pc.WatchItems.Restore();
+        }
+
         /// <summary>
         /// Delete selected items from phone and watch
         /// </summary>
@@ -419,6 +427,12 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         public RelayCommand DeleteCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand BackupCommand
         {
             get;
             private set;
