@@ -254,10 +254,6 @@
                               Label="Select" 
                               Visibility="{Binding Commands.EditFaces, Converter={StaticResource BoolToVisibilityConverter}}"
                               Command="{Binding WatchFaces.EditCommand}"/>
-                            <AppBarButton x:Name="btnBackup"
-                              Icon="Upload"
-                              Label="Backup" 
-                              Command="{Binding WatchFaces.BackupCommand}"/>
                             
                             <AppBarButton x:Name="btnDeleteApps"
                               Icon="Delete"

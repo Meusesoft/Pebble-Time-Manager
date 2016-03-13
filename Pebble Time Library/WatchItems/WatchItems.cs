@@ -178,9 +178,10 @@ namespace Pebble_Time_Manager.WatchItems
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(String.Format("WatchItems.Load exception: {0}", e.Message));
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -296,6 +297,7 @@ namespace Pebble_Time_Manager.WatchItems
                         }
                     }
                 }
+
             }
             catch (Exception exp)
             {

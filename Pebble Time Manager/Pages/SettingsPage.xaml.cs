@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 using Pebble_Time_Manager.ViewModels;
+using Windows.UI.Popups;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -149,6 +150,43 @@ namespace Pebble_Time_Manager
             messageDialog.ShowAsync();
         }
 
+        #region Backup and Restore
 
+        private async void btnBackup_Click(object sender, RoutedEventArgs e)
+        {
+            var messageDialog = new Windows.UI.Popups.MessageDialog("A backup will be made on your OneDrive in the folder 'Backup'. If it does not exist it will be created.");
+            messageDialog.Commands.Add(new UICommand("Continue", new UICommandInvokedHandler(this.InitiateBackup)));
+            messageDialog.Commands.Add(new UICommand("Cancel"));
+
+            await messageDialog.ShowAsync();
+        }
+
+
+        private void InitiateBackup(IUICommand command)
+        {
+            vmBinder.GetInstance().BackupCommand.Execute(null);
+        }
+
+        private async void btnRestore_Click(object sender, RoutedEventArgs e)
+        {
+            var messageDialog = new Windows.UI.Popups.MessageDialog("The last backup from your OneDrive will be restored. All current watch items on your device will be removed.");
+            messageDialog.Commands.Add(new UICommand("Continue", new UICommandInvokedHandler(this.InitiateRestore)));
+            messageDialog.Commands.Add(new UICommand("Cancel"));
+
+            await messageDialog.ShowAsync();
+        }
+
+
+        private void InitiateRestore(IUICommand command)
+        {
+            vmBinder.GetInstance().RestoreCommand.Execute(null);
+        }
+
+        #endregion
+
+        private void btnClearFiles_Click(object sender, RoutedEventArgs e)
+        {
+            LocalStorage.DeleteAll();
+        }
     }
-}
+    }

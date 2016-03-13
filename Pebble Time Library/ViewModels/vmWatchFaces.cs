@@ -365,7 +365,6 @@ namespace Pebble_Time_Manager.ViewModels
         {
             Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
             await _pc.WatchItems.Backup();
-            //await _pc.WatchItems.Restore();
         }
 
         /// <summary>

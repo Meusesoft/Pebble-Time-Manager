@@ -43,6 +43,8 @@ namespace Pebble_Time_Manager.ViewModels
             ClearCommand = new RelayCommand(ClearLog);
             ResyncCommand = new RelayCommand(Resync);
             SynchronizeCommand = new RelayCommand(SynchronizeCalender);
+            RestoreCommand = new RelayCommand(Restore);
+            BackupCommand = new RelayCommand(Backup);
         }
 
         private void Log_CollectionChanged1(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -338,6 +340,18 @@ namespace Pebble_Time_Manager.ViewModels
             private set;
         }
 
+        public RelayCommand BackupCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand RestoreCommand
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Connect to Pebble Time and start a new background communication task
         /// </summary>
@@ -472,6 +486,140 @@ namespace Pebble_Time_Manager.ViewModels
                 ApplicationData.Current.LocalSettings.Values.Remove(Constants.BackgroundCommunicatieLog);
             }
         }
+
+        #endregion
+
+        #region Backup/Restore
+
+        /// <summary>
+        /// The last time a backup has been made
+        /// </summary>
+        public DateTime LastBackup
+        {
+            get
+            {
+                try
+                {
+                    var roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
+                    if (roamingSettings.Values.Keys.Contains("lastbackup"))
+                    {
+                        String LastBackup = (string)roamingSettings.Values["lastbackup"];
+                        return DateTime.Parse(LastBackup);
+                    }
+                }
+                catch (Exception) { }
+
+                return DateTime.MinValue;
+            }
+
+            set
+            {
+                var roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
+                if (roamingSettings.Values.Keys.Contains("lastbackup"))
+                {
+                    roamingSettings.Values["lastbackup"] = value.ToString();
+                }
+                else
+                {
+                    roamingSettings.Values.Add("lastbackup", value.ToString());
+                }
+
+                NotifyPropertyChanged("LastBackup");
+            }
+        }
+
+        private bool _BackupBusy;
+        public bool BackupBusy
+        {
+            get
+            {
+                return _BackupBusy;
+            }
+            set
+            {
+                _BackupBusy = value;
+                NotifyPropertyChanged("BackupBusy");
+            }
+        }
+
+        private string _BackupStatus;
+        public string BackupStatus
+        {
+            get
+            {
+                return _BackupStatus;
+            }
+            set
+            {
+                _BackupStatus = value;
+                NotifyPropertyChanged("BackupStatus");
+            }
+        }
+
+        private async void Backup(object obj)
+        {
+            try
+            {
+                PebbleConnector _pc = PebbleConnector.GetInstance();
+
+                BackupBusy = true;
+                BackupStatus = "Backing up watch items";
+
+                bool Result = await _pc.WatchItems.Backup();
+
+                if (Result)
+                {
+                    LastBackup = DateTime.Now;
+                    BackupStatus = "Backup success";
+                }
+                else
+                {
+                    BackupStatus = "Backup failed";
+                }
+            }
+            catch (Exception exp)
+            {
+                BackupStatus = "Backup failed";
+            }
+
+            BackupBusy = false;
+        }
+
+        private async void Restore(object obj)
+        {
+            try
+            {
+                BackupBusy = true;
+                BackupStatus = "Retrieving backup from OneDrive";
+
+                PebbleConnector _pc = PebbleConnector.GetInstance();
+
+                bool Result = await _pc.WatchItems.Restore();
+
+                if (Result)
+                {
+                    BackupStatus = "Restoring watch items";
+
+                    Result = await _pc.WatchItems.Load();
+                }
+
+                if (Result)
+                {
+                    BackupStatus = "Restore success";
+                }
+                else
+                {
+                    BackupStatus = "Restore failed";
+                }
+            }
+            catch (Exception exp)
+            {
+                BackupStatus = "Restore failed";
+            }
+
+            BackupBusy = false;
+        }
+
 
         #endregion
 
