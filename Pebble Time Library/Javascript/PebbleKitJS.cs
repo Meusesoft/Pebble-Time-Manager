@@ -81,8 +81,9 @@ namespace Pebble_Time_Library.Javascript
                     .SetValue("setInterval", new Func<Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>, double, int>(__setInterval__))
                     .SetValue("clearInterval", new Action<int>(__clearInterval__));
 
-
                 _JintEngine.SetValue("XMLHttpRequest", TypeReference.CreateTypeReference(_JintEngine, typeof(XMLHttpRequest)));
+
+                _Pebble.JintEngine = _JintEngine;
             }
             catch (Exception exp)
             {
@@ -506,6 +507,14 @@ namespace Pebble_Time_Library.Javascript
                 }
             }
 
+            public string language
+            {
+                get
+                {
+                    return System.Globalization.CultureInfo.CurrentCulture.Name;
+                }
+            }
+
             internal class GeoLocation
             {
                 private object _funcSuccess;
@@ -757,6 +766,8 @@ namespace Pebble_Time_Library.Javascript
 
             private IWatchItem ParentItem;
 
+            public Engine JintEngine { get; set; }
+
 
             public void addEventListener(String Event, object function)
             {
@@ -782,7 +793,25 @@ namespace Pebble_Time_Library.Javascript
                 return "account";
             }
 
-            public async void sendAppMessage(ExpandoObject data)
+            public async void sendAppMessage(ExpandoObject data, object functionAck, object functionNack)
+            {
+                await sendAppMessage(data);
+
+                System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = functionAck as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
+
+                Jint.Native.JsValue A = new JsValue(1);
+                Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
+
+                Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(JintEngine);
+                String JSON = "null";
+                Jint.Native.JsValue _eValue = _jsp.Parse(JSON);
+
+                B[0] = _eValue;
+
+                Jint.Native.JsValue C = _func.Invoke(A, B);
+            }   
+                
+            public async Task sendAppMessage(ExpandoObject data)
             {
                 PebbleConnector _pc = PebbleConnector.GetInstance();
 

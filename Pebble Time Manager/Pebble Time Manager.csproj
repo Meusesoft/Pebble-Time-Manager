@@ -123,9 +123,6 @@
     <Compile Include="Pages\ConnectPage.xaml.cs">
       <DependentUpon>ConnectPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\HubPage.xaml.cs">
-      <DependentUpon>HubPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\JavascriptPage.xaml.cs">
       <DependentUpon>JavascriptPage.xaml</DependentUpon>
     </Compile>
@@ -229,10 +226,6 @@
     <Page Include="Pages\ConnectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\HubPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\JavascriptPage.xaml">
       <SubType>Designer</SubType>

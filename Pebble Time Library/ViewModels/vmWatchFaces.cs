@@ -226,6 +226,15 @@ namespace Pebble_Time_Manager.ViewModels
                         }
                     }
 
+                    //Sort
+                    var SortedFaces = WatchFaces.OrderBy(x => x.Name).ToList();
+                    WatchFaces.Clear();
+
+                    foreach (var App in SortedFaces)
+                    {
+                        WatchFaces.Add(App);
+                    }
+
                     break;
 
                 //Remove viewmodel WatchFace
@@ -258,15 +267,6 @@ namespace Pebble_Time_Manager.ViewModels
 
                     break;
                 }
-
-            //Sort
-            var SortedFaces = WatchFaces.OrderBy(x => x.Name).ToList();
-            WatchFaces.Clear();
-
-            foreach (var App in SortedFaces)
-            {
-                WatchFaces.Add(App);
-            }
         }
 
         public async void LoadImage(vmWatchFace item)
@@ -376,33 +376,32 @@ namespace Pebble_Time_Manager.ViewModels
 
             try
             {
+                //Collect all GUIDs of selected items
+                List<Guid> GuidSelectedItems = new List<Guid>();
+
+                var SelectedItems = WatchFaces.Where(x => x.Selected);
+
+                foreach (var SelectedItem in SelectedItems)
+                {
+                    GuidSelectedItems.Add(SelectedItem.Model);
+                }
+
+                //Connect 
                 Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
 
                 _ConnectionToken = await _pc.Connect(_ConnectionToken);
 
-                int i = 0;
-
-                while (i < WatchFaces.Count)
+                //Remove all selected items
+                foreach (var GuidSelectdItem in GuidSelectedItems)
                 {
-                    var item = WatchFaces[i];
-                    i++;
+                    var selecteditem = _pc.WatchItems.Where(x => x.ID == GuidSelectdItem);
+                    await _pc.DeleteWatchItemAsync(selecteditem.First());
+                }
 
-                    if (item.Selected)
-                    {
-                        var selecteditems = _pc.WatchItems.Where(x => x.ID == item.Model);
-
-                        if (selecteditems.Count() > 0)
-                        {
-                            WatchItems.WatchItem selecteditem = selecteditems.First();
-                            await _pc.DeleteWatchItemAsync(selecteditem);
-                            i--;
-                        }
-                    }
-
-                    if (_pc.IsConnected)
-                    {
-                        _pc.Disconnect(_ConnectionToken);
-                    }
+                //Disconnect
+                if (_pc.IsConnected)
+                {
+                    _pc.Disconnect(_ConnectionToken);
                 }
             }
             catch (Exception)
@@ -453,7 +452,6 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
         #endregion
-
 
     }
 }

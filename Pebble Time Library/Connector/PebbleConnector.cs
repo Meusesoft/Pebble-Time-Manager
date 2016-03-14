@@ -250,6 +250,7 @@ namespace Pebble_Time_Manager.Connector
 
                 //Remove from storage
                 await LocalStorage.Delete(_deleteItem.File);
+                await LocalStorage.Delete(_deleteItem.File.Replace(".zip", ".gif"));
 
                 //Remove from watch
                 if (IsConnected)
