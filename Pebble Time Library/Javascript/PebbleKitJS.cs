@@ -200,6 +200,8 @@ namespace Pebble_Time_Library.Javascript
         {
             try
             {
+                if (Javascript == null) return;
+
                 if (_JintEngine == null) await Initialise();
 
                 _JavascriptLines = Javascript.Split("\n\r".ToCharArray());

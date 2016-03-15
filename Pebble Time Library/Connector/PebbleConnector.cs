@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Devices.Enumeration;
+using Windows.Devices.Geolocation;
 using Windows.Networking.Sockets;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.Storage.Streams;
@@ -85,6 +86,11 @@ namespace Pebble_Time_Manager.Connector
         /// The last error message
         /// </summary>
         public string LastError { get; set; }
+
+        /// <summary>
+        /// The identifier of the last connected device
+        /// </summary>
+        public string LastConnectedDevice { get; set; }
         #endregion
 
         #region Methods
@@ -123,6 +129,8 @@ namespace Pebble_Time_Manager.Connector
 
                         if (Result)
                         {
+                            LastConnectedDevice = _pebble.DisplayName;
+
                             _pebble.WatchItems.Load();
                             return newToken;
                         }
@@ -177,6 +185,83 @@ namespace Pebble_Time_Manager.Connector
         private void _protocol_disconnectEventHandler(object sender, EventArgs e)
         {
             OnDisconnect(e);
+        }
+
+        /// <summary>
+        /// Returns true if an existing paired Pebble device has been associated with this app
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> IsPebbleAssociated()
+        {
+            try
+            {
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+                if (localSettings.Values.ContainsKey("AssociatedDevice"))
+                {
+                    String AssociatedDevice = (String)localSettings.Values["AssociatedDevice"];
+
+                    List<P3bble.P3bble> pebbles = await P3bble.P3bble.DetectPebbles();
+
+                    if (pebbles.Count == 0) return false;
+
+                    _pebble = pebbles[0];
+                    return (_pebble.DisplayName == AssociatedDevice);
+                }
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine("IsPebbleAssociated: " + exp.Message);
+            }
+
+            return false;
+        }
+
+        public async Task<String> GetCandidatePebble()
+        {
+            try
+            {
+                String PebbleCandidate = await P3bble.P3bble.FindPebble();
+                return PebbleCandidate;
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine("GetCandidatePebble: " + exp.Message);
+            }
+
+            return "";
+        }
+        
+        /// <summary>
+                 /// Associate the current Pebble device by connecting to it and getting the current location
+                 /// </summary>
+                 /// <returns></returns>
+        public async Task<bool> AssociatePebble()
+        {
+            try
+            {
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+                int Token = await Connect(-1);
+
+                if (IsConnected)
+                {
+                    Geolocator _geoLocater = new Geolocator();
+                    _geoLocater.DesiredAccuracy = PositionAccuracy.High;
+                    Geoposition _pos = await _geoLocater.GetGeopositionAsync();
+
+                    localSettings.Values["AssociatedDevice"] = LastConnectedDevice;
+                }
+
+                Disconnect(Token);
+
+                return true;
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine("AssociatePebble: " + exp.Message);
+                throw exp;
+            }
         }
 
         #region Events

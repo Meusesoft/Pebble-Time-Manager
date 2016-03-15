@@ -92,10 +92,9 @@ namespace P3bble
             PeerInformation = peerInformation;
         }
 
-        BluetoothDevice _blDevice;
         internal P3bble(BluetoothDevice _device)
         {
-            _blDevice = _device;
+            BluetoothDevice = _device;
         }
 
 #if NETFX_CORE && !WINDOWS_PHONE_APP
@@ -194,7 +193,9 @@ namespace P3bble
         {
             get
             {
-                return PeerInformation.DisplayName.Trim();
+                if (PeerInformation != null) return PeerInformation.DisplayName.Trim();
+                if (BluetoothDevice != null) return BluetoothDevice.Name.Trim();
+                return "";
             }
         }
 
@@ -221,6 +222,8 @@ namespace P3bble
         /// The peer information.
         /// </value>
         public PeerInformation PeerInformation { get; private set; }
+
+        public BluetoothDevice BluetoothDevice { get; private set; }
 
         /// <summary>
         /// Bundle being upload
@@ -280,7 +283,7 @@ namespace P3bble
                 //     this._protocol = await Protocol.CreateProtocolAsync(_deviceService);
                 //#else
                 //      this._protocol = await Protocol.CreateProtocolAsync(PeerInformation);
-                this._protocol = await Protocol.CreateProtocolAsync(_blDevice);
+                this._protocol = await Protocol.CreateProtocolAsync(BluetoothDevice);
                 //#endif
                 if (this._protocol == null)
                 {
@@ -1066,9 +1069,6 @@ namespace P3bble
         // Private methods below - e.g. handling discovery or incoming messages
         //////////////////////////////////////////////////////////////////////////////////
 
-
-
-
         /// <summary>
         /// Finds paired pebbles.
         /// </summary>
@@ -1142,6 +1142,70 @@ namespace P3bble
             }
 
             return result;
+        }
+
+        public static async Task<String> FindPebble()
+        {
+            List<P3bble> result = new List<P3bble>();
+
+            try
+            {
+                #if NETFX_CORE && !WINDOWS_PHONE_APP
+
+                var PebbleRfCommID = RfcommServiceId.FromUuid(new Guid("00000000-deca-fade-deca-deafdecacaff"));
+                var PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
+                var PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
+
+                string s = BluetoothDevice.GetDeviceSelector();
+
+                foreach (var device in PebbleDevices)
+                {
+                    if (device.Name.ToLower().Contains("pebble"))
+                    {
+                        try
+                        {
+                            return device.Name;
+                        }
+                        catch (Exception e)
+                        {
+                            System.Diagnostics.Debug.WriteLine(e.Message);
+                        }
+                    }
+                }
+
+                return "";
+
+#else
+
+                //PeerFinder.Start();
+                PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
+                IReadOnlyList<PeerInformation> pairedDevices = await PeerFinder.FindAllPeersAsync();
+
+                // Filter to only devices that are named Pebble - right now, that's the only way to
+                // stop us getting headphones, etc. showing up...
+                foreach (PeerInformation pi in pairedDevices)
+                {
+                    if (pi.DisplayName.ToLower().Contains("pebble") 
+                        || pi.DisplayName.ToLower().Contains("bc5f")
+                        || pi.DisplayName.ToLower().Contains("7e3f"))
+                    {
+                        return pi.DisplayName;
+                    }
+                }
+
+                if (pairedDevices.Count == 0)
+                {
+                    ServiceLocator.Logger.WriteLine("No paired devices were found.");
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                // If Bluetooth is turned off, we will get an exception. We catch it to return a zero-count list.
+                ServiceLocator.Logger.WriteLine("Exception looking for Pebbles: " + ex.ToString());
+            }
+
+            return "";
         }
 
         /// <summary>
