@@ -147,6 +147,10 @@ namespace P3bble.Messages
             this._tuples.Add(result.ToArray());
         }
 
+        public void GetContentMessage()
+        {
+        }
+
         protected override void AddContentToMessage(List<byte> payload)
         {
             // Add the command
@@ -288,6 +292,21 @@ namespace P3bble.Messages
                         Payload.RemoveRange(0, iLength + 3);
 
                         Result.Add(Key, iValue);
+
+                        break;
+
+
+                    case 0x02: //boolean
+
+                        byte[] bbLength = Payload.GetRange(1, 2).ToArray();
+                        int bLength = BitConverter.ToInt16(bbLength, 0);
+
+                        byte[] bbValue = Payload.GetRange(3, bLength).ToArray();
+                        bool dValue = BitConverter.ToBoolean(bbValue, 0);
+
+                        Payload.RemoveRange(0, bLength + 3);
+
+                        Result.Add(Key, dValue);
 
                         break;
 

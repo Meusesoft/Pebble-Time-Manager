@@ -204,6 +204,15 @@ namespace BackgroundTasks
                             System.Diagnostics.Debug.WriteLine("AppMessage received: " + _appMessage.AppUuid.ToString());
                         }
 
+                        WatchItem = _pc.WatchItems.FindLast(x => x.ID == _appMessage.AppUuid);
+
+                        if (WatchItem != null)
+                        {
+                            System.Diagnostics.Debug.WriteLine("AppMessage received: " + WatchItem.Name);
+
+                            await WatchItem.AppMessage(_appMessage.Content);
+                        }
+
                         break;
                 }
             }

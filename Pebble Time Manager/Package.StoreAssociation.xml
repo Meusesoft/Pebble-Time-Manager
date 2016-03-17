@@ -358,15 +358,15 @@
     <Language Code="zu-za" InMinimumRequirementSet="true" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>1903Meusesoft.PebbleTimeConnect</MainPackageIdentityName>
+    <MainPackageIdentityName>1903Meusesoft.PebbleTimeManager10</MainPackageIdentityName>
     <ReservedNames>
-      <ReservedName>Pebble Time Connect</ReservedName>
-      <ReservedName>Pebble Time Manager</ReservedName>
+      <ReservedName>Pebble Time Manager 10</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
     <MainPackageIdentityName>1903Meusesoft.PebbleTimeBetaConnect</MainPackageIdentityName>
+    <MainPackageIdentityName>1903Meusesoft.PebbleTimeConnect</MainPackageIdentityName>
     <MainPackageIdentityName>1903Meusesoft.PebbleTimeConnectBeta</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9NBLGGH1P2TQ" />
+  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9NBLGGH4R34B" />
 </StoreAssociation>

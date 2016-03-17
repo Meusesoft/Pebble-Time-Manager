@@ -186,6 +186,21 @@ namespace Pebble_Time_Manager.WatchItems
                 throw exp;
             }
         }
+        public async Task AppMessage(Dictionary<int, object> Content)
+        {
+            try
+            {
+                await LoadJavascript();
+
+                _PebbleKitJS.AppMessage(Content);
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine(exp.Message);
+
+                throw exp;
+            }
+        }
 
         #endregion
 

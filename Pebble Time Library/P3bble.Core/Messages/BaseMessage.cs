@@ -28,11 +28,18 @@ namespace P3bble.Messages
         /// <param name="value"></param>
         protected void AddString2Payload(List<byte> payload, String value)
         {
-            String _value = RemoveSpecialChars(value);
-            _value = _value.Substring(0, Math.Min(_value.Length, 1024));
-            AddStringLength2Payload(payload, _value);
-            byte[] _bytes = System.Text.Encoding.UTF8.GetBytes(_value);
-            payload.AddRange(_bytes);
+            byte[] bsValue = System.Text.Encoding.UTF8.GetBytes(value);
+            Int16 sLength = (short)(bsValue.Length);
+            byte[] bsValueLength = BitConverter.GetBytes(sLength);
+            AddInteger2Payload(payload, sLength);
+            payload.AddRange(bsValue);
+
+            //String _value = RemoveSpecialChars(value);
+            //_value = _value.Substring(0, Math.Min(_value.Length, 1024));
+            //AddStringLength2Payload(payload, _value);
+
+            //byte[] _bytes = System.Text.Encoding.UTF8.GetBytes(_value);
+            //payload.AddRange(_bytes);
         }
 
         /// <summary>
