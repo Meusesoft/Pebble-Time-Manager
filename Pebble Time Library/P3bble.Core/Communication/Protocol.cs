@@ -88,9 +88,17 @@ namespace P3bble.Communication
             try
             {
                 StreamSocket socket = new StreamSocket();
-                await socket.ConnectAsync(_device.HostName, Guid.Parse(Pebble_Time_Manager.Common.Constants.PebbleGuid).ToString("B"));
 
-                return new Protocol(socket);
+                var Services = _device.RfcommServices;
+                if (Services.Count > 0)
+                {
+                    await socket.ConnectAsync(_device.HostName, Services[0].ServiceId.Uuid.ToString("B"));
+
+                    return new Protocol(socket);
+                }
+
+                //await socket.ConnectAsync(_device.HostName, Guid.Parse(Pebble_Time_Manager.Common.Constants.PebbleGuid).ToString("B"));
+
             }
             catch (Exception e)
             {

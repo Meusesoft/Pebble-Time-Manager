@@ -1,4 +1,5 @@
-﻿using P3bble.Messages;
+﻿using P3bble;
+using P3bble.Messages;
 using Pebble_Time_Manager.Common;
 using Pebble_Time_Manager.WatchItems;
 using System;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Geolocation;
@@ -90,7 +92,7 @@ namespace Pebble_Time_Manager.Connector
         /// <summary>
         /// The identifier of the last connected device
         /// </summary>
-        public string LastConnectedDevice { get; set; }
+        public PebbleDevice LastConnectedDevice { get; set; }
         #endregion
 
         #region Methods
@@ -119,17 +121,17 @@ namespace Pebble_Time_Manager.Connector
 #else
                     P3bble.P3bble.IsLoggingEnabled = false;
 #endif
-                    List<P3bble.P3bble> pebbles = await P3bble.P3bble.DetectPebbles();
-
-                    if (pebbles.Count >= 1)
+                    PebbleDevice _AssociatedDevice = PebbleDevice.LoadAssociatedDevice();
+                    if (_AssociatedDevice != null)
                     {
-                        _pebble = pebbles[0];
+                        var _device = await BluetoothDevice.FromIdAsync(_AssociatedDevice.ServiceId);
+                        _pebble = new P3bble.P3bble(_device);
                         _pebble.WatchItems = this.WatchItems;
                         bool Result = await _pebble.ConnectAsync();
 
                         if (Result)
                         {
-                            LastConnectedDevice = _pebble.DisplayName;
+                            LastConnectedDevice = _AssociatedDevice;
 
                             _pebble.WatchItems.Load();
                             return newToken;
@@ -146,15 +148,14 @@ namespace Pebble_Time_Manager.Connector
                     }
                     else
                     {
-                        //No Pebble found
-                        LastError = "No Pebble Time detected; is one paired?";
+                        //No Pebble associated
+                        LastError = "No Pebble device associated.";
                     }
                 }
                 else
                 {
                     return newToken;
                 }
-
             }
             catch (Exception exp)
             {
@@ -195,18 +196,16 @@ namespace Pebble_Time_Manager.Connector
         {
             try
             {
-                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                PebbleDevice AssociatedDevice = PebbleDevice.LoadAssociatedDevice();
 
-                if (localSettings.Values.ContainsKey("AssociatedDevice"))
+                if (AssociatedDevice != null)
                 {
-                    String AssociatedDevice = (String)localSettings.Values["AssociatedDevice"];
+                    var _pebble = await P3bble.P3bble.FindPebble(AssociatedDevice.ServiceId);
 
-                    List<P3bble.P3bble> pebbles = await P3bble.P3bble.DetectPebbles();
-
-                    if (pebbles.Count == 0) return false;
-
-                    _pebble = pebbles[0];
-                    return (_pebble.DisplayName == AssociatedDevice);
+                    if (_pebble != null)
+                    {
+                        return (_pebble.Name == AssociatedDevice.Name);
+                    }
                 }
             }
             catch (Exception exp)
@@ -217,11 +216,11 @@ namespace Pebble_Time_Manager.Connector
             return false;
         }
 
-        public async Task<String> GetCandidatePebble()
+        public async Task<PebbleDevice> GetCandidatePebble()
         {
             try
             {
-                String PebbleCandidate = await P3bble.P3bble.FindPebble();
+                PebbleDevice PebbleCandidate = await P3bble.P3bble.FindPebble();
                 return PebbleCandidate;
             }
             catch (Exception exp)
@@ -229,18 +228,18 @@ namespace Pebble_Time_Manager.Connector
                 System.Diagnostics.Debug.WriteLine("GetCandidatePebble: " + exp.Message);
             }
 
-            return "";
+            return null;
         }
         
         /// <summary>
-                 /// Associate the current Pebble device by connecting to it and getting the current location
-                 /// </summary>
-                 /// <returns></returns>
-        public async Task<bool> AssociatePebble()
+        /// Associate the current Pebble device by connecting to it and getting the current location
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> AssociatePebble(PebbleDevice _newDevice)
         {
             try
             {
-                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                _newDevice.StoreAsAssociateDevice();
 
                 int Token = await Connect(-1);
 
@@ -250,18 +249,18 @@ namespace Pebble_Time_Manager.Connector
                     _geoLocater.DesiredAccuracy = PositionAccuracy.High;
                     Geoposition _pos = await _geoLocater.GetGeopositionAsync();
 
-                    localSettings.Values["AssociatedDevice"] = LastConnectedDevice;
+                    Disconnect(Token);
+
+                    return true;
                 }
-
-                Disconnect(Token);
-
-                return true;
             }
             catch (Exception exp)
             {
                 System.Diagnostics.Debug.WriteLine("AssociatePebble: " + exp.Message);
                 throw exp;
             }
+
+            return false;
         }
 
         #region Events

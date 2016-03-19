@@ -21,6 +21,7 @@ using Windows.Devices.Enumeration;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Pebble_Time_Manager.Connector;
 using Windows.UI.Popups;
+using P3bble;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -164,50 +165,14 @@ namespace Pebble_Time_Manager
             await _tl.Wipe();
         }
 
-        private String PebbleDeviceName;
+        private PebbleDevice PebbleDeviceName;
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             PebbleConnector _pc = PebbleConnector.GetInstance();
             if (!await _pc.IsPebbleAssociated())
             {
-                PebbleDeviceName = await _pc.GetCandidatePebble();
-
-                if (PebbleDeviceName.Length > 0)
-                {
-                    String Message = String.Format("{0} has not been associated with Pebble Time Manager. Do you want to associate it?", PebbleDeviceName);
-
-                    var messageDialog = new Windows.UI.Popups.MessageDialog(Message);
-                    messageDialog.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(this.PebbleAssociate)));
-                    messageDialog.Commands.Add(new UICommand("No"));
-
-                    await messageDialog.ShowAsync();
-                }
+                _vmBinder.Associate(null);
             }
         }
-
-        private async void PebbleAssociate(IUICommand command)
-        {
-            vmBinder _vmBinder = vmBinder.GetInstance();
-            _vmBinder.Log.Add("Associating " + PebbleDeviceName);
-
-            try
-            {
-                PebbleConnector _pc = PebbleConnector.GetInstance();
-                if (await _pc.AssociatePebble())
-                {
-                    _vmBinder.Log.Add("Success");
-                }
-
-                var messageDialog = new Windows.UI.Popups.MessageDialog(String.Format("Association {0} completed successfully.", PebbleDeviceName));
-                messageDialog.Commands.Add(new UICommand("Ok"));
-
-                await messageDialog.ShowAsync();
-
-            }
-            catch (Exception exp)
-            {
-                _vmBinder.Log.Add(String.Format("An error occurred while associating {0}: {1}", PebbleDeviceName, exp.Message));
-            }
-        }
-    }
+   }
 }

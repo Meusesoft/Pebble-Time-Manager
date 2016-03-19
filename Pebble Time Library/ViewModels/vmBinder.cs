@@ -8,6 +8,8 @@ using Pebble_Time_Manager.Connector;
 using Windows.UI.Xaml;
 using Windows.Storage;
 using Pebble_Time_Manager.Common;
+using P3bble;
+using Windows.UI.Popups;
 
 namespace Pebble_Time_Manager.ViewModels
 {
@@ -45,6 +47,8 @@ namespace Pebble_Time_Manager.ViewModels
             SynchronizeCommand = new RelayCommand(SynchronizeCalender);
             RestoreCommand = new RelayCommand(Restore);
             BackupCommand = new RelayCommand(Backup);
+            AssociateCommand = new RelayCommand(Associate);
+            UndoAssociationCommand = new RelayCommand(UndoAssociation);
         }
 
         private void Log_CollectionChanged1(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -352,6 +356,18 @@ namespace Pebble_Time_Manager.ViewModels
             private set;
         }
 
+        public RelayCommand AssociateCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand UndoAssociationCommand
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Connect to Pebble Time and start a new background communication task
         /// </summary>
@@ -623,6 +639,121 @@ namespace Pebble_Time_Manager.ViewModels
 
         #endregion
 
+        #region Device association
+
+        private PebbleDevice _AssociatedDevice;
+        public String AssociatedDeviceName
+        {
+            get
+            {
+                if (_AssociatedDevice == null)
+                {
+                    _AssociatedDevice = PebbleDevice.LoadAssociatedDevice();
+                }
+                if (_AssociatedDevice != null)
+                {
+                    return _AssociatedDevice.Name;
+                }
+                return "";
+            }
+        }
+
+        public String AssociatedDeviceFirmware
+        {
+            get
+            {
+                if (_AssociatedDevice == null)
+                {
+                    _AssociatedDevice = PebbleDevice.LoadAssociatedDevice();
+                }
+                if (_AssociatedDevice != null)
+                {
+                    return "Firmware " + _AssociatedDevice.Firmware;
+                }
+                return "";
+            }
+        }
+
+        public bool IsDeviceAssociated
+        {
+            get
+            {
+                PebbleDevice AssociatedDevice = PebbleDevice.LoadAssociatedDevice();
+                return AssociatedDevice != null;
+            }
+        }
+
+        private void UndoAssociation(object obj)
+        {
+            PebbleDevice.RemoveAssociation();
+
+            NotifyPropertyChanged("IsDeviceAssociated");
+            NotifyPropertyChanged("AssociatedDeviceFirmware");
+            NotifyPropertyChanged("AssociatedDeviceName");
+        }
+
+        public async void Associate(object obj)
+        {
+            PebbleConnector _pc = PebbleConnector.GetInstance();
+            {
+                PebbleDeviceName = await _pc.GetCandidatePebble();
+
+                if (PebbleDeviceName != null)
+                {
+                    String Message = String.Format("{0} has not been associated with Pebble Time Manager. Do you want to associate it?", PebbleDeviceName.Name);
+
+                    var messageDialog = new Windows.UI.Popups.MessageDialog(Message);
+                    messageDialog.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(this.PebbleAssociate)));
+                    messageDialog.Commands.Add(new UICommand("No"));
+
+                    await messageDialog.ShowAsync();
+                }
+            }
+        }
+
+        private async void PebbleAssociate(IUICommand command)
+        {
+            Log.Add("Associating " + PebbleDeviceName.Name);
+
+            try
+            {
+                PebbleConnector _pc = PebbleConnector.GetInstance();
+                if (await _pc.AssociatePebble(PebbleDeviceName))
+                {
+                    Log.Add("Success");
+
+                    NotifyPropertyChanged("IsDeviceAssociated");
+                    NotifyPropertyChanged("AssociatedDeviceFirmware");
+                    NotifyPropertyChanged("AssociatedDeviceName");
+
+                    var successDialog = new Windows.UI.Popups.MessageDialog(String.Format("Association {0} completed successfully.", PebbleDeviceName.Name));
+                    successDialog.Commands.Add(new UICommand("Ok"));
+
+                    await successDialog.ShowAsync();
+
+                    return;
+                }
+                else
+                {
+                    Log.Add("Failed");
+                }
+
+            }
+            catch (Exception exp)
+            {
+                Log.Add(String.Format("An error occurred while associating {0}: {1}", PebbleDeviceName, exp.Message));
+            }
+
+            var messageDialog = new Windows.UI.Popups.MessageDialog(String.Format("Association {0} failed.", PebbleDeviceName.Name));
+            messageDialog.Commands.Add(new UICommand("Ok"));
+
+            await messageDialog.ShowAsync();
+        }
+
+
+
+        #endregion
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -639,6 +770,8 @@ namespace Pebble_Time_Manager.ViewModels
         #endregion
         
         private static vmBinder _vmBinder;
+        private PebbleDevice PebbleDeviceName;
+
         /// <summary>
         /// Returns the global instance of the PebbleConnector class
         /// </summary>
@@ -650,7 +783,5 @@ namespace Pebble_Time_Manager.ViewModels
 
             return _vmBinder;
         }
-
-
     }
 }

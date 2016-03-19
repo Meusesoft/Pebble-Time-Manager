@@ -21,7 +21,7 @@ namespace P3bble.Types
         public FirmwareVersion(int timestamp, string version, string commit, bool isrecovery, byte hardwareplatform, byte metadataversion)
         {
            // this.TimestampInternal = timestamp;
-           // this.VersionInternal = version;
+            this.VersionInternal = version;
             this.Commit = commit;
             this.IsRecovery = isrecovery;
             this.HardwarePlatform = hardwareplatform;

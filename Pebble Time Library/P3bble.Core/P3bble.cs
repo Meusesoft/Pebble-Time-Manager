@@ -42,6 +42,61 @@ namespace P3bble
     /// <param name="percentComplete">The percent complete.</param>
     public delegate void InstallProgressHandler(int percentComplete);
 
+    public class PebbleDevice
+    {
+        #region Properties
+
+        public String Name { get; set; }
+        public String ServiceId { get; set; }
+        public String Firmware { get; set; }
+
+        #endregion
+
+        static public PebbleDevice LoadAssociatedDevice()
+        {
+            try
+            {
+                PebbleDevice Result = new PebbleDevice();
+
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+                if (localSettings.Values.ContainsKey("AssociatedDevice") && localSettings.Values.ContainsKey("AssociatedDeviceId"))
+                {
+                    Result.Name = (string)localSettings.Values["AssociatedDevice"];
+                    Result.ServiceId = (string)localSettings.Values["AssociatedDeviceId"];
+
+                    if (localSettings.Values.ContainsKey("AssociatedDeviceFirmware"))
+                    {
+                        Result.Firmware = (string)localSettings.Values["AssociatedDeviceFirmware"];
+                    }
+
+                    return Result;
+                }
+            }
+            catch (Exception) { }
+
+            return null;
+        }
+
+        static public void RemoveAssociation()
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+            localSettings.Values.Remove("AssociatedDevice");
+            localSettings.Values.Remove("AssociatedDeviceId");
+            localSettings.Values.Remove("AssociatedDeviceFirmware");
+        }
+
+        public void StoreAsAssociateDevice()
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+            localSettings.Values["AssociatedDevice"] = Name;
+            localSettings.Values["AssociatedDeviceId"] = ServiceId;
+            localSettings.Values["AssociatedDeviceFirmware"] = Firmware;
+        }
+    }
+
     /// <summary>
     /// Defines a connection to a Pebble watch
     /// </summary>
@@ -293,16 +348,27 @@ namespace P3bble
 
                 P3bbleMessage _receivedMsg;
 
-            //    WatchItems.Load();
-                
+                //    WatchItems.Load();
+
                 //phone version message
-               // _receivedMsg = await this._protocol.ReceiveMessage(35);
+                // _receivedMsg = await this._protocol.ReceiveMessage(35);
                 await this._protocol.ClearMessageBuffer();
                 await this._protocol.WriteMessage(new PhoneVersionMessage(false));
                 
                 //pebble firmware version
                 await this._protocol.WriteMessage(new VersionMessage());
                 _receivedMsg = await this._protocol.ReceiveMessage(0);
+                while (_receivedMsg == null || _receivedMsg.Endpoint != Endpoint.Version)
+                {
+                    _receivedMsg = await this._protocol.ReceiveMessage(0);
+                }
+                PebbleDevice _pd = PebbleDevice.LoadAssociatedDevice();
+                if (_pd != null)
+                {
+                    var VersionMessage = _receivedMsg as VersionMessage;
+                    _pd.Firmware = VersionMessage.Firmware.Version.ToString();
+                    _pd.StoreAsAssociateDevice();
+                }
 
                 //factory setting message
                 await this._protocol.WriteMessage(new FactorySettingMessage());
@@ -310,11 +376,9 @@ namespace P3bble
 
                 //watch face message
                 await this._protocol.WriteMessage(new WatchFaceMessage());
-                P3bbleMessage newMsg = _receivedMsg;
-                while (newMsg.Endpoint != Endpoint.WatchFaceSelect)
+                while (_receivedMsg == null || _receivedMsg.Endpoint != Endpoint.WatchFaceSelect)
                 {
                     _receivedMsg = await this._protocol.ReceiveMessage(0);
-                    if (_receivedMsg != null) newMsg = _receivedMsg;
                 }
                 WatchFaceMessage wfm = (WatchFaceMessage)_receivedMsg;
                 CurrentWatchFace = wfm.CurrentWatchFace;
@@ -322,6 +386,7 @@ namespace P3bble
                 var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
                 localSettings.Values["CurrentWatchFace"] = CurrentWatchFace;
 
+               
                 // await this._protocol.WriteMessage(new ResetMessage());
 
                 //time message
@@ -1144,60 +1209,46 @@ namespace P3bble
             return result;
         }
 
-        public static async Task<String> FindPebble()
+
+        public static async Task<PebbleDevice> FindPebble()
+        {
+            return await FindPebble("");
+        }
+
+            
+        public static async Task<PebbleDevice> FindPebble(String ServiceId)
         {
             List<P3bble> result = new List<P3bble>();
 
             try
             {
-                #if NETFX_CORE && !WINDOWS_PHONE_APP
+                //var PebbleRfCommID = RfcommServiceId.FromUuid(new Guid("00000000-deca-fade-deca-deafdecacaff"));
+                //var PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
+                //var PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
+                DeviceInformationCollection AllDevices;
 
-                var PebbleRfCommID = RfcommServiceId.FromUuid(new Guid("00000000-deca-fade-deca-deafdecacaff"));
-                var PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
-                var PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
+                if (ServiceId.Length == 0)
+                {
+                    AllDevices = await DeviceInformation.FindAllAsync();
+                }
+                else
+                {
+                    string InterfaceClassGuid = ServiceId.Substring(ServiceId.Length - 38);
+                    string Filter = String.Format("System.Devices.InterfaceClassGuid:=\"{0}\"", InterfaceClassGuid);
+                    AllDevices = await DeviceInformation.FindAllAsync(Filter);
+                }
 
-                string s = BluetoothDevice.GetDeviceSelector();
-
-                foreach (var device in PebbleDevices)
+                foreach (var device in AllDevices)
                 {
                     if (device.Name.ToLower().Contains("pebble"))
                     {
-                        try
-                        {
-                            return device.Name;
-                        }
-                        catch (Exception e)
-                        {
-                            System.Diagnostics.Debug.WriteLine(e.Message);
-                        }
+                        var PebbleDevice = new PebbleDevice();
+                        PebbleDevice.Name = device.Name;
+                        PebbleDevice.ServiceId = device.Id;
+
+                        return PebbleDevice;
                     }
                 }
-
-                return "";
-
-#else
-
-                //PeerFinder.Start();
-                PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
-                IReadOnlyList<PeerInformation> pairedDevices = await PeerFinder.FindAllPeersAsync();
-
-                // Filter to only devices that are named Pebble - right now, that's the only way to
-                // stop us getting headphones, etc. showing up...
-                foreach (PeerInformation pi in pairedDevices)
-                {
-                    if (pi.DisplayName.ToLower().Contains("pebble") 
-                        || pi.DisplayName.ToLower().Contains("bc5f")
-                        || pi.DisplayName.ToLower().Contains("7e3f"))
-                    {
-                        return pi.DisplayName;
-                    }
-                }
-
-                if (pairedDevices.Count == 0)
-                {
-                    ServiceLocator.Logger.WriteLine("No paired devices were found.");
-                }
-#endif
             }
             catch (Exception ex)
             {
@@ -1205,7 +1256,7 @@ namespace P3bble
                 ServiceLocator.Logger.WriteLine("Exception looking for Pebbles: " + ex.ToString());
             }
 
-            return "";
+            return null;
         }
 
         /// <summary>
