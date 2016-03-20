@@ -34,7 +34,7 @@ namespace Pebble_Time_Library.Javascript
         #region Fields
 
         private Pebble _Pebble;
-        private Engine _JintEngine;
+        public static Engine _JintEngine;
         private String[] _JavascriptLines;
         private IWatchItem _ParentItem;
 
@@ -676,6 +676,11 @@ namespace Pebble_Time_Library.Javascript
 
         private class XMLHttpRequest
         {
+            public XMLHttpRequest()
+            {
+                System.Diagnostics.Debug.WriteLine("XMLHttpRequest created");
+            }
+
             #region Properties
 
             private HttpWebRequest _httpWebRequest;
@@ -757,6 +762,17 @@ namespace Pebble_Time_Library.Javascript
                 send(null);
             }
 
+            private string JSONEncode(String value)
+            {
+                String Result = value;
+                Result = Result.Replace("\"", "\\\"");
+                Result = Result.Replace("\n", "\\\n");
+                Result = Result.Replace("\r", "\\\r");
+
+
+                return Result;
+            }
+
             public async void send(object data)
             {
                 WebResponse _response;
@@ -794,10 +810,15 @@ namespace Pebble_Time_Library.Javascript
 
                         var jsfunction = onload;
 
-                        System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
+                        System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue > _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
 
-                        Jint.Native.JsValue A = new JsValue(1);
-                        Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
+                        String JSON = String.Format("{{\"responseText\":\"{0}\" }}", JSONEncode(Response));
+                        Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(PebbleKitJS._JintEngine);
+                        Jint.Native.JsValue _eValue = _jsp.Parse(JSON);
+                        Jint.Native.JsValue A = _eValue; 
+                        Jint.Native.JsValue[] B = new JsValue[1];
+                        B[0] = new Jint.Native.JsValue(Response);
+
                         Jint.Native.JsValue C = _func.Invoke(A, B);
                     }
                 }
