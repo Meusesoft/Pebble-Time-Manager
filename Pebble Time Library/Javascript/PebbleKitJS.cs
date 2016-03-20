@@ -335,11 +335,39 @@ namespace Pebble_Time_Library.Javascript
 
                 System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
 
+                String JSON = "";
+
+                foreach (var item in Content)
+                {
+                    var keys = from entry in _ParentItem.AppKeys
+                               where entry.Value == item.Key 
+                               select entry.Key;
+
+                    if (keys.Count() == 1)
+                    {
+                        if (JSON.Length > 0) JSON += ", ";
+                        JSON += String.Format("\"{0}\": ", keys.FirstOrDefault());
+
+                        if (item.Value.GetType() == typeof(string))
+                        {
+                            JSON += String.Format("\"{0}\"", item.Value);
+                        }
+                        if (item.Value.GetType() == typeof(int))
+                        {
+                            JSON += String.Format("{0}", item.Value);
+                        }
+                        if (item.Value.GetType() == typeof(bool))
+                        {
+                            JSON += String.Format("{0}", (bool)item.Value ? 1 : 0);
+                        }
+                    }
+                }
+
                 Jint.Native.JsValue A = new JsValue(1);
                 Jint.Native.JsValue[] B = new Jint.Native.JsValue[1];
 
                 Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(_JintEngine);
-                B[0] = _jsp.Parse("{}");
+                B[0] = _jsp.Parse(String.Format("{{\"payload\": {{ {0} }} }}", JSON));
 
                 Jint.Native.JsValue C = _func.Invoke(A, B);
             }
