@@ -34,7 +34,7 @@ namespace Pebble_Time_Library.Javascript
         #region Fields
 
         private Pebble _Pebble;
-        public static Engine _JintEngine;
+        public /*static*/ Engine _JintEngine;
         private String[] _JavascriptLines;
         private IWatchItem _ParentItem;
 
@@ -207,6 +207,7 @@ namespace Pebble_Time_Library.Javascript
                 _JavascriptLines = Javascript.Split("\n\r".ToCharArray());
 
                 _JintEngine.Execute(Javascript);
+
             }
             catch (Jint.Runtime.JavaScriptException exp)
             {
@@ -227,6 +228,8 @@ namespace Pebble_Time_Library.Javascript
         {
             try
             {
+                if (!_Pebble.EventListeners.ContainsKey("showConfiguration")) return;
+
                 var jsfunction = _Pebble.EventListeners["showConfiguration"];
 
                 System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
@@ -258,6 +261,8 @@ namespace Pebble_Time_Library.Javascript
         {
             try
             {
+                if (!_Pebble.EventListeners.ContainsKey("webviewclosed")) return;
+
                 var jsfunction = _Pebble.EventListeners["webviewclosed"];
 
                 String Argument = Data;
@@ -300,6 +305,8 @@ namespace Pebble_Time_Library.Javascript
         {
             try
             {
+                if (!_Pebble.EventListeners.ContainsKey("ready")) return;
+
                 var jsfunction = _Pebble.EventListeners["ready"];
 
                 System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
@@ -331,6 +338,8 @@ namespace Pebble_Time_Library.Javascript
         {
             try
             {
+                if (!_Pebble.EventListeners.ContainsKey("appmessage")) return;
+
                 var jsfunction = _Pebble.EventListeners["appmessage"];
 
                 System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue> _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
@@ -813,7 +822,7 @@ namespace Pebble_Time_Library.Javascript
                         System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue > _func = jsfunction as System.Func<Jint.Native.JsValue, Jint.Native.JsValue[], Jint.Native.JsValue>;
 
                         String JSON = String.Format("{{\"responseText\":\"{0}\" }}", JSONEncode(Response));
-                        Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(PebbleKitJS._JintEngine);
+                        Jint.Native.Json.JsonParser _jsp = new Jint.Native.Json.JsonParser(new Jint.Engine());
                         Jint.Native.JsValue _eValue = _jsp.Parse(JSON);
                         Jint.Native.JsValue A = _eValue; 
                         Jint.Native.JsValue[] B = new JsValue[1];
@@ -918,26 +927,29 @@ namespace Pebble_Time_Library.Javascript
                         {
                             if (element.Value != null)
                             {
-                                Type VariableType = element.Value.GetType();
-                                System.Diagnostics.Debug.WriteLine(String.Format("  key: {0}, value: {1}, type: {2}", element.Key, element.Value, VariableType.ToString()));
+                                if (ParentItem.AppKeys.ContainsKey(element.Key)) {
 
-                                if (VariableType == typeof(String))
-                                {
-                                    String Value = (String)element.Value;
-                                    //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.String, System.Text.Encoding.UTF8.GetBytes(Value));
-                                    _am.Content.Add((int)iKey, Value);
+                                    iKey = (uint)ParentItem.AppKeys[element.Key];
+
+                                    Type VariableType = element.Value.GetType();
+                                    System.Diagnostics.Debug.WriteLine(String.Format("  key: {0}-{3}, value: {1}, type: {2}", element.Key, element.Value, VariableType.ToString(), iKey));
+
+                                    if (VariableType == typeof(String))
+                                    {
+                                        String Value = (String)element.Value;
+                                        //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.String, System.Text.Encoding.UTF8.GetBytes(Value));
+                                        _am.Content.Add((int)iKey, Value);
+                                    }
+
+                                    if (VariableType == typeof(Double))
+                                    {
+                                        double dValue = (double)element.Value;
+                                        int iValue = (int)dValue;
+                                        byte[] bytes = BitConverter.GetBytes(iValue);
+                                        //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.Int, bytes);
+                                        _am.Content.Add((int)iKey, iValue);
+                                    }
                                 }
-
-                                if (VariableType == typeof(Double))
-                                {
-                                    double dValue = (double)element.Value;
-                                    int iValue = (int)dValue;
-                                    byte[] bytes = BitConverter.GetBytes(iValue);
-                                    //_am.AddTuple(iKey, P3bble.Messages.AppMessageTupleDataType.Int, bytes);
-                                    _am.Content.Add((int)iKey, iValue);
-                                }
-
-                                iKey++;
                             }
                         }
 

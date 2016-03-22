@@ -42,7 +42,7 @@ namespace Pebble_Time_Manager
 
             if (IsMobile)
             {
-                MySplitView.CompactPaneLength = 0;
+                //MySplitView.CompactPaneLength = 0;
                 FrameRight.Visibility = Visibility.Collapsed;
                 MainGrid.ColumnDefinitions.RemoveAt(1);
                 btnConnect.Visibility = Visibility.Visible;

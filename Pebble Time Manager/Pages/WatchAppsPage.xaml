@@ -90,7 +90,6 @@
     </Page.Resources>
 
     <Grid 
-        Margin="20"
         Background="{StaticResource AppBackgroundBrush}">
 
         <ListView x:Name="lvWatchApps"
@@ -102,6 +101,7 @@
                               IsItemClickEnabled="{Binding WatchApps.EditMode, Converter={StaticResource BooleanXOR}}"
                               ItemClick="lvWatchApps_ItemClick"
                               RequestedTheme="Dark" 
+                              Padding="20"
                               >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
