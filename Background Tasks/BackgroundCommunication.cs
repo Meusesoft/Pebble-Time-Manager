@@ -87,7 +87,7 @@ namespace BackgroundTasks
 
                                 await TennisHandler();
 
-                                await Wipe();
+                                //await Wipe();
 
                                 await Synchronize();
 
@@ -666,17 +666,19 @@ namespace BackgroundTasks
         /// <summary>
         /// Wipe the Pebble Time
         /// </summary>
-        private async Task Wipe()
+        /*private async Task Wipe()
         {
             if (PebbleConnector.IsBackgroundTaskRunningStatusSet(PebbleConnector.Initiator.Reset))
             {
+
+
                 _tlsynchronizer = new TimeLineSynchronizer();
                 _tlsynchronizer.Log.CollectionChanged += Log_CollectionChanged;
                 await _tlsynchronizer.Wipe();
 
                 AddProcessDelay(30000, PebbleConnector.Initiator.Reset); 
             }
-        }
+        }*/
 
         private async Task Synchronize()
         {

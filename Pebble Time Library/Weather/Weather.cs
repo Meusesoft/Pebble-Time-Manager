@@ -93,11 +93,10 @@ namespace Pebble_Time_Manager.Weather
         /// <summary>
         /// Clear the cache of the weather synchronization
         /// </summary>
-        public void ClearCache()
+        public static void ClearCache()
         {
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             localSettings.Values.Remove("weathersynchronization");
-
         }
 
         #endregion

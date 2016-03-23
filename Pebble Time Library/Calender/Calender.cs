@@ -146,7 +146,7 @@ namespace Pebble_Time_Manager.Calender
         /// Clear the calender cache
         /// </summary>
         /// <returns></returns>
-        public async Task ClearCache()
+        public static async Task ClearCache()
         {
             await Common.LocalStorage.Delete("calenderitems.xml");
         }

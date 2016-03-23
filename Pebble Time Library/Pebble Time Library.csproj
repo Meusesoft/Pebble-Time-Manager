@@ -118,6 +118,7 @@
     <Compile Include="Connector\PaceHandler.cs" />
     <Compile Include="Connector\PebbleConnector.cs" />
     <Compile Include="Connector\TimeLineSynchronizer.cs" />
+    <Compile Include="Connector\WipeHandler.cs" />
     <Compile Include="Javascript\PebbleKitJS.cs" />
     <Compile Include="P3bble.Core\AsyncLock.cs" />
     <Compile Include="P3bble.Core\BundleUpload.cs" />

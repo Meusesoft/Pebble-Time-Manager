@@ -133,7 +133,7 @@ namespace Pebble_Time_Manager.Connector
                         {
                             LastConnectedDevice = _AssociatedDevice;
 
-                            _pebble.WatchItems.Load();
+                            await _pebble.WatchItems.Load();
                             return newToken;
                         }
 
@@ -552,11 +552,34 @@ namespace Pebble_Time_Manager.Connector
             return _PebbleConnector;
         }
 
+        /// <summary>
+        /// Write a message direct to the Pebble. Message is described as a string (00:01:02 etc)
+        /// </summary>
+        /// <param name="Message"></param>
+        /// <returns></returns>
+        public async Task WriteMessage(String Message)
+        {
+            String[] StringBytes = Message.Split(":".ToCharArray());
+            Byte[] Bytes = new Byte[StringBytes.Count()];
+            int index = 0;
+
+            foreach (String Byte in StringBytes)
+            {
+                Bytes[index] = byte.Parse(Byte, System.Globalization.NumberStyles.HexNumber);
+                index++;
+            }
+
+            System.Diagnostics.Debug.WriteLine("<< PAYLOAD: " + Message);
+
+            Pebble.Writer().WriteBytes(Bytes);
+            await Pebble.Writer().StoreAsync().AsTask();
+        }
+
 
         #endregion
 
         #region BackgroundCommunication
-        
+
         /// <summary>
         /// Returns true if background communication is running
         /// </summary>
@@ -589,11 +612,31 @@ namespace Pebble_Time_Manager.Connector
             return Result;*/
         }
 
+        /// <summary>
+        /// Returns true if background communication is running
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> WaitBackgroundTaskStopped(int Seconds)
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
+            for (int i = 0; i < Seconds; i++)
+            {
+                bool Result = (bool)localSettings.Values[Constants.BackgroundCommunicatieIsRunning];
+
+                if (Result) return true;
+
+                await System.Threading.Tasks.Task.Delay(1000);
+            }
+
+            return false;
+        }
+
         public enum Initiator
         {
             Manual = 0x0001,
             Select = 0x0002,
-            Reset = 0x0004,
+            Reserved5 = 0x0004,
             Synchronize = 0x0008,
             Launch = 0x0010,
             Delay = 0x0020,

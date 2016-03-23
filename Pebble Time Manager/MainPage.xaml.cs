@@ -157,14 +157,6 @@ namespace Pebble_Time_Manager
             MySplitView.IsPaneOpen = false;
         }
 
-        private async void btnResync_Click(object sender, RoutedEventArgs e)
-        {
-            Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
-            Connector.TimeLineSynchronizer _tl = new Connector.TimeLineSynchronizer();
-            _vmBinder.Log = _tl.Log;
-            await _tl.Wipe();
-        }
-
         private PebbleDevice PebbleDeviceName;
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {

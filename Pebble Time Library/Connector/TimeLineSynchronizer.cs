@@ -27,6 +27,7 @@ namespace Pebble_Time_Manager.Connector
             _Weather = new Weather.Weather();
             _Calender = new Calender.Calender();
             _ConnectionToken = -1;
+            _pc = PebbleConnector.GetInstance();
             
             BackgroundTaskStatus();
 
@@ -639,117 +640,6 @@ namespace Pebble_Time_Manager.Connector
             }
         }*/
 
-        /// <summary>
-        /// Reset the watch / timeline
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> Wipe()
-        {
-            try
-            {
-                Log.Clear();
-
-                await Connect();
-
-                String Message;
-
-                //Get current watch face ID
-                //WatchFaceMessage _wfm = new WatchFaceMessage();
-                Guid CurrentWatchFace = _pc.Pebble.CurrentWatchFace; //await _pc.Pebble.RequestWatchFaceMessageAsync(_wfm);
-
-                Log.Add(String.Format("Current watch face: {0}", CurrentWatchFace));
-                System.Diagnostics.Debug.WriteLine(String.Format("Current watch face: {0}", CurrentWatchFace));
-
-                _pc.Pebble._protocol.StartRun();
-
-                //_pc.Pebble._protocol.MessageReceived = MessageReceived;
-
-                Message = "00:04:b1:db:05:d0:11:01";
-                await WriteMessage(Message);
-                //await _pc.Pebble._protocol.ReceiveAcknowledgement();
-
-                Message = "00:04:b1:db:05:65:54:02";
-                await WriteMessage(Message);
-                //await _pc.Pebble._protocol.ReceiveAcknowledgement();
-
-                Message = "00:04:b1:db:05:8c:b5:03";
-                await WriteMessage(Message);
-                //await _pc.Pebble._protocol.ReceiveAcknowledgement();
-
-                Message = "00:04:b1:db:05:8c:b5:04";
-                await WriteMessage(Message);
-                //await _pc.Pebble._protocol.ReceiveAcknowledgement();
-                
-                Log.Add("Pebble Time wiped.");
-                System.Diagnostics.Debug.WriteLine("Pebble Time wiped.");
-      
-                _pc.Pebble.WatchItems.Clear();
-
-                await _pc.Pebble.WatchItems.Load();
-
-                foreach (var item in _pc.Pebble.WatchItems)
-                {
-                    WatchItemAddMessage _waam = new WatchItemAddMessage(_pc.Pebble.GetNextMessageIdentifier(), item);
-                    await _pc.Pebble._protocol.WriteMessage(_waam);
-
-                    switch (item.Type)
-                    {
-                        case WatchItems.WatchItemType.WatchFace:
-
-                            Log.Add(String.Format("Watch face {0} added.", item.Name));
-                            System.Diagnostics.Debug.WriteLine(String.Format("Watch face {0} added.", item.Name));
-
-                            break;
-
-                        case WatchItems.WatchItemType.WatchApp:
-
-                            Log.Add(String.Format("Watch app {0} added.", item.Name));
-                            System.Diagnostics.Debug.WriteLine(String.Format("Watch app {0} added.", item.Name));
-
-                            break;
-                    }
-                }
-
-                Log.Add("Watch items restored");
-                System.Diagnostics.Debug.WriteLine("Watch items restored");
-
-                //Clear caches
-                _Weather.ClearCache();
-                await _Calender.ClearCache();
-
-                Log.Add("Cache cleared on phone");
-                System.Diagnostics.Debug.WriteLine("Cache cleared on phone");
-
-                //Update timeline
-                await Synchronize();
-                
-                //Set the watch face
-                if (CurrentWatchFace != Guid.Empty)
-                {
-                    byte[] TicTocGuid = new byte[16] { 0x8F, 0x3C, 0x86, 0x86, 0x31, 0xA1, 0x4F, 0x5F, 0x91, 0xF5, 0x01, 0x60, 0x0C, 0x9B, 0xDC, 0x59 };
-
-                    WatchFaceSelectMessage _wsm = new WatchFaceSelectMessage(new Guid(TicTocGuid), CurrentWatchFace);
-                    await _pc.Pebble.WriteMessageAsync(_wsm);
-
-                    Log.Add(String.Format("Selected watch face: {0}", CurrentWatchFace));
-                    System.Diagnostics.Debug.WriteLine(String.Format("Selected watch face: {0}", CurrentWatchFace));
-                }
-
-
-                _pc.Pebble.ItemSend += Pebble_ItemSend;
-
-                //Disconnect();
-
-                return true;
-
-            }
-            catch (Exception)
-            {
-                Disconnect();
-            }
-
-            return false;
-        }
 
         void Pebble_ItemSend(object sender, EventArgs e)
         {
@@ -863,17 +753,14 @@ namespace Pebble_Time_Manager.Connector
         /// <returns></returns>
         public async Task Connect()
         {
+            bool bNewConnection = false;
+
             //clear log
             Log.Clear();
 
-            if (_ConnectionToken != -1)
-            {
-                //throw new Exception("Timeline connection still active.");
-            }
+            bNewConnection = !_pc.IsConnected;
 
             //Connect to the watch
-            _pc = Connector.PebbleConnector.GetInstance();
-
             _ConnectionToken = await _pc.Connect(_ConnectionToken);
 
             if (!_pc.IsConnected)
@@ -883,7 +770,7 @@ namespace Pebble_Time_Manager.Connector
                 throw new Exception("No connection with Pebble Time");
             }
 
-            Log.Add("Connected");
+            if (bNewConnection) Log.Add("Connected");
         }
 
         /// <summary>
@@ -896,30 +783,7 @@ namespace Pebble_Time_Manager.Connector
 
             _ConnectionToken = -1;
 
-            Log.Add("Disconnected");
-        }
-
-        /// <summary>
-        /// Write a message direct to the Pebble. Message is described as a string (00:01:02 etc)
-        /// </summary>
-        /// <param name="Message"></param>
-        /// <returns></returns>
-        private async Task WriteMessage(String Message)
-        {
-            String[] StringBytes = Message.Split(":".ToCharArray());
-            Byte[] Bytes = new Byte[StringBytes.Count()];
-            int index = 0;
-
-            foreach (String Byte in StringBytes)
-            {
-                Bytes[index] = byte.Parse(Byte, System.Globalization.NumberStyles.HexNumber);
-                index++;
-            }
-
-            System.Diagnostics.Debug.WriteLine("<< PAYLOAD: " + Message);
-
-            _pc.Pebble.Writer().WriteBytes(Bytes);
-            await _pc.Pebble.Writer().StoreAsync().AsTask();
+            if (!_pc.IsConnected) Log.Add("Disconnected");
         }
 
         #endregion

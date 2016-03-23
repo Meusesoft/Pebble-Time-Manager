@@ -10,6 +10,7 @@ using Windows.Storage;
 using Pebble_Time_Manager.Common;
 using P3bble;
 using Windows.UI.Popups;
+using Pebble_Time_Library.Connector;
 
 namespace Pebble_Time_Manager.ViewModels
 {
@@ -280,6 +281,8 @@ namespace Pebble_Time_Manager.ViewModels
 
         //public NotificationsHandler NotificationsHandler { get; set; }
 
+        public WipeHandler WipeHandler { get; set; }
+
         public ObservableCollection<String> Log { get; set; }
 
 
@@ -398,8 +401,14 @@ namespace Pebble_Time_Manager.ViewModels
                 Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
 
                 Log.Add("Disconnecting...");
-
-                _pc.StopBackgroundTask(PebbleConnector.Initiator.Manual);
+                if (WipeHandler != null && WipeHandler.IsConnected)
+                {
+                    WipeHandler.Disconnect();
+                }
+                else
+                {
+                    _pc.StopBackgroundTask(PebbleConnector.Initiator.Manual);
+                }
             }
             catch (Exception exp)
             {
@@ -417,11 +426,15 @@ namespace Pebble_Time_Manager.ViewModels
         {
             try
             {
+                _vmBinder.Log.Clear();
+
                 _vmBinder.Log.Add("Initiating resync...");
 
-                Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
+                WipeHandler = new WipeHandler(Log, TimeLineSynchronizer);
+                await WipeHandler.Wipe();
 
-                await _pc.StartBackgroundTask(PebbleConnector.Initiator.Reset);
+                PebbleConnector _pc = PebbleConnector.GetInstance();
+                IsConnected = _pc.IsConnected;
             }
             catch (Exception exp)
             {
@@ -474,7 +487,13 @@ namespace Pebble_Time_Manager.ViewModels
                 //Update connection status
                 if (localSettings.Values.ContainsKey(Constants.BackgroundCommunicatieIsRunning))
                 {
-                    IsConnected = (bool)localSettings.Values[Constants.BackgroundCommunicatieIsRunning];
+                    bool bConnected = false;
+
+                    bConnected = (bool)localSettings.Values[Constants.BackgroundCommunicatieIsRunning];
+
+                    if (WipeHandler != null && !bConnected) bConnected = WipeHandler.IsConnected;  
+
+                    IsConnected = bConnected;
                 }
 
                 //Process logging
