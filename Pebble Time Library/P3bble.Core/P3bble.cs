@@ -421,6 +421,7 @@ namespace P3bble
                 this._protocol.StopRun();
                 this._protocol.Dispose();
                 this._protocol = null;
+                this._protocol.MessageReceived = null;
                 IsConnected = false;
             }
 

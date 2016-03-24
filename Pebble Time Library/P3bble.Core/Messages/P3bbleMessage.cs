@@ -83,6 +83,10 @@ namespace P3bble
                 case Endpoint.WatchFaceSelect:
                     frame = new WatchFaceMessage();
                     break;
+
+                case Endpoint.StandardV3:
+                    frame = new StandardV3Message();
+                    break;
             }
 
             if (frame != null)

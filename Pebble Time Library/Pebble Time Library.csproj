@@ -153,6 +153,7 @@
     <Compile Include="P3bble.Core\Messages\PutBytesMessageV3.cs" />
     <Compile Include="P3bble.Core\Messages\ResetMessage.cs" />
     <Compile Include="P3bble.Core\Messages\SportMessage.cs" />
+    <Compile Include="P3bble.Core\Messages\StandardV3Message.cs" />
     <Compile Include="P3bble.Core\Messages\SystemMessage.cs" />
     <Compile Include="P3bble.Core\Messages\TennisMessage.cs" />
     <Compile Include="P3bble.Core\Messages\TimeLineCalenderMessage.cs" />

@@ -19,6 +19,7 @@ using Pebble_Time_Manager.Connector;
 using Pebble_Time_Manager.Weather;
 using Pebble_Time_Manager.Calender;
 using Windows.UI.Core;
+using P3bble;
 
 namespace Pebble_Time_Library.Connector
 {
@@ -61,6 +62,35 @@ namespace Pebble_Time_Library.Connector
 
 
         /// <summary>
+        /// Process the tennis message
+        /// </summary>
+        /// <param name="message"></param>
+        private void AppMessageReceived(P3bbleMessage message)
+        {
+            if (message.Endpoint == P3bble.Constants.Endpoint.StandardV3)
+            {
+                StandardV3Message _SV3M = (StandardV3Message)message;
+
+                if (MessageIdentifier == _SV3M.Identifier)  MessageReceived = true;
+            }    
+        }
+
+        private bool MessageReceived = false;
+        private int MessageIdentifier;
+
+        private async Task WaitForMessage(int Identifier)
+        {
+            MessageIdentifier = Identifier;
+
+            MessageReceived = false;
+
+            while (!MessageReceived)
+            {
+                await Task.Delay(100);
+            }
+        }
+
+        /// <summary>
         /// Reset the watch / timeline
         /// </summary>
         /// <returns></returns>
@@ -89,6 +119,7 @@ namespace Pebble_Time_Library.Connector
                 System.Diagnostics.Debug.WriteLine(String.Format("Current watch face: {0}", CurrentWatchFace));
 
                 _pc.StartReceivingMessages();
+                _pc.Pebble._protocol.MessageReceived += AppMessageReceived;
 
                 //Set the watch face
                 byte[] TicTocByte = new byte[16] { 0x8F, 0x3C, 0x86, 0x86, 0x31, 0xA1, 0x4F, 0x5F, 0x91, 0xF5, 0x01, 0x60, 0x0C, 0x9B, 0xDC, 0x59 };
@@ -103,31 +134,61 @@ namespace Pebble_Time_Library.Connector
                     System.Diagnostics.Debug.WriteLine(String.Format("TicToc Watch fase set as current"));
                 }
 
-                //_pc.Pebble._protocol.MessageReceived = MessageReceived;
+                StandardV3Message _SV3M;
 
-                Message = "00:04:b1:db:05:d0:11:01";
+                for (int i = 1; i <= 9; i++)
+                {
+                    _SV3M = new StandardV3Message(_pc.Pebble.GetNextMessageIdentifier(), (byte)i);
+                    await _pc.Pebble._protocol.WriteMessage(_SV3M);
+                    await WaitForMessage(_SV3M.Identifier);
+                }
+
+
+                /*Message = "00:04:b1:db:05:d0:11:01";
                 await _pc.WriteMessage(Message);
-                //await _pc.Pebble._protocol.ReceiveAcknowledgement();
+                await WaitForMessage("d0:11");
 
                 Message = "00:04:b1:db:05:65:54:02";
                 await _pc.WriteMessage(Message);
-                //await _pc.Pebble._protocol.ReceiveAcknowledgement();
+                await WaitForMessage("65:54");
 
                 Message = "00:04:b1:db:05:8c:b5:03";
                 await _pc.WriteMessage(Message);
-                //await _pc.Pebble._protocol.ReceiveAcknowledgement();
+                await WaitForMessage("8c:b5");
 
-                Message = "00:04:b1:db:05:8c:b5:04";
+                Message = "00:04:b1:db:05:8c:b6:04";
                 await _pc.WriteMessage(Message);
-                //await _pc.Pebble._protocol.ReceiveAcknowledgement();
+                await WaitForMessage("8c:b6");
+
+                Message = "00:04:b1:db:05:8c:b7:05";
+                await _pc.WriteMessage(Message);
+                await WaitForMessage("8c:b7");
+
+                Message = "00:04:b1:db:05:8c:b8:06";
+                await _pc.WriteMessage(Message);
+                await WaitForMessage("8c:b8");
+
+                Message = "00:04:b1:db:05:8c:b9:07";
+                await _pc.WriteMessage(Message);
+                await WaitForMessage("8c:b9");
+
+                Message = "00:04:b1:db:05:8c:ba:08";
+                await _pc.WriteMessage(Message);
+                await WaitForMessage("8c:ba");
+
+                Message = "00:04:b1:db:05:8c:b0:09";
+                await _pc.WriteMessage(Message);
+                await WaitForMessage("8c:b0");*/
 
                 _Log.Add("Pebble Time wiped.");
+
                 System.Diagnostics.Debug.WriteLine("Pebble Time wiped.");
 
                 foreach (var item in _pc.Pebble.WatchItems)
                 {
                     WatchItemAddMessage _waam = new WatchItemAddMessage(_pc.Pebble.GetNextMessageIdentifier(), item);
                     await _pc.Pebble._protocol.WriteMessage(_waam);
+                    await WaitForMessage(_waam.Transaction);
 
                     switch (item.Type)
                     {
