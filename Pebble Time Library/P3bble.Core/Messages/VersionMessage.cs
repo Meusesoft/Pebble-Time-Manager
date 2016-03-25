@@ -18,6 +18,12 @@ namespace P3bble.Messages
 
         public FirmwareVersion RecoveryFirmware { get; private set; }
 
+        public String Board { get; private set; }
+
+        public String Serial { get; private set; }
+
+        public bool IsUnfaithful { get; private set; }
+
         protected override void AddContentToMessage(List<byte> payload)
         {
             payload.Add(0x00);
@@ -29,6 +35,10 @@ namespace P3bble.Messages
 
             this.Firmware = ParseVersion(data.Skip(1).Take(47).ToArray());
             this.RecoveryFirmware = ParseVersion(data.Skip(48).Take(47).ToArray());
+
+            this.Board = Encoding.UTF8.GetString(data.Skip(99).Take(9).ToArray(), 0, 9);
+            this.Serial = Encoding.UTF8.GetString(data.Skip(108).Take(12).ToArray(), 0, 12);
+            this.IsUnfaithful = BitConverter.ToBoolean(data, 150);
         }
 
         private static FirmwareVersion ParseVersion(byte[] data)

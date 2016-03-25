@@ -49,6 +49,7 @@ namespace P3bble
         public String Name { get; set; }
         public String ServiceId { get; set; }
         public String Firmware { get; set; }
+        public String Board { get; set; }
 
         #endregion
 
@@ -270,6 +271,20 @@ namespace P3bble
         /// </value>
         public FirmwareVersion RecoveryFirmwareVersion { get; private set; }
 
+        public String Board { get; private set; }
+
+        public bool IsUnfaithful { get; private set; }
+
+        public PebbleDeviceType PebbleDeviceType {
+
+            get
+            {
+                if (Board.ToLower().Contains("snowy")) return PebbleDeviceType.Basalt;
+                if (Board.ToLower().Contains("bobby")) return PebbleDeviceType.Chalk;
+                return PebbleDeviceType.Aplite;
+            }
+        }
+
         /// <summary>
         /// Gets the underlying Bluetooth peer information.
         /// </summary>
@@ -362,11 +377,17 @@ namespace P3bble
                 {
                     _receivedMsg = await this._protocol.ReceiveMessage(0);
                 }
+
+                var VersionMessage = _receivedMsg as VersionMessage;
+                this.FirmwareVersion = VersionMessage.Firmware;
+                this.Board = VersionMessage.Board;
+                this.IsUnfaithful = VersionMessage.IsUnfaithful;
+
                 PebbleDevice _pd = PebbleDevice.LoadAssociatedDevice();
                 if (_pd != null)
                 {
-                    var VersionMessage = _receivedMsg as VersionMessage;
                     _pd.Firmware = VersionMessage.Firmware.Version.ToString();
+                    _pd.Board = VersionMessage.Board;
                     _pd.StoreAsAssociateDevice();
                 }
 
@@ -420,8 +441,8 @@ namespace P3bble
             {
                 this._protocol.StopRun();
                 this._protocol.Dispose();
-                this._protocol = null;
                 this._protocol.MessageReceived = null;
+                this._protocol = null;
                 IsConnected = false;
             }
 
@@ -1281,6 +1302,8 @@ namespace P3bble
                     VersionMessage version = message as VersionMessage;
                     this.FirmwareVersion = version.Firmware;
                     this.RecoveryFirmwareVersion = version.RecoveryFirmware;
+                    this.Board = version.Board;
+                    this.IsUnfaithful = version.IsUnfaithful;
                     break;
 
                 case Endpoint.Logs:
@@ -1333,8 +1356,7 @@ namespace P3bble
                         //StorageFile _resource = await StorageFile.GetFileFromApplicationUriAsync(new System.Uri("ms-appx:///Assets/" + _selectedApp.File));
                         //await _resource.CopyAsync(ApplicationData.Current.LocalFolder, _selectedApp.File, NameCollisionOption.ReplaceExisting);
 
-
-                        Bundle _bundle = await Types.Bundle.LoadFromLocalStorageAsync(_selectedApp.File);
+                        Bundle _bundle = await Types.Bundle.LoadFromLocalStorageAsync(_selectedApp.File, this.PebbleDeviceType);
 
                         BundleUpload = new BundleUpload(_bundle);
                         BundleUpload.TransactionId = apmm3.BundleId;

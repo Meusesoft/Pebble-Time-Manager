@@ -29,6 +29,14 @@ namespace P3bble.Types
         Firmware
     }
 
+    public enum PebbleDeviceType
+    {
+        Original,
+        Aplite,
+        Basalt,
+        Chalk        
+    }
+
     /// <summary>
     /// Represents an app this.Bundle
     /// <remarks>STRUCT_DEFINITION in pebble.py</remarks>
@@ -45,6 +53,7 @@ namespace P3bble.Types
         internal Bundle(string path)
         {
             this._path = path;
+            this.PebbleDeviceType = PebbleDeviceType.Basalt;
         }
 
         /// <summary>
@@ -103,6 +112,8 @@ namespace P3bble.Types
 
         public String Javascript { get; private set; }
 
+        public PebbleDeviceType PebbleDeviceType {get; set;}
+
         /// <summary>
         /// Loads a bundle from ApplicationData.Current.LocalFolder.
         /// </summary>
@@ -113,6 +124,23 @@ namespace P3bble.Types
             try
             {
                 var bundle = new Bundle(name);
+                await bundle.Initialise();
+                return bundle;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("LoadFromLocalStorageAsync: {0}", e.Message));
+            }
+
+            return null;
+        }
+
+        public static async Task<Bundle> LoadFromLocalStorageAsync(string name, PebbleDeviceType PebbleDeviceType)
+        {
+            try
+            {
+                var bundle = new Bundle(name);
+                bundle.PebbleDeviceType = PebbleDeviceType;
                 await bundle.Initialise();
                 return bundle;
             }
@@ -160,6 +188,8 @@ namespace P3bble.Types
 
         internal async Task Initialise()
         {
+            PebbleDeviceType BundlePebbleDeviceType = PebbleDeviceType;
+
             //Get the app from the local storage
 
             if (this._path.Contains("ms-appx:"))
@@ -186,6 +216,7 @@ namespace P3bble.Types
 
             bool Basalt = true;
 
+            //Load appinfo
             var appinfoEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "appinfo.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
             if (appinfoEntry != null)
             {
@@ -220,14 +251,25 @@ namespace P3bble.Types
                 }
             }
 
-            var manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "basalt/manifest.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+            //Load manifest
+            String ManifestPath = "";
+
+            switch (PebbleDeviceType)
+            {
+                case PebbleDeviceType.Aplite: ManifestPath = "aplite/manifest.json"; break;
+                case PebbleDeviceType.Basalt: ManifestPath = "basalt/manifest.json"; break;
+                case PebbleDeviceType.Chalk:  ManifestPath = "chalk/manifest.json";  break;
+            }
+
+            var manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, ManifestPath, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+
             if (manifestEntry == null)
             {
-                Basalt = false;
                 manifestEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "manifest.json", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+                BundlePebbleDeviceType = PebbleDeviceType.Original;
                 if (manifestEntry == null)
                 {
-                    throw new ArgumentException("manifest.json not found in archive - not a Pebble this.Bundle.");
+                    throw new ArgumentException("manifest.json not found in archive - not a Pebble Bundle.");
                 }
             }
 
@@ -237,6 +279,9 @@ namespace P3bble.Types
                 this.Manifest = serializer.ReadObject(jsonstream) as BundleManifest;
             }
 
+            //Load binary content
+            String BinaryPath = "";
+
             if (this.Manifest.Type == "firmware")
             {
                 this.BundleType = BundleType.Firmware;
@@ -244,8 +289,15 @@ namespace P3bble.Types
             }
             else
             {
+                switch (BundlePebbleDeviceType)
+                {
+                    case PebbleDeviceType.Aplite: BinaryPath = "aplite/"; break;
+                    case PebbleDeviceType.Basalt: BinaryPath = "basalt/"; break;
+                    case PebbleDeviceType.Chalk: BinaryPath = "chalk/"; break;
+                }
+
                 this.BundleType = BundleType.Application;
-                this.BinaryContent = await this.ReadFileToArray(Basalt ? "basalt/" + this.Manifest.ApplicationManifest.Filename : this.Manifest.ApplicationManifest.Filename, this.Manifest.ApplicationManifest.Size);
+                this.BinaryContent = await this.ReadFileToArray(BinaryPath + this.Manifest.ApplicationManifest.Filename, this.Manifest.ApplicationManifest.Size);
 
                 // Convert first part to app manifest
 #if NETFX_CORE  && !WINDOWS_PHONE_APP
@@ -257,12 +309,14 @@ namespace P3bble.Types
                 this.Application = buffer.AsStruct<ApplicationMetadata>();
             }
 
+            //Load resources
             this.HasResources = this.Manifest.Resources.Size != 0;
             if (this.HasResources)
             {
-                this.Resources = await this.ReadFileToArray(Basalt ? "basalt/" + this.Manifest.Resources.Filename : this.Manifest.Resources.Filename, this.Manifest.Resources.Size);
+                this.Resources = await this.ReadFileToArray(BinaryPath + this.Manifest.Resources.Filename, this.Manifest.Resources.Size);
             }
 
+            //Load javascript
             var javascriptEntry = this._bundle.Entries.Where(e => string.Compare(e.FilePath, "pebble-js-app.js", StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
             if (javascriptEntry != null)
             {
