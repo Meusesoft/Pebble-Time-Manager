@@ -42,7 +42,7 @@ namespace Pebble_Time_Manager
 
             if (IsMobile)
             {
-                //MySplitView.CompactPaneLength = 0;
+                MySplitView.CompactPaneLength = 0;
                 FrameRight.Visibility = Visibility.Collapsed;
                 MainGrid.ColumnDefinitions.RemoveAt(1);
                 btnConnect.Visibility = Visibility.Visible;
@@ -163,8 +163,20 @@ namespace Pebble_Time_Manager
             PebbleConnector _pc = PebbleConnector.GetInstance();
             if (!await _pc.IsPebbleAssociated())
             {
+                MessageDialog msgBox = new MessageDialog("No Pebble device has been associated with Pebble Time Manager. Do you want to search and associate a device now?" + System.Environment.NewLine + System.Environment.NewLine + "This will take a couple of seconds to complete.");
+                msgBox.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(this.AssociateInvokedHandler)));
+                msgBox.Commands.Add(new UICommand("No", new UICommandInvokedHandler(this.AssociateInvokedHandler)));
+
+                await msgBox.ShowAsync();
+            }
+        }
+
+        private async void AssociateInvokedHandler(IUICommand command)
+        {
+            if (command.Label == "Yes")
+            {
                 _vmBinder.Associate(null);
             }
         }
-   }
+    }
 }

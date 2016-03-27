@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.Serialization.Json;
-using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -13,7 +10,6 @@ using Pebble_Time_Manager.Common;
 using Pebble_Time_Library.Common;
 using System.IO;
 using System.IO.Compression;
-using System.IO.IsolatedStorage;
 using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Pebble_Time_Manager.WatchItems
@@ -37,9 +33,9 @@ namespace Pebble_Time_Manager.WatchItems
             if (WatchItemListChanged != null) WatchItemListChanged(this, e);
         }
         #endregion
-      
+
         #region Methods
-        
+
         /// <summary>
         /// Add new watch item
         /// </summary>
@@ -49,7 +45,7 @@ namespace Pebble_Time_Manager.WatchItems
             NotifyCollectionChangedEventArgs ea;
 
             await DeleteWatchItem(_newItem);
-            
+
             //Add the new watch face
             Add(_newItem);
 

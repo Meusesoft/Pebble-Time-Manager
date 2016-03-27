@@ -29,7 +29,9 @@ namespace Pebble_Time_Manager.ViewModels
             Commands = new vmCommands();
             Store = new vmStore();
 
-            //NotificationsHandler = new Connector.NotificationsHandler();
+#if WINDOWS_PHONE_APP
+            NotificationsHandler = new Connector.NotificationsHandler();
+#endif
             //Applications = new vmApps();
 
             PageWatchFace = true;
@@ -57,15 +59,15 @@ namespace Pebble_Time_Manager.ViewModels
             throw new NotImplementedException();
         }
 
-        #endregion
+#endregion
 
-        #region Fields
+#region Fields
 
         private DispatcherTimer _Timer;
 
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
 
         public vmCommands Commands { get; set; }
 
@@ -75,7 +77,7 @@ namespace Pebble_Time_Manager.ViewModels
 
         public vmSportApp Sport { get; set; }
 
-        public vmStore Store{ get; set; }
+        public vmStore Store { get; set; }
 
         int _PageSelected = 1;
         private int PageSelected
@@ -279,7 +281,9 @@ namespace Pebble_Time_Manager.ViewModels
 
         public TimeLineSynchronizer TimeLineSynchronizer { get; set; }
 
-        //public NotificationsHandler NotificationsHandler { get; set; }
+#if WINDOWS_PHONE_APP
+        public NotificationsHandler NotificationsHandler { get; set; }
+#endif
 
         public WipeHandler WipeHandler { get; set; }
 
@@ -293,7 +297,7 @@ namespace Pebble_Time_Manager.ViewModels
             {
                 var PackageVersion = Windows.ApplicationModel.Package.Current.Id.Version;
 
-                String Result = String.Format("version {0}.{1}.{2}", PackageVersion.Major, PackageVersion.Minor, PackageVersion.Build);                 
+                String Result = String.Format("version {0}.{1}.{2}", PackageVersion.Major, PackageVersion.Minor, PackageVersion.Build);
 
                 return Result;
             }
@@ -303,7 +307,8 @@ namespace Pebble_Time_Manager.ViewModels
         {
             get
             {
-                return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
+                return Windows.ApplicationModel.Package.Current.Id.Publisher;
+                //return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
             }
         }
 
@@ -311,12 +316,13 @@ namespace Pebble_Time_Manager.ViewModels
         {
             get
             {
-                return Windows.ApplicationModel.Package.Current.DisplayName;
+                return Windows.ApplicationModel.Package.Current.Id.Name;
+                //return Windows.ApplicationModel.Package.Current.DisplayName;
             }
         }
-        #endregion
+#endregion
 
-        #region Commands
+#region Commands
 
         public RelayCommand ConnectCommand
         {
@@ -458,9 +464,9 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        #endregion
+#endregion
 
-        #region Event handlers
+#region Event handlers
 
         void Log_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -491,7 +497,7 @@ namespace Pebble_Time_Manager.ViewModels
 
                     bConnected = (bool)localSettings.Values[Constants.BackgroundCommunicatieIsRunning];
 
-                    if (WipeHandler != null && !bConnected) bConnected = WipeHandler.IsConnected;  
+                    if (WipeHandler != null && !bConnected) bConnected = WipeHandler.IsConnected;
 
                     IsConnected = bConnected;
                 }
@@ -522,9 +528,9 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        #endregion
+#endregion
 
-        #region Backup/Restore
+#region Backup/Restore
 
         /// <summary>
         /// The last time a backup has been made
@@ -656,9 +662,9 @@ namespace Pebble_Time_Manager.ViewModels
         }
 
 
-        #endregion
+#endregion
 
-        #region Device association
+#region Device association
 
         private PebbleDevice _AssociatedDevice;
         public String AssociatedDeviceName
@@ -719,7 +725,7 @@ namespace Pebble_Time_Manager.ViewModels
 
                 if (PebbleDeviceName != null)
                 {
-                    String Message = String.Format("{0} has not been associated with Pebble Time Manager. Do you want to associate it?", PebbleDeviceName.Name);
+                    String Message = String.Format("Device {0} found. Do you want to associate it?", PebbleDeviceName.Name);
 
                     var messageDialog = new Windows.UI.Popups.MessageDialog(Message);
                     messageDialog.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(this.PebbleAssociate)));
@@ -771,9 +777,9 @@ namespace Pebble_Time_Manager.ViewModels
 
 
 
-        #endregion
+#endregion
 
-        #region INotifyPropertyChanged Members
+#region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -786,8 +792,8 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
-        #endregion
-        
+#endregion
+
         private static vmBinder _vmBinder;
         private PebbleDevice PebbleDeviceName;
 

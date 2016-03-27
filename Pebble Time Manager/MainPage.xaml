@@ -297,6 +297,25 @@
                                 Label="Clear"
                                 Visibility="{Binding Commands.ClearLog, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Command="{Binding ClearCommand}"/>
+                        
+                            <AppBarButton x:Name="btnConnectDirect"
+                              Label="Connect"
+                              Command="{Binding ConnectCommand}"
+                              Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter},ConverterParameter=XOR}">
+                                <AppBarButton.Icon>
+                                    <FontIcon FontFamily="/Assets/ptm_icons.otf#ptm_icons" Glyph="F"/>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+
+                            <AppBarButton x:Name="btnDisconnectDirect"
+                              Label="Disconnect"
+                              Command="{Binding DisconnectCommand}"
+                              Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <AppBarButton.Icon>
+                                    <FontIcon FontFamily="/Assets/ptm_icons.otf#ptm_icons" Glyph="E"/>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                        
                         </CommandBar.PrimaryCommands>
                         <CommandBar.SecondaryCommands>
                             <AppBarButton x:Name="btnResync"
