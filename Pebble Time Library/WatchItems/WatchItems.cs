@@ -139,6 +139,7 @@ namespace Pebble_Time_Manager.WatchItems
                     //else return false;
                 }
 
+#if WINDOWS_UWP
                 if (this.Find(x => x.ID == Guid.Parse(Constants.TennisAppGuid)) == null)
                 {
                     //WatchItem newitem = await WatchItem.Load("ms-appx:///Assets/Tennis.pbw");
@@ -160,6 +161,16 @@ namespace Pebble_Time_Manager.WatchItems
 
                     await Save();
                 }
+#endif
+
+#if WINDOWS_PHONE_APP
+                WatchItem TennisApp = this.Find(x => x.ID == Guid.Parse(Constants.TennisAppGuid));
+                if (TennisApp != null)
+                {
+                    this.Remove(TennisApp);
+                }
+#endif
+
 
                 NotifyCollectionChangedEventArgs ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
                 OnItemListChange(ea);
