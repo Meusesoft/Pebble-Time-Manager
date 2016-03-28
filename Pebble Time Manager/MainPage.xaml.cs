@@ -22,6 +22,7 @@ using Windows.Devices.Bluetooth.Rfcomm;
 using Pebble_Time_Manager.Connector;
 using Windows.UI.Popups;
 using P3bble;
+using Windows.UI.ViewManagement;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -39,8 +40,9 @@ namespace Pebble_Time_Manager
             this.InitializeComponent();
 
             FrameLeft.Navigate(typeof(WatchFacesPage));
+            FrameRight.Navigate(typeof(ConnectPage));
 
-            if (IsMobile)
+            /*if (IsMobile)
             {
                 MySplitView.CompactPaneLength = 0;
                 FrameRight.Visibility = Visibility.Collapsed;
@@ -52,7 +54,7 @@ namespace Pebble_Time_Manager
                 FrameRight.Navigate(typeof(ConnectPage));
                 //FrameRight.Navigate(typeof(JavascriptPage));
                 btnConnect.Visibility = Visibility.Collapsed;
-            }
+            }*/
 
             _vmBinder = vmBinder.GetInstance();
             // _vmBinder.PageWatchApp = true;
@@ -76,6 +78,12 @@ namespace Pebble_Time_Manager
 
                 var qualifiers = Windows.ApplicationModel.Resources.Core.ResourceContext.GetForCurrentView().QualifierValues;
                 _IsMobile = (qualifiers.ContainsKey("DeviceFamily") && qualifiers["DeviceFamily"] == "Mobile");
+
+                if (_IsMobile.Value)
+                {
+                    _IsMobile = (UIViewSettings.GetForCurrentView().UserInteractionMode == UserInteractionMode.Touch);
+                }
+
                 return _IsMobile.Value;
             }
         }
@@ -176,6 +184,18 @@ namespace Pebble_Time_Manager
             if (command.Label == "Yes")
             {
                 _vmBinder.Associate(null);
+            }
+        }
+
+        private void ScreenSize_CurrentStateChanged(object sender, VisualStateChangedEventArgs e)
+        {
+            if (e.NewState.Name == "Small")
+            {
+                FrameRight.Content = null;
+            }
+            if (e.NewState.Name == "Wide")
+            {
+                FrameRight.Navigate(typeof(ConnectPage));
             }
         }
     }
