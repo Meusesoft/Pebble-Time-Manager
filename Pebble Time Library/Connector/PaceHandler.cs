@@ -181,29 +181,36 @@ namespace Pebble_Time_Manager.Connector
         /// <param name="message"></param>
         private async void ProtocolMessageReceived(P3bble.P3bbleMessage message)
         {
-            if (message.Endpoint == P3bble.Constants.Endpoint.ApplicationMessage)
+            try
             {
-                if (message.GetType() == typeof(P3bble.Messages.AppMessage))
+                if (message.Endpoint == P3bble.Constants.Endpoint.ApplicationMessage)
                 {
-                    P3bble.Messages.AppMessage _msg = (P3bble.Messages.AppMessage)message;
-                    if (_msg.Command == P3bble.Messages.AppCommand.Push && _msg.AppUuid == SportFace)
+                    if (message.GetType() == typeof(P3bble.Messages.AppMessage))
                     {
-                        if (_msg.Response.Last() == 0x02) Resume();
-                        if (_msg.Response.Last() == 0x01) Pause();
+                        P3bble.Messages.AppMessage _msg = (P3bble.Messages.AppMessage)message;
+                        if (_msg.Command == P3bble.Messages.AppCommand.Push && _msg.AppUuid == SportFace)
+                        {
+                            if (_msg.Response.Last() == 0x02) Resume();
+                            if (_msg.Response.Last() == 0x01) Pause();
 
-                        System.Diagnostics.Debug.WriteLine("ProtocolMessageReceived: " + message.ToString());
+                            System.Diagnostics.Debug.WriteLine("ProtocolMessageReceived: " + message.ToString());
 
-                        List<byte> payload = new List<byte>();
-                        payload.Add(0xff);
+                            List<byte> payload = new List<byte>();
+                            payload.Add(0xff);
 
-                        P3bble.Messages.AppMessage AckMessage = (P3bble.Messages.AppMessage)P3bble.P3bbleMessage.CreateMessage(P3bble.Constants.Endpoint.ApplicationMessage, payload);
-                        AckMessage.TransactionId = _msg.TransactionId;
+                            P3bble.Messages.AppMessage AckMessage = (P3bble.Messages.AppMessage)P3bble.P3bbleMessage.CreateMessage(P3bble.Constants.Endpoint.ApplicationMessage, payload);
+                            AckMessage.TransactionId = _msg.TransactionId;
 
-                        await _pc.Pebble.WriteMessageAsync(AckMessage);
-                        await SendPebblePaceMessage();
-                        await SendPebblePaceMessage();
+                            await _pc.Pebble.WriteMessageAsync(AckMessage);
+                            await SendPebblePaceMessage();
+                            await SendPebblePaceMessage();
+                        }
                     }
                 }
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("ProtocolMessageReceived: {0}", exp.Message));    
             }
         }
 

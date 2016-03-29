@@ -26,7 +26,6 @@ namespace Pebble_Time_Manager.ViewModels
 
         #endregion
 
-
         #region Properties
 
         private Uri _URL;

@@ -37,7 +37,7 @@
                         <Setter Target="MySplitView.(SplitView.CompactPaneLength)" Value="50"/>
                     </VisualState.Setters>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="600"/>
+                        <AdaptiveTrigger MinWindowWidth="700"/>
                     </VisualState.StateTriggers>
                 </VisualState>
             </VisualStateGroup>
@@ -331,7 +331,7 @@
                               Command="{Binding ConnectCommand}"
                               Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter},ConverterParameter=XOR}">
                                 <AppBarButton.Icon>
-                                    <FontIcon FontFamily="/Assets/ptm_icons.otf#ptm_icons" Glyph="F"/>
+                                    <FontIcon FontFamily="/Assets/ptm_icons.otf#ptm_icons" Glyph="F" FontSize="26"/>
                                 </AppBarButton.Icon>
                             </AppBarButton>
 
@@ -340,7 +340,7 @@
                               Command="{Binding DisconnectCommand}"
                               Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <AppBarButton.Icon>
-                                    <FontIcon FontFamily="/Assets/ptm_icons.otf#ptm_icons" Glyph="E"/>
+                                    <FontIcon FontFamily="/Assets/ptm_icons.otf#ptm_icons" Glyph="E" FontSize="26"/>
                                 </AppBarButton.Icon>
                             </AppBarButton>
                         

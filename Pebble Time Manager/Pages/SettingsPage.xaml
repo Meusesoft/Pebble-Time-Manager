@@ -73,6 +73,10 @@
                                   Margin="0,15,0,0"
                                   IsOn="{Binding Sport.Miles, Mode=TwoWay}" RequestedTheme="Dark" FontSize="16" OffContent="Kilometres" OnContent="Miles">Distance</ToggleSwitch>
 
+                <TextBlock Margin="0,40,0,0" Style="{StaticResource SubtitleTextBlockStyle}" >Update</TextBlock>
+                <Button Margin="0,15,0,0" x:Name="btnUpdate" FontSize="16" RequestedTheme="Dark" Command="{Binding UpdateCommand}">Check for updates</Button>
+
+
                 <TextBlock Margin="0,40,0,0" Style="{StaticResource SubtitleTextBlockStyle}" >Backup</TextBlock>
                 <TextBlock Margin="0,25,0,0" FontSize="16">Last backup made</TextBlock>
                 <TextBlock Margin="0,10,0,0" FontSize="16" Text="{Binding LastBackup}" Foreground="#A0FFFFFF"></TextBlock>

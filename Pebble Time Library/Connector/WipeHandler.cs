@@ -114,9 +114,18 @@ namespace Pebble_Time_Library.Connector
                 //Get current watch face ID
                 //WatchFaceMessage _wfm = new WatchFaceMessage();
                 Guid CurrentWatchFace = _pc.Pebble.CurrentWatchFace; //await _pc.Pebble.RequestWatchFaceMessageAsync(_wfm);
-
-                _Log.Add(String.Format("Current watch face: {0}", CurrentWatchFace));
+                WatchItem CurrentWatchFaceItem = _pc.WatchItems.Get(CurrentWatchFace);
                 System.Diagnostics.Debug.WriteLine(String.Format("Current watch face: {0}", CurrentWatchFace));
+
+                if (CurrentWatchFaceItem != null)
+                {
+                    _Log.Add(String.Format("Current watch face: {0}", CurrentWatchFaceItem.Name));
+                }
+                else
+                {
+                    _Log.Add(String.Format("Current watch face: {0}", CurrentWatchFace));
+                }
+
 
                 _pc.StartReceivingMessages();
                 _pc.Pebble._protocol.MessageReceived += AppMessageReceived;
@@ -229,6 +238,15 @@ namespace Pebble_Time_Library.Connector
                     await _pc.Pebble.WriteMessageAsync(_wsm);
 
                     _Log.Add(String.Format("Selected watch face: {0}", CurrentWatchFace));
+                    if (CurrentWatchFaceItem != null)
+                    {
+                        _Log.Add(String.Format("Current watch face: {0}", CurrentWatchFaceItem.Name));
+                    }
+                    else
+                    {
+                        _Log.Add(String.Format("Current watch face: {0}", CurrentWatchFace));
+                    }
+
                     System.Diagnostics.Debug.WriteLine(String.Format("Selected watch face: {0}", CurrentWatchFace));
 
                     _pc.Pebble.ItemSend += Pebble_ItemSend;

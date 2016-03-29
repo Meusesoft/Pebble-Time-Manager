@@ -18,16 +18,10 @@ namespace Pebble_Time_Manager.WatchItems
         public WatchFace()
         {
             Type = WatchItemType.WatchFace;
-            VersionMajor = 1;
-            VersionMinor = 0;
-            VersionMajor = 5;
-            VersionMinor = 0;
         }
 
         //1 = WatchFace (appinfo.json) watchapp - watchface:true
         //8 = Configurable (appinfo.json) capabilities - configurable
         //8 = Contains javascript
-
-        public byte Flags { get; set; }
     }
 }

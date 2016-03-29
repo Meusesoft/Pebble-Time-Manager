@@ -229,7 +229,7 @@ namespace P3bble.Messages
                             Response = payload.GetRange(18, payload.Count - 18);
 
                             //Process the response
-                            Content = GetContentDictionary(Response);
+                            Content = GetContentDictionary(new List<byte>(Response));
 
                             break;
 

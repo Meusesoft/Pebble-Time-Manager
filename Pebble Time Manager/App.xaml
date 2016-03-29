@@ -419,7 +419,7 @@
                     </TextBlock>
                 </StackPanel>
 
-                <Button Grid.Column="2"
+                <Button Grid.Column="2" RequestedTheme="Dark"
                         Visibility="{Binding Configurable, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Command="{Binding ConfigureCommand}">
                     <Grid>

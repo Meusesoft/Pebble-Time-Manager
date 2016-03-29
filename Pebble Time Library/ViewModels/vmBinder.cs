@@ -52,6 +52,7 @@ namespace Pebble_Time_Manager.ViewModels
             BackupCommand = new RelayCommand(Backup);
             AssociateCommand = new RelayCommand(Associate);
             UndoAssociationCommand = new RelayCommand(UndoAssociation);
+            UpdateCommand = new RelayCommand(Update);
         }
 
         private void Log_CollectionChanged1(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -307,8 +308,12 @@ namespace Pebble_Time_Manager.ViewModels
         {
             get
             {
+#if WINDOWS_PHONE_APP
                 return Windows.ApplicationModel.Package.Current.Id.Publisher;
-                //return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
+#endif
+#if WINDOWS_UWP
+                return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
+#endif
             }
         }
 
@@ -316,13 +321,23 @@ namespace Pebble_Time_Manager.ViewModels
         {
             get
             {
+#if WINDOWS_PHONE_APP
                 return Windows.ApplicationModel.Package.Current.Id.Name;
-                //return Windows.ApplicationModel.Package.Current.DisplayName;
+#endif
+#if WINDOWS_UWP
+                return Windows.ApplicationModel.Package.Current.DisplayName;
+#endif
             }
         }
-#endregion
+        #endregion
 
-#region Commands
+        #region Commands
+
+        public RelayCommand UpdateCommand
+        {
+            get;
+            private set;
+        }
 
         public RelayCommand ConnectCommand
         {
@@ -384,6 +399,10 @@ namespace Pebble_Time_Manager.ViewModels
         {
             try
             {
+                if (_IsConnecting) return;
+
+                _IsConnecting = true;
+
                 Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
 
                 Log.Add("Connecting...");
@@ -395,7 +414,10 @@ namespace Pebble_Time_Manager.ViewModels
                 _vmBinder.Log.Add("An exception occurred while connecting.");
                 _vmBinder.Log.Add(exp.Message);
             }
+
+            _IsConnecting = false;
         }
+        private bool _IsConnecting;
 
         /// <summary>
         /// Disconnect Pebble Time and stop background communication task
@@ -777,9 +799,21 @@ namespace Pebble_Time_Manager.ViewModels
 
 
 
-#endregion
+        #endregion
 
-#region INotifyPropertyChanged Members
+        #region Updates
+
+        public void Update(object obj)
+        {
+            Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
+            _pc.WatchItems.CheckUpdates();
+
+        }
+
+        #endregion
+
+
+        #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
 

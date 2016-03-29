@@ -753,7 +753,6 @@ namespace Pebble_Time_Manager.Connector
 
              return;*/
             var result = await BackgroundExecutionManager.RequestAccessAsync();
-
             if (result == BackgroundAccessStatus.Denied) return;
 
             PebbleConnector.SetBackgroundTaskRunningStatus(InitiatedBy);

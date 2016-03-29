@@ -52,12 +52,22 @@ namespace Pebble_Time_Manager.Pages
         {
             _vmBinder.Commands.ClearLog = true;
             _vmBinder.Commands.Synchronize = true;
+            if (_vmBinder.Log != null) _vmBinder.Log.CollectionChanged += Log_CollectionChanged;
+        }
+
+        private void Log_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (lstLogs.Items.Count > 0)
+            {
+                lstLogs.ScrollIntoView(lstLogs.Items.Last());
+            }
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             _vmBinder.Commands.ClearLog = false;
             _vmBinder.Commands.Synchronize = false;
+            if (_vmBinder.Log != null) _vmBinder.Log.CollectionChanged -= Log_CollectionChanged;
         }
     }
 }

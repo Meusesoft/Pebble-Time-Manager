@@ -100,7 +100,6 @@
                               SelectionChanged="lvWatchApps_SelectionChanged" 
                               IsItemClickEnabled="{Binding WatchApps.EditMode, Converter={StaticResource BooleanXOR}}"
                               ItemClick="lvWatchApps_ItemClick"
-                              RequestedTheme="Dark" 
                               Padding="20"
                               >
             <ListView.ItemContainerStyle>

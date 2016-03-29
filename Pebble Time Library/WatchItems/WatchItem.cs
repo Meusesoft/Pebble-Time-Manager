@@ -54,6 +54,9 @@ namespace Pebble_Time_Manager.WatchItems
         public Dictionary<String, int> AppKeys { get; set; }
         [DataMember]
         public Dictionary<String, String> StoredItems { get; set; }
+
+        public bool UpdateAvailable { get; set; }
+
         #endregion
 
         #region Fields

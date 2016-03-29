@@ -18,6 +18,8 @@ namespace Pebble_Time_Manager.WatchItems
 
         String File { get; set; }
 
+        bool UpdateAvailable { get; set; }
+
         WatchItemType Type { get; set; }
 
         byte VersionMajor { get; set; }
