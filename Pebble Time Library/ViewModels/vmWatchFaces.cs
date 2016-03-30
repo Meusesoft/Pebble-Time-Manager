@@ -414,6 +414,26 @@ namespace Pebble_Time_Manager.ViewModels
             NotifyPropertyChanged("ItemsSelected");
         }
 
+        /// <summary>
+        /// Check for updates in the Pebble store
+        /// </summary>
+        public async void CheckUpdates()
+        {
+            try
+            {
+                foreach (var WatchItem in WatchFaces)
+                {
+                    await WatchItem.CheckUpdate();
+                    WatchItem.Item.UpdateAvailable = true;
+
+                }
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine("CheckUpdates exception: " + exp.Message);
+            }
+        }
+
         #endregion
 
         #region Commands

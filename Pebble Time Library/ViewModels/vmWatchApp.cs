@@ -184,6 +184,18 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+        /// <summary>
+        /// True if an update is available in the Pebble store
+        /// </summary>
+        public bool UpdateAvailable
+        {
+            get
+            {
+                if (Item == null) return false;
+                return Item.UpdateAvailable;
+            }
+        }
+
         public String ImageFile { get; set; }
 
         public Pebble_Time_Manager.WatchItems.IWatchItem Item { get; set; }
@@ -266,6 +278,15 @@ namespace Pebble_Time_Manager.ViewModels
                 ea.Error = "Time out occurred while opening the settings window.";
 
                 if (OnException != null) OnException(this, ea);
+            }
+        }
+
+        public async Task CheckUpdate()
+        {
+            if (Item != null)
+            {
+                await Item.CheckUpdate();
+                NotifyPropertyChanged("UpdateAvailable");
             }
         }
 

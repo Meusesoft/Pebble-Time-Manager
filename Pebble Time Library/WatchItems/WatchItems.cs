@@ -330,51 +330,7 @@ namespace Pebble_Time_Manager.WatchItems
 
             return true;
         }
-        public async void CheckUpdates()
-        {
-            try
-            {
-                foreach (var WatchItem in this)
-                {
-                    await CheckUpdate(WatchItem);
-                }
-            }
-            catch (Exception exp)
-            {
-                System.Diagnostics.Debug.WriteLine("CheckUpdates exception: " + exp.Message);
-            }
-        }
 
-        public async Task CheckUpdate(WatchItem item)
-        {
-            try
-            {
-                String PackageID = item.File.Replace(".zip", "");
-
-                String URL = String.Format("https://api2.getpebble.com/v2/apps/id/{0}?image_ratio=1&platform=all&hardware=basalt", PackageID);
-                System.Diagnostics.Debug.WriteLine(String.Format("{0}", URL));
-
-                //Start webrequest for JSON
-                WebRequest _wr = HttpWebRequest.Create(URL);
-                WebResponse _wresponse = await _wr.GetResponseAsync();
-                Stream _stream = _wresponse.GetResponseStream();
-
-                //Read the JSON
-                StreamReader _tr = new StreamReader(_stream);
-                String JSON = _tr.ReadToEnd();
-
-                JsonValue jsonValue = JsonValue.Parse(JSON);
-
-                String Version = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["latest_release"].GetObject()["version"].GetString();
-                String CurrentVersion = String.Format("{0}.{1}", item.VersionMajor, item.VersionMinor);
-
-                System.Diagnostics.Debug.WriteLine(String.Format("{0} {1} {2}", item.Name, Version, CurrentVersion));
-            }
-            catch (Exception exp)
-            {
-                System.Diagnostics.Debug.WriteLine("CheckUpdate exception: " + exp.Message);
-            }
-        }
 
         #endregion
     }

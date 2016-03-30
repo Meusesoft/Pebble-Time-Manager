@@ -8,6 +8,9 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using P3bble.Types;
 using Pebble_Time_Library.Javascript;
+using System.Net;
+using System.IO;
+using Windows.Data.Json;
 
 namespace Pebble_Time_Manager.WatchItems
 {
@@ -204,6 +207,53 @@ namespace Pebble_Time_Manager.WatchItems
                 throw exp;
             }
         }
+
+        /// <summary>
+        /// Check for an update in the Pebble store
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public async Task CheckUpdate()
+        {
+            try
+            {
+                String PackageID = File.Replace(".zip", "");
+                String URL = String.Format("https://api2.getpebble.com/v2/apps/id/{0}?image_ratio=1&platform=all&hardware=basalt", PackageID);
+                //System.Diagnostics.Debug.WriteLine(String.Format("{0}", URL));
+
+                //Start webrequest for JSON
+                WebRequest _wr = HttpWebRequest.Create(URL);
+                WebResponse _wresponse = await _wr.GetResponseAsync();
+                Stream _stream = _wresponse.GetResponseStream();
+
+                //Read the JSON
+                StreamReader _tr = new StreamReader(_stream);
+                String JSON = _tr.ReadToEnd();
+
+                JsonValue jsonValue = JsonValue.Parse(JSON);
+
+                String Version = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["latest_release"].GetObject()["version"].GetString();
+
+                //Compare versions
+                String[] VersionParts = Version.Split(".".ToCharArray());
+                if (VersionParts.Count() == 2)
+                {
+                    int _VersionMajor = int.Parse(VersionParts[0]);
+                    int _VersionMinor = int.Parse(VersionParts[1]);
+                    Version = String.Format("{0}.{1}", int.Parse(VersionParts[0]), int.Parse(VersionParts[1]));
+                    String CurrentVersion = String.Format("{0}.{1}", VersionMajor, VersionMinor);
+
+                    System.Diagnostics.Debug.WriteLine(String.Format("{0} - Latest version: {1}  Current version: {2}", Name, Version, CurrentVersion));
+
+                    UpdateAvailable = (_VersionMajor != VersionMajor || _VersionMinor != VersionMinor);
+                }
+            }
+            catch (Exception exp)
+            {
+                System.Diagnostics.Debug.WriteLine("CheckUpdate exception: " + exp.Message);
+            }
+        }
+
 
         #endregion
 

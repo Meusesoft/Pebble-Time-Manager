@@ -805,9 +805,8 @@ namespace Pebble_Time_Manager.ViewModels
 
         public void Update(object obj)
         {
-            Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
-            _pc.WatchItems.CheckUpdates();
-
+            WatchApps.CheckUpdates();
+            WatchFaces.CheckUpdates();
         }
 
         #endregion
