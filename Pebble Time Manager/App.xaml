@@ -425,17 +425,17 @@
                             RequestedTheme="Dark"
                             Margin="2,0,2,0"
                             Visibility="{Binding UpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Command="{Binding ConfigureCommand}">
+                            Command="{Binding UpdateCommand}">
                         <Grid>
                             <SymbolIcon 
                         Symbol="Download" 
-                        Visibility="{Binding Configuring, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=XOR}"
+                        Visibility="{Binding Updating, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=XOR}"
                         />
                             <ProgressRing 
                         Background="{x:Null}" 
                         Foreground="White"
-                        IsActive="{Binding Configuring}"
-                        Visibility="{Binding Configuring, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        IsActive="{Binding Updating}"
+                        Visibility="{Binding Updating, Converter={StaticResource BooleanToVisibilityConverter}}"
                         />
                         </Grid>
                     </Button>

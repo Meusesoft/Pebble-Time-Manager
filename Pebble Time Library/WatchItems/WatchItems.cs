@@ -13,6 +13,9 @@ using System.IO.Compression;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Net;
 using Windows.Data.Json;
+using Windows.Networking.BackgroundTransfer;
+using System.Net.Http;
+using System.Threading;
 
 namespace Pebble_Time_Manager.WatchItems
 {
@@ -329,6 +332,239 @@ namespace Pebble_Time_Manager.WatchItems
             }
 
             return true;
+        }
+
+
+        #endregion
+
+        #region Download
+
+        public enum DownloadState { Initiate, InProgress, Done, Error, Canceled};
+
+        public class DownloadEventArgs : System.EventArgs
+        {
+            public DownloadEventArgs(String Status, DownloadState State)
+            {
+                this.Status = Status;
+                this.State = State;
+            }
+
+            public DownloadEventArgs(String Status, DownloadState State, WatchItem WatchItem)
+            {
+                this.Status = Status;
+                this.State = State;
+                this.WatchItem = WatchItem;
+            }
+
+            public String Status{ get; set; }
+            public DownloadState State { get; set; }
+            public WatchItem WatchItem { get; set; }
+        }
+
+        public delegate void DownloadEventHandler(object sender, DownloadEventArgs e);
+        public static event DownloadEventHandler OnDownloadEvent;
+        public static CancellationTokenSource cts;
+        private static WatchItem newWatchItem;
+
+        public static async void Download(String PackageID)
+        {
+            try
+            {
+                cts = new CancellationTokenSource();
+
+                String URL = String.Format("https://api2.getpebble.com/v2/apps/id/{0}?image_ratio=1&platform=all&hardware=basalt", PackageID);
+
+                //Start webrequest for JSON
+                WebRequest _wr = HttpWebRequest.Create(URL);
+                WebResponse _wresponse = await _wr.GetResponseAsync();
+                Stream _stream = _wresponse.GetResponseStream();
+
+                //Read the JSON
+                StreamReader _tr = new StreamReader(_stream);
+                String JSON = _tr.ReadToEnd();
+
+                JsonValue jsonValue = JsonValue.Parse(JSON);
+
+                String Title = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["title"].GetString();
+                String Type = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["type"].GetString();
+                String File = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["latest_release"].GetObject()["pbw_file"].GetString();
+                String Uuid = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["uuid"].GetString();
+                String ListImage = jsonValue.GetObject()["data"].GetArray()[0].GetObject()["list_image"].GetObject()["80x80"].GetString();
+
+                System.Diagnostics.Debug.WriteLine($"{Type} {Title} {File}");
+
+                //Initiate download
+                HttpClient _hc = new HttpClient();
+
+                HttpResponseMessage response = await _hc.GetAsync(File);
+                response.EnsureSuccessStatusCode();
+
+                Windows.Storage.StorageFolder LocalFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+
+                BackgroundDownloader downloader = new BackgroundDownloader();
+
+                //Show download progress window
+                OnDownloadEvent?.Invoke(PackageID, new DownloadEventArgs(Title, DownloadState.Initiate));
+
+                //Download image
+                downloader = new BackgroundDownloader();
+                Windows.Storage.StorageFile destinationFile = await LocalFolder.CreateFileAsync(PackageID + ".gif", CreationCollisionOption.ReplaceExisting);
+                DownloadOperation download = downloader.CreateDownload(new Uri(ListImage), destinationFile);
+
+                await HandleDownloadImageAsync(download, true);
+
+                //Download binary
+                System.Diagnostics.Debug.WriteLine($"Download binary: {File}");
+                destinationFile = await LocalFolder.CreateFileAsync(PackageID + ".zip", CreationCollisionOption.ReplaceExisting);
+                download = downloader.CreateDownload(new Uri(File), destinationFile);
+
+                //Create watchitem instance    
+                newWatchItem = new WatchItem();
+                newWatchItem.File = PackageID + ".zip";
+                newWatchItem.ID = new Guid(Uuid);
+                newWatchItem.Name = Title;
+
+                await HandleDownloadAsync(download, true);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Exception: " + ex.Message);
+
+                OnDownloadEvent?.Invoke(null, new DownloadEventArgs(ex.Message, DownloadState.Error));
+            }
+        }
+
+        private static async Task HandleDownloadAsync(DownloadOperation download, bool start)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Running: " + download.Guid);
+
+                // Store the download so we can pause/resume.
+                Progress<DownloadOperation> progressCallback = new Progress<DownloadOperation>(DownloadProgress);
+                if (start)
+                {
+                    // Start the download and attach a progress handler.
+                    await download.StartAsync().AsTask(cts.Token, progressCallback);
+                }
+                else
+                {
+                    // The download was already running when the application started, re-attach the progress handler.
+                    await download.AttachAsync().AsTask(cts.Token, progressCallback);
+                }
+
+                ResponseInformation response = download.GetResponseInformation();
+
+                System.Diagnostics.Debug.WriteLine(String.Format("Completed: {0}, Status Code: {1}", download.Guid, response.StatusCode));
+
+                if (response.StatusCode == 200)
+                {
+                    System.Diagnostics.Debug.WriteLine("Downloaded file: " + download.ResultFile.Name);
+
+                    OnDownloadEvent?.Invoke(null, new DownloadEventArgs(download.ResultFile.Name, DownloadState.Done, newWatchItem));
+
+                    //Set the name of the file in a localsetting
+                    var localSettings = ApplicationData.Current.LocalSettings;
+                    localSettings.Values[Constants.BackgroundCommunicatieDownloadedItem] = download.ResultFile.Name;
+
+                    //Start background task to sed new item to pebble
+                    Pebble_Time_Manager.Connector.PebbleConnector _pc = Pebble_Time_Manager.Connector.PebbleConnector.GetInstance();
+                    try
+                    {
+                        await _pc.StartBackgroundTask(Connector.PebbleConnector.Initiator.AddItem);
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e.Message);
+                    }
+
+                    //Add new item to viewmodel
+                    WatchItem _newItem;
+                    _newItem = await WatchItem.Load(download.ResultFile.Name);
+                    await _pc.WatchItems.AddWatchItem((WatchItem)_newItem);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("Canceled: " + download.Guid);
+                OnDownloadEvent?.Invoke(null, new DownloadEventArgs(download.ResultFile.Name, DownloadState.Canceled));
+            }
+        }
+
+        private static async Task HandleDownloadImageAsync(DownloadOperation download, bool start)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Running image: " + download.Guid);
+
+                // Store the download so we can pause/resume.
+                Progress<DownloadOperation> progressCallback = new Progress<DownloadOperation>(DownloadImageProgress);
+                if (start)
+                {
+                    // Start the download and attach a progress handler.
+                    await download.StartAsync().AsTask(cts.Token, progressCallback);
+                }
+                else
+                {
+                    // The download was already running when the application started, re-attach the progress handler.
+                    await download.AttachAsync().AsTask(cts.Token, progressCallback);
+                }
+
+                ResponseInformation response = download.GetResponseInformation();
+
+                System.Diagnostics.Debug.WriteLine(String.Format("Completed image: {0}, Status Code: {1}", download.Guid, response.StatusCode));
+                // grDownload.Visibility = Visibility.Collapsed;
+
+                if (response.StatusCode == 200)
+                {
+                    //image loaded
+                    System.Diagnostics.Debug.WriteLine("Downloaded file: " + download.ResultFile.Name);
+
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("Canceled: " + download.Guid);
+                OnDownloadEvent?.Invoke(null, new DownloadEventArgs(download.ResultFile.Name, DownloadState.Canceled));
+            }
+        }
+
+        private static void DownloadImageProgress(DownloadOperation download)
+        {
+
+        }
+
+        /// <summary>
+        /// Update the progress windows
+        /// </summary>
+        /// <param name="download"></param>
+        private static void DownloadProgress(DownloadOperation download)
+        {
+            System.Diagnostics.Debug.WriteLine(String.Format("Progress: {0}, Status: {1}", download.Guid, download.Progress.Status));
+
+            double percent = 100;
+            if (download.Progress.TotalBytesToReceive > 0)
+            {
+                percent = download.Progress.BytesReceived * 100 / download.Progress.TotalBytesToReceive;
+            }
+
+            System.Diagnostics.Debug.WriteLine(String.Format(" - Transfered bytes: {0} of {1}, {2}%", download.Progress.BytesReceived, download.Progress.TotalBytesToReceive, percent));
+
+            OnDownloadEvent?.Invoke(null, new DownloadEventArgs($"{(int)percent}", DownloadState.InProgress));
+
+            if (download.Progress.HasRestarted)
+            {
+                System.Diagnostics.Debug.WriteLine(" - Download restarted");
+            }
+
+            if (download.Progress.HasResponseChanged)
+            {
+                // We've received new response headers from the server.
+                System.Diagnostics.Debug.WriteLine(" - Response updated; Header count: " + download.GetResponseInformation().Headers.Count);
+
+                // If you want to stream the response data this is a good time to start.
+                // download.GetResultStreamAt(0);
+            }
         }
 
 

@@ -24,10 +24,11 @@ namespace Pebble_Time_Manager.ViewModels
             Editable = true;
 
             ConfigureCommand = new RelayCommand(Configure);
+            UpdateCommand = new RelayCommand(Update);
         }
 
         #endregion
-        
+
         #region Fields
 
         private string _Name;
@@ -196,6 +197,24 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+        private bool _Updating;
+        /// <summary>
+        /// Update is in progress
+        /// </summary>
+        public bool Updating
+        {
+            get
+            {
+                return _Updating;
+            }
+            set
+            {
+                _Updating = value;
+                NotifyPropertyChanged("Updating");
+            }
+
+        }
+
         public String ImageFile { get; set; }
 
         public Pebble_Time_Manager.WatchItems.IWatchItem Item { get; set; }
@@ -300,7 +319,99 @@ namespace Pebble_Time_Manager.ViewModels
             private set;
         }
 
+        public RelayCommand UpdateCommand
+        {
+            get;
+            private set;
+        }
+
         #endregion
+
+        #region Update
+
+        private void Update(object obj)
+        {
+            try
+            {
+                String PackageID = Item.File.Replace(".zip", "");
+
+                //Initiate download
+                WatchItems.WatchItems.OnDownloadEvent += WatchItems_OnDownloadEvent;
+                WatchItems.WatchItems.Download(PackageID);
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Exception: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Process the download events
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void WatchItems_OnDownloadEvent(object sender, WatchItems.WatchItems.DownloadEventArgs e)
+        {
+            switch (e.State)
+            {
+                case WatchItems.WatchItems.DownloadState.Initiate:
+
+                    Updating = true;
+
+                    break;
+
+                case WatchItems.WatchItems.DownloadState.InProgress:
+
+                    break;
+
+                case WatchItems.WatchItems.DownloadState.Done:
+
+                    Updating = false;
+                    Item.UpdateAvailable = false;
+
+                    NotifyPropertyChanged("UpdateAvailable");
+
+                    //Set the name of the file in a localsetting
+                    var localSettings = ApplicationData.Current.LocalSettings;
+                    localSettings.Values[Constants.BackgroundCommunicatieDownloadedItem] = e.Status;
+
+                    //Start background task to sed new item to pebble
+                    Pebble_Time_Manager.Connector.PebbleConnector _pc = Pebble_Time_Manager.Connector.PebbleConnector.GetInstance();
+                    try
+                    {
+                        await _pc.StartBackgroundTask(Connector.PebbleConnector.Initiator.AddItem);
+                    }
+                    catch (Exception exp)
+                    {
+                        System.Diagnostics.Debug.WriteLine(exp.Message);
+                    }
+
+                    //Add new item to viewmodel
+                    WatchItems.WatchItem _newItem;
+                    _newItem = await WatchItems.WatchItem.Load(e.Status);
+                    await _pc.WatchItems.AddWatchItem((WatchItems.WatchItem)_newItem);
+
+                    Item = _newItem;
+
+                    break;
+
+                case WatchItems.WatchItems.DownloadState.Error:
+
+                    Updating = false;
+
+                    break;
+
+                case WatchItems.WatchItems.DownloadState.Canceled:
+
+                    break;
+            }
+        }
+
+
+
+        #endregion
+
 
         #region INotifyPropertyChanged Members
 
