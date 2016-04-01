@@ -654,7 +654,7 @@ namespace Pebble_Time_Manager.Connector
         /// <summary>
         /// Start background task
         /// </summary>
-        public async Task StartBackgroundTask_old(Initiator InitiatedBy)
+        /*public async Task StartBackgroundTask_old(Initiator InitiatedBy)
         {
             PebbleConnector.SetBackgroundTaskRunningStatus(InitiatedBy);
 
@@ -693,8 +693,7 @@ namespace Pebble_Time_Manager.Connector
                     }
 
                     //Start on real device
-                    var _Trigger = new DeviceUseTrigger();
-                
+                    var _Trigger = new DeviceUseTrigger();                
 
                     BackgroundTaskBuilder builder = new BackgroundTaskBuilder
                     {
@@ -724,7 +723,7 @@ namespace Pebble_Time_Manager.Connector
                     }
                 }
             }
-        }
+        }*/
 
         /// <summary>
         /// Search all the existing background tasks for the sync task
@@ -734,7 +733,7 @@ namespace Pebble_Time_Manager.Connector
         {
             foreach (var backgroundTask in BackgroundTaskRegistration.AllTasks.Values)
             {
-                if (backgroundTask.Name == "abcd")
+                if (backgroundTask.Name == Constants.BackgroundCommunicationTaskName || backgroundTask.Name == "abcd")
                 {
                     return (BackgroundTaskRegistration)backgroundTask;
                 }
@@ -759,11 +758,14 @@ namespace Pebble_Time_Manager.Connector
 
             if (!await IsBackgroundTaskRunning())
             {
-                backgroundSyncTaskRegistration = FindSyncTask();
-                if (backgroundSyncTaskRegistration != null)
+                backgroundSyncTaskRegistration = FindSyncTask() ;
+                while (backgroundSyncTaskRegistration != null)
                 {
                     backgroundSyncTaskRegistration.Unregister(true);
+
+                    backgroundSyncTaskRegistration = FindSyncTask();
                 }
+
                 //if (backgroundSyncTaskRegistration == null)
                 // {
                 syncBackgroundTaskTrigger = new DeviceUseTrigger();
@@ -771,7 +773,7 @@ namespace Pebble_Time_Manager.Connector
                 // Create background task to write 
                 var backgroundTaskBuilder = new BackgroundTaskBuilder();
 
-                backgroundTaskBuilder.Name = "abcd";
+                backgroundTaskBuilder.Name = Constants.BackgroundCommunicationTaskName;
                 backgroundTaskBuilder.TaskEntryPoint = Constants.BackgroundCommunicationTaskEntry;
                 backgroundTaskBuilder.SetTrigger(syncBackgroundTaskTrigger);
                 backgroundSyncTaskRegistration = backgroundTaskBuilder.Register();
@@ -782,20 +784,26 @@ namespace Pebble_Time_Manager.Connector
 
                 try
                 {
-                    var device = (await DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.FromUuid(new Guid(Constants.PebbleGuid))))).FirstOrDefault(y => y.Name.ToLower().Contains("pebble"));
-
-                    if (device == null) throw new OperationCanceledException("Is bluetooth enabled and the Pebble Time paired?");
-
-                    //DeviceTriggerResult x = await syncBackgroundTaskTrigger.RequestAsync(device.Id);
-
-                    var abc = syncBackgroundTaskTrigger.RequestAsync(device.Id).AsTask();
-                     var x = await abc;
-
-                    System.Diagnostics.Debug.WriteLine("DeviceTriggerResult: " + x.ToString());
-
-                    if (x != DeviceTriggerResult.Allowed)
+                    PebbleDevice _AssociatedDevice = PebbleDevice.LoadAssociatedDevice();
+                    if (_AssociatedDevice != null)
                     {
-                        throw new Exception(x.ToString());
+                        var _device = await BluetoothDevice.FromIdAsync(_AssociatedDevice.ServiceId);
+
+                        //var device = (await DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.FromUuid(new Guid(Constants.PebbleGuid))))).FirstOrDefault(y => y.Name.ToLower().Contains("pebble"));
+
+                        if (_device == null) throw new OperationCanceledException("Is bluetooth enabled and the Pebble Time paired?");
+
+                        //DeviceTriggerResult x = await syncBackgroundTaskTrigger.RequestAsync(device.Id);
+
+                        var abc = syncBackgroundTaskTrigger.RequestAsync(_device.DeviceId).AsTask();
+                        var x = await abc;
+
+                        System.Diagnostics.Debug.WriteLine("DeviceTriggerResult: " + x.ToString());
+
+                        if (x != DeviceTriggerResult.Allowed)
+                        {
+                            throw new Exception(x.ToString());
+                        }
                     }
                 }
                 catch (Exception exc)
