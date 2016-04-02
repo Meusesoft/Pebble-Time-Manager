@@ -359,7 +359,7 @@ namespace Pebble_Time_Manager.ViewModels
         /// <summary>
         /// Check for updates in the Pebble store
         /// </summary>
-        public async void CheckUpdates()
+        public async Task CheckUpdates()
         {
             try
             {

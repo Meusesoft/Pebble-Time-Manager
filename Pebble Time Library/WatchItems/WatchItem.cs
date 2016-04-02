@@ -105,7 +105,7 @@ namespace Pebble_Time_Manager.WatchItems
 
             try
             {
-                _newItem.Configurable = _Bundle.AppInfo.Capabilities.Contains("configurable");
+                if (_Bundle.AppInfo.Capabilities != null) _newItem.Configurable = _Bundle.AppInfo.Capabilities.Contains("configurable");
             }
             catch (Exception) { }
 

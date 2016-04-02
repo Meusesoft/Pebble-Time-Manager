@@ -75,7 +75,14 @@
 
                 <TextBlock Margin="0,40,0,0" Style="{StaticResource SubtitleTextBlockStyle}" >Update</TextBlock>
                 <Button Margin="0,15,0,0" x:Name="btnUpdate" FontSize="16" RequestedTheme="Dark" Command="{Binding UpdateCommand}">Check for updates</Button>
-
+                <TextBlock Margin="0,25,0,0" 
+                           FontSize="16"
+                           Text="{Binding UpdateStatus}"
+                           />
+                <ProgressBar
+                    IsIndeterminate="True"
+                    Visibility="{Binding UpdateBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    />
 
                 <TextBlock Margin="0,40,0,0" Style="{StaticResource SubtitleTextBlockStyle}" >Backup</TextBlock>
                 <TextBlock Margin="0,25,0,0" FontSize="16">Last backup made</TextBlock>

@@ -803,11 +803,65 @@ namespace Pebble_Time_Manager.ViewModels
 
         #region Updates
 
-        public void Update(object obj)
+        public async void Update(object obj)
         {
-            WatchApps.CheckUpdates();
-            WatchFaces.CheckUpdates();
+            UpdateBusy = true;
+            UpdateStatus = "Checking updates";
+
+            await WatchApps.CheckUpdates();
+            await WatchFaces.CheckUpdates();
+
+            int i = 0;
+            foreach (var watchitem in WatchApps.WatchApps)
+            {
+                if (watchitem.UpdateAvailable) i++;
+            }
+            foreach (var watchitem in WatchFaces.WatchFaces)
+            {
+                if (watchitem.UpdateAvailable) i++;
+            }
+
+            if (i==0)
+            {
+                UpdateStatus = "No updates available";
+            }
+            else
+            {
+                UpdateStatus = $"{i} update(s) availables";
+            }
+
+            UpdateBusy = false;
         }
+
+        private bool _UpdateBusy;
+        public bool UpdateBusy
+        {
+            get
+            {
+                return _UpdateBusy;
+            }
+            set
+            {
+                _UpdateBusy = value;
+                NotifyPropertyChanged("UpdateBusy");
+            }
+        }
+
+        private string _UpdateStatus;
+        public string UpdateStatus
+        {
+            get
+            {
+                return _UpdateStatus;
+            }
+            set
+            {
+                _UpdateStatus = value;
+                NotifyPropertyChanged("UpdateStatus");
+            }
+        }
+
+
 
         #endregion
 

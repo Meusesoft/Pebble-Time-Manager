@@ -343,12 +343,14 @@ namespace Pebble_Time_Manager.ViewModels
         {
             try
             {
-                String PackageID = Item.File.Replace(".zip", "");
+                if (WatchItems.WatchItems.cts == null)
+                {
+                    String PackageID = Item.File.Replace(".zip", "");
 
-                //Initiate download
-                WatchItems.WatchItems.OnDownloadEvent += WatchItems_OnDownloadEvent;
-                WatchItems.WatchItems.Download(PackageID);
-
+                    //Initiate download
+                    WatchItems.WatchItems.OnDownloadEvent += WatchItems_OnDownloadEvent;
+                    WatchItems.WatchItems.Download(PackageID);
+                }
             }
             catch (Exception ex)
             {

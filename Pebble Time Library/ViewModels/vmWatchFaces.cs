@@ -417,15 +417,14 @@ namespace Pebble_Time_Manager.ViewModels
         /// <summary>
         /// Check for updates in the Pebble store
         /// </summary>
-        public async void CheckUpdates()
+        public async Task CheckUpdates()
         {
             try
             {
                 foreach (var WatchItem in WatchFaces)
                 {
                     await WatchItem.CheckUpdate();
-                    WatchItem.Item.UpdateAvailable = true;
-
+                    //if (WatchItem.Item!=null) WatchItem.Item.UpdateAvailable = true;
                 }
             }
             catch (Exception exp)

@@ -431,6 +431,7 @@ namespace Pebble_Time_Manager.WatchItems
                 System.Diagnostics.Debug.WriteLine("Exception: " + ex.Message);
 
                 OnDownloadEvent?.Invoke(null, new DownloadEventArgs(ex.Message, DownloadState.Error));
+                cts = null;
             }
         }
 
@@ -482,12 +483,20 @@ namespace Pebble_Time_Manager.WatchItems
                     WatchItem _newItem;
                     _newItem = await WatchItem.Load(download.ResultFile.Name);
                     await _pc.WatchItems.AddWatchItem((WatchItem)_newItem);
+
+                    cts = null;
+                }
+                else
+                {
+                    OnDownloadEvent?.Invoke(null, new DownloadEventArgs("An error occurred while downloading", DownloadState.Error));
+                    cts = null;
                 }
             }
             catch (TaskCanceledException)
             {
                 System.Diagnostics.Debug.WriteLine("Canceled: " + download.Guid);
                 OnDownloadEvent?.Invoke(null, new DownloadEventArgs(download.ResultFile.Name, DownloadState.Canceled));
+                cts = null;
             }
         }
 
@@ -519,13 +528,13 @@ namespace Pebble_Time_Manager.WatchItems
                 {
                     //image loaded
                     System.Diagnostics.Debug.WriteLine("Downloaded file: " + download.ResultFile.Name);
-
                 }
             }
             catch (TaskCanceledException)
             {
                 System.Diagnostics.Debug.WriteLine("Canceled: " + download.Guid);
                 OnDownloadEvent?.Invoke(null, new DownloadEventArgs(download.ResultFile.Name, DownloadState.Canceled));
+                cts = null;
             }
         }
 
