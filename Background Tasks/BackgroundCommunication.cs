@@ -310,9 +310,14 @@ namespace BackgroundTasks
 
                         localSettings.Values[Constants.PaceSwitchPaused] = false;
                         localSettings.Values[Constants.PaceGPX] = false;
-                        if (roamingSettings.Values.Keys.Contains(Constants.Miles))
-                            localSettings.Values[Constants.Miles] = roamingSettings.Values[Constants.Miles];
-                        localSettings.Values[Constants.Miles] = !System.Globalization.RegionInfo.CurrentRegion.IsMetric;
+                        if (localSettings.Values.Keys.Contains(Constants.Miles))
+                        {
+                            localSettings.Values[Constants.Miles] = localSettings.Values[Constants.Miles];
+                        }
+                        else
+                        {
+                            localSettings.Values[Constants.Miles] = !System.Globalization.RegionInfo.CurrentRegion.IsMetric;
+                        }
                         localSettings.Values[Constants.BackgroundCommunicatieIsRunning] = true;
 
                         //initialise pace handler

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using P3bble;
+using Pebble_Time_Library.Connector;
+using Pebble_Time_Manager.Common;
+using Pebble_Time_Manager.Connector;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Tennis_Statistics.ViewModels;
-using Pebble_Time_Manager.Connector;
-using Windows.UI.Xaml;
 using Windows.Storage;
-using Pebble_Time_Manager.Common;
-using P3bble;
 using Windows.UI.Popups;
-using Pebble_Time_Library.Connector;
+using Windows.UI.Xaml;
 
 namespace Pebble_Time_Manager.ViewModels
 {
@@ -52,7 +50,6 @@ namespace Pebble_Time_Manager.ViewModels
             BackupCommand = new RelayCommand(Backup);
             AssociateCommand = new RelayCommand(Associate);
             UndoAssociationCommand = new RelayCommand(UndoAssociation);
-            UpdateCommand = new RelayCommand(Update);
         }
 
         private void Log_CollectionChanged1(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -308,12 +305,8 @@ namespace Pebble_Time_Manager.ViewModels
         {
             get
             {
-#if WINDOWS_PHONE_APP
                 return Windows.ApplicationModel.Package.Current.Id.Publisher;
-#endif
-#if WINDOWS_UWP
-                return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
-#endif
+                //return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
             }
         }
 
@@ -321,23 +314,13 @@ namespace Pebble_Time_Manager.ViewModels
         {
             get
             {
-#if WINDOWS_PHONE_APP
                 return Windows.ApplicationModel.Package.Current.Id.Name;
-#endif
-#if WINDOWS_UWP
-                return Windows.ApplicationModel.Package.Current.DisplayName;
-#endif
+                //return Windows.ApplicationModel.Package.Current.DisplayName;
             }
         }
-        #endregion
+#endregion
 
-        #region Commands
-
-        public RelayCommand UpdateCommand
-        {
-            get;
-            private set;
-        }
+#region Commands
 
         public RelayCommand ConnectCommand
         {
@@ -399,10 +382,6 @@ namespace Pebble_Time_Manager.ViewModels
         {
             try
             {
-                if (_IsConnecting) return;
-
-                _IsConnecting = true;
-
                 Connector.PebbleConnector _pc = Connector.PebbleConnector.GetInstance();
 
                 Log.Add("Connecting...");
@@ -414,10 +393,7 @@ namespace Pebble_Time_Manager.ViewModels
                 _vmBinder.Log.Add("An exception occurred while connecting.");
                 _vmBinder.Log.Add(exp.Message);
             }
-
-            _IsConnecting = false;
         }
-        private bool _IsConnecting;
 
         /// <summary>
         /// Disconnect Pebble Time and stop background communication task
@@ -721,6 +697,22 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+        public String AssociatedDeviceBoard
+        {
+            get
+            {
+                if (_AssociatedDevice == null)
+                {
+                    _AssociatedDevice = PebbleDevice.LoadAssociatedDevice();
+                }
+                if (_AssociatedDevice != null)
+                {
+                    return "Board " + _AssociatedDevice.Board;
+                }
+                return "";
+            }
+        }
+
         public bool IsDeviceAssociated
         {
             get
@@ -736,6 +728,7 @@ namespace Pebble_Time_Manager.ViewModels
 
             NotifyPropertyChanged("IsDeviceAssociated");
             NotifyPropertyChanged("AssociatedDeviceFirmware");
+            NotifyPropertyChanged("AssociatedDeviceBoard");
             NotifyPropertyChanged("AssociatedDeviceName");
         }
 
@@ -772,6 +765,7 @@ namespace Pebble_Time_Manager.ViewModels
                     NotifyPropertyChanged("IsDeviceAssociated");
                     NotifyPropertyChanged("AssociatedDeviceFirmware");
                     NotifyPropertyChanged("AssociatedDeviceName");
+                    NotifyPropertyChanged("AssociatedDeviceBoard");
 
                     var successDialog = new Windows.UI.Popups.MessageDialog(String.Format("Association {0} completed successfully.", PebbleDeviceName.Name));
                     successDialog.Commands.Add(new UICommand("Ok"));
@@ -799,74 +793,9 @@ namespace Pebble_Time_Manager.ViewModels
 
 
 
-        #endregion
+#endregion
 
-        #region Updates
-
-        public async void Update(object obj)
-        {
-            UpdateBusy = true;
-            UpdateStatus = "Checking updates";
-
-            await WatchApps.CheckUpdates();
-            await WatchFaces.CheckUpdates();
-
-            int i = 0;
-            foreach (var watchitem in WatchApps.WatchApps)
-            {
-                if (watchitem.UpdateAvailable) i++;
-            }
-            foreach (var watchitem in WatchFaces.WatchFaces)
-            {
-                if (watchitem.UpdateAvailable) i++;
-            }
-
-            if (i==0)
-            {
-                UpdateStatus = "No updates available";
-            }
-            else
-            {
-                UpdateStatus = $"{i} update(s) availables";
-            }
-
-            UpdateBusy = false;
-        }
-
-        private bool _UpdateBusy;
-        public bool UpdateBusy
-        {
-            get
-            {
-                return _UpdateBusy;
-            }
-            set
-            {
-                _UpdateBusy = value;
-                NotifyPropertyChanged("UpdateBusy");
-            }
-        }
-
-        private string _UpdateStatus;
-        public string UpdateStatus
-        {
-            get
-            {
-                return _UpdateStatus;
-            }
-            set
-            {
-                _UpdateStatus = value;
-                NotifyPropertyChanged("UpdateStatus");
-            }
-        }
-
-
-
-        #endregion
-
-
-        #region INotifyPropertyChanged Members
+#region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
 

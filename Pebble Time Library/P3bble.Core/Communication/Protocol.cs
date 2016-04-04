@@ -429,11 +429,14 @@ namespace P3bble.Communication
                 {
                     System.Diagnostics.Debug.WriteLine("ReceiveMessage: " + e.Message);
 
-                    if (e.HResult == -2147023901)
+                    if (e.HResult == -2147023901 || e.HResult == -2147014843)
                     {
                         StopRun();
                         OnDisconnect(EventArgs.Empty);
                     }
+
+
+
                 }
 
             return null;

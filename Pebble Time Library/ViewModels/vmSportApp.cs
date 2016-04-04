@@ -57,11 +57,11 @@ namespace Pebble_Time_Manager.ViewModels
 
             if (localSettings.Values.Keys.Contains(Constants.Miles))
             {
-                Miles = (bool)localSettings.Values[Constants.Miles];
+                _Miles = (bool)localSettings.Values[Constants.Miles];
             }
             else
             {
-                Miles = !System.Globalization.RegionInfo.CurrentRegion.IsMetric;
+                _Miles = !System.Globalization.RegionInfo.CurrentRegion.IsMetric;
             }
         }
 
@@ -328,7 +328,13 @@ namespace Pebble_Time_Manager.ViewModels
             Pace = (String)localSettings.Values[Constants.PacePace];
             Distance = (String)localSettings.Values[Constants.PaceDistance];
 
-            if (localSettings.Values.Keys.Contains(Constants.BackgroundCommunicatieIsRunning)) IsRunning = (bool)localSettings.Values[Constants.BackgroundCommunicatieIsRunning];
+            /*if (localSettings.Values.Keys.Contains(Constants.BackgroundCommunicatieIsRunning))
+            {
+                IsRunning = (bool)localSettings.Values[Constants.BackgroundCommunicatieIsRunning];
+            }*/
+
+            IsRunning = PebbleConnector.IsBackgroundTaskRunningStatusSet(PebbleConnector.Initiator.Pace);
+
             if (localSettings.Values.Keys.Contains(Constants.PacePaused)) Paused = (bool)localSettings.Values[Constants.PacePaused];
             if (localSettings.Values.Keys.Contains(Constants.PaceGPX)) Shareable = (bool)localSettings.Values[Constants.PaceGPX];
 

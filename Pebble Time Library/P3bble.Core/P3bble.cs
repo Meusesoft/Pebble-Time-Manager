@@ -70,7 +70,10 @@ namespace P3bble
                     {
                         Result.Firmware = (string)localSettings.Values["AssociatedDeviceFirmware"];
                     }
-
+                    if (localSettings.Values.ContainsKey("AssociatedDeviceBoard"))
+                    {
+                        Result.Board = (string)localSettings.Values["AssociatedDeviceBoard"];
+                    }
                     return Result;
                 }
             }
@@ -86,6 +89,7 @@ namespace P3bble
             localSettings.Values.Remove("AssociatedDevice");
             localSettings.Values.Remove("AssociatedDeviceId");
             localSettings.Values.Remove("AssociatedDeviceFirmware");
+            localSettings.Values.Remove("AssociatedDeviceBoard");
         }
 
         public void StoreAsAssociateDevice()
@@ -95,6 +99,7 @@ namespace P3bble
             localSettings.Values["AssociatedDevice"] = Name;
             localSettings.Values["AssociatedDeviceId"] = ServiceId;
             localSettings.Values["AssociatedDeviceFirmware"] = Firmware;
+            localSettings.Values["AssociatedDeviceBoard"] = Board;
         }
     }
 
@@ -108,7 +113,7 @@ namespace P3bble
         public P3bble()
         {
             Initialise();
-         }
+        }
 
         private async Task Initialise()
         {
@@ -275,7 +280,8 @@ namespace P3bble
 
         public bool IsUnfaithful { get; private set; }
 
-        public PebbleDeviceType PebbleDeviceType {
+        public PebbleDeviceType PebbleDeviceType
+        {
 
             get
             {
@@ -318,7 +324,7 @@ namespace P3bble
         {
             if (ItemSend != null) ItemSend(this, e);
         }
-        
+
         #endregion
 
         /// <summary>
@@ -340,7 +346,7 @@ namespace P3bble
         /// <returns>A bool indicating if the connection was successful</returns>
         public async Task<bool> ConnectAsync()
         {
-            
+
             // Check we're not already connected...
             if (this.IsConnected)
             {
@@ -369,7 +375,7 @@ namespace P3bble
                 // _receivedMsg = await this._protocol.ReceiveMessage(35);
                 await this._protocol.ClearMessageBuffer();
                 await this._protocol.WriteMessage(new PhoneVersionMessage(false));
-                
+
                 //pebble firmware version
                 await this._protocol.WriteMessage(new VersionMessage());
                 _receivedMsg = await this._protocol.ReceiveMessage(0);
@@ -407,7 +413,7 @@ namespace P3bble
                 var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
                 localSettings.Values["CurrentWatchFace"] = CurrentWatchFace;
 
-               
+
                 // await this._protocol.WriteMessage(new ResetMessage());
 
                 //time message
@@ -415,10 +421,10 @@ namespace P3bble
                 //_receivedMsg = await this._protocol.ReceiveMessage(0);
 
                 this.IsConnected = true;
-               // this._protocol.StartRun();
+                // this._protocol.StartRun();
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LastError = e.Message;
                 ServiceLocator.Logger.WriteLine("Error connecting to pebble " + e.Message);
@@ -670,17 +676,17 @@ namespace P3bble
 
             return false;
         }
-        
+
         /// <summary>
-                 /// Sets the now playing track.
-                 /// </summary>
-                 /// <param name="artist">The artist.</param>
-                 /// <param name="album">The album.</param>
-                 /// <param name="track">The track.</param>
-                 /// <returns>
-                 /// An async task to wait
-                 /// </returns>
-                 /// <remarks>Using this method requires you set Pebble.IsMusicControlEnabled to true</remarks>
+        /// Sets the now playing track.
+        /// </summary>
+        /// <param name="artist">The artist.</param>
+        /// <param name="album">The album.</param>
+        /// <param name="track">The track.</param>
+        /// <returns>
+        /// An async task to wait
+        /// </returns>
+        /// <remarks>Using this method requires you set Pebble.IsMusicControlEnabled to true</remarks>
         public Task SetNowPlayingAsync(string artist, string album, string track)
         {
             return this._protocol.WriteMessage(new MusicMessage(artist, album, track));
@@ -1024,7 +1030,7 @@ namespace P3bble
 
             return true;
         }
-        
+
         /// <summary>
         /// Request the current watch face
         /// </summary>
@@ -1085,7 +1091,7 @@ namespace P3bble
                 DateTime.Now,
                 Header,
                 Message,
-                Icons.bell));                
+                Icons.bell));
 
             //return this._protocol.WriteMessage(new NotificationMessage(NotificationType.SMS, sender, message));
         }
@@ -1185,7 +1191,8 @@ namespace P3bble
                 {
                     if (device.Name.ToLower().Contains("pebble"))
                     {
-                        try {
+                        try
+                        {
                             var _device = await BluetoothDevice.FromIdAsync(device.Id);
                             //var service = await RfcommDeviceService.FromIdAsync(device.Id);
                             //device.
@@ -1198,7 +1205,7 @@ namespace P3bble
                     }
                 }
 
-                #else
+#else
 
                 //PeerFinder.Start();
                 PeerFinder.AlternateIdentities["Bluetooth:Paired"] = string.Empty;
@@ -1208,7 +1215,7 @@ namespace P3bble
                 // stop us getting headphones, etc. showing up...
                 foreach (PeerInformation pi in pairedDevices)
                 {
-                    if (pi.DisplayName.ToLower().Contains("pebble") 
+                    if (pi.DisplayName.ToLower().Contains("pebble")
                         || pi.DisplayName.ToLower().Contains("bc5f")
                         || pi.DisplayName.ToLower().Contains("7e3f"))
                     {
@@ -1220,7 +1227,7 @@ namespace P3bble
                 {
                     ServiceLocator.Logger.WriteLine("No paired devices were found.");
                 }
-        #endif
+#endif
             }
             catch (Exception ex)
             {
@@ -1237,7 +1244,7 @@ namespace P3bble
             return await FindPebble("");
         }
 
-            
+
         public static async Task<PebbleDevice> FindPebble(String ServiceId)
         {
             List<P3bble> result = new List<P3bble>();
@@ -1326,7 +1333,7 @@ namespace P3bble
                 case Endpoint.AppManagerV3:
 
                     Messages.AppManagerMessageV3 apmm3 = (Messages.AppManagerMessageV3)message;
-                
+
                     System.Diagnostics.Debug.WriteLine(">> RECEIVED MESSAGE FOR ENDPOINT AppManagerV3");
                     System.Diagnostics.Debug.WriteLine(">> AppManagerV3 - App requested: " + apmm3.App.ToString());
 
@@ -1391,7 +1398,7 @@ namespace P3bble
                         case 0x01:
 
                             if (BundleUpload.Status != UploadStatus.eNone)
-                            { 
+                            {
                                 if (!BundleUpload.EOD)
                                 {
                                     BundleUpload.AddFileId((Messages.PutBytesMessage)_pbm);
@@ -1430,7 +1437,7 @@ namespace P3bble
 
                                     //Send event
                                     OnItemSend(EventArgs.Empty);
-                                }                            
+                                }
                             }
 
                             break;
@@ -1505,53 +1512,53 @@ namespace P3bble
             }
 
             return Task.Run<T>(async () =>
+            {
+                this.IsBusy = true;
+
+                int startTicks = Environment.TickCount;
+                this._pendingMessageSignal = new ManualResetEventSlim(false);
+                this._pendingMessage = message;
+
+                // Send the message...
+                await this._protocol.WriteMessage(message);
+
+                // Return directly if not waiting for the response
+                if (millisecondsTimeout == 0) return message as T;
+
+                // Wait for the response...
+                this._pendingMessageSignal.Wait(millisecondsTimeout);
+
+                T pendingMessage = null;
+
+                if (this._pendingMessageSignal.IsSet)
                 {
-                    this.IsBusy = true;
+                    // Store any response will be null if timed out...
+                    pendingMessage = this._pendingMessage as T;
+                }
 
-                    int startTicks = Environment.TickCount;
-                    this._pendingMessageSignal = new ManualResetEventSlim(false);
-                    this._pendingMessage = message;
+                // See if we have a protocol error
+                LogsMessage logMessage = this._pendingMessage as LogsMessage;
+                Type pendingMessageType = this._pendingMessage.GetType();
 
-                    // Send the message...
-                    await this._protocol.WriteMessage(message);
+                // Clear the pending variables...
+                this._pendingMessageSignal = null;
+                this._pendingMessage = null;
 
-                    // Return directly if not waiting for the response
-                    if (millisecondsTimeout == 0) return message as T;
+                int timeTaken = Environment.TickCount - startTicks;
 
-                    // Wait for the response...
-                    this._pendingMessageSignal.Wait(millisecondsTimeout);
+                this.IsBusy = false;
 
-                    T pendingMessage = null;
+                if (pendingMessage != null)
+                {
+                    System.Diagnostics.Debug.WriteLine(pendingMessage.GetType().Name + " message received back in " + timeTaken.ToString() + "ms");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms - type received was " + pendingMessageType.ToString());
+                }
 
-                    if (this._pendingMessageSignal.IsSet)
-                    {
-                        // Store any response will be null if timed out...
-                        pendingMessage = this._pendingMessage as T;
-                    }
-
-                    // See if we have a protocol error
-                    LogsMessage logMessage = this._pendingMessage as LogsMessage;
-                    Type pendingMessageType = this._pendingMessage.GetType();
-
-                    // Clear the pending variables...
-                    this._pendingMessageSignal = null;
-                    this._pendingMessage = null;
-
-                    int timeTaken = Environment.TickCount - startTicks;
-
-                    this.IsBusy = false;
-
-                    if (pendingMessage != null)
-                    {
-                        System.Diagnostics.Debug.WriteLine(pendingMessage.GetType().Name + " message received back in " + timeTaken.ToString() + "ms");
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine(message.GetType().Name + " message timed out in " + timeTaken.ToString() + "ms - type received was " + pendingMessageType.ToString());
-                    }
-
-                    return pendingMessage;
-                });
+                return pendingMessage;
+            });
         }
     }
 }
