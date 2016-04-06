@@ -745,6 +745,7 @@ namespace Pebble_Time_Manager.Connector
 
         private DeviceUseTrigger syncBackgroundTaskTrigger;
         private BackgroundTaskRegistration backgroundSyncTaskRegistration;
+
         public async Task StartBackgroundTask(Initiator InitiatedBy)
         {
             /* PebbleConnector _pc = PebbleConnector.GetInstance();
@@ -813,6 +814,7 @@ namespace Pebble_Time_Manager.Connector
                     {
                         throw new Exception("Background communication task can't be started: " + exc.Message);
                     }
+                    throw new Exception("Unexpected error: " + exc.Message);
                 }
             }
         }

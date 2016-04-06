@@ -287,6 +287,7 @@ namespace P3bble
             {
                 if (Board.ToLower().Contains("snowy")) return PebbleDeviceType.Basalt;
                 if (Board.ToLower().Contains("bobby")) return PebbleDeviceType.Chalk;
+                if (Board.ToLower().Contains("spauld")) return PebbleDeviceType.Chalk;
                 return PebbleDeviceType.Aplite;
             }
         }

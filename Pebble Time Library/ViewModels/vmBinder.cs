@@ -50,6 +50,8 @@ namespace Pebble_Time_Manager.ViewModels
             BackupCommand = new RelayCommand(Backup);
             AssociateCommand = new RelayCommand(Associate);
             UndoAssociationCommand = new RelayCommand(UndoAssociation);
+            UpdateCommand = new RelayCommand(Update);
+
         }
 
         private void Log_CollectionChanged1(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -57,15 +59,15 @@ namespace Pebble_Time_Manager.ViewModels
             throw new NotImplementedException();
         }
 
-#endregion
+        #endregion
 
-#region Fields
+        #region Fields
 
         private DispatcherTimer _Timer;
 
-#endregion
+        #endregion
 
-#region Properties
+        #region Properties
 
         public vmCommands Commands { get; set; }
 
@@ -305,8 +307,11 @@ namespace Pebble_Time_Manager.ViewModels
         {
             get
             {
+#if WINDOWS_PHONE_APP
                 return Windows.ApplicationModel.Package.Current.Id.Publisher;
-                //return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
+#else
+                return Windows.ApplicationModel.Package.Current.PublisherDisplayName;
+#endif
             }
         }
 
@@ -314,13 +319,22 @@ namespace Pebble_Time_Manager.ViewModels
         {
             get
             {
+#if WINDOWS_PHONE_APP
                 return Windows.ApplicationModel.Package.Current.Id.Name;
-                //return Windows.ApplicationModel.Package.Current.DisplayName;
+#else
+                return Windows.ApplicationModel.Package.Current.DisplayName;
+#endif
             }
         }
 #endregion
 
 #region Commands
+
+        public RelayCommand UpdateCommand
+        {
+            get;
+            private set;
+        }
 
         public RelayCommand ConnectCommand
         {
@@ -789,6 +803,70 @@ namespace Pebble_Time_Manager.ViewModels
             messageDialog.Commands.Add(new UICommand("Ok"));
 
             await messageDialog.ShowAsync();
+        }
+
+
+
+#endregion
+
+#region Updates
+
+        public async void Update(object obj)
+        {
+            UpdateBusy = true;
+            UpdateStatus = "Checking updates";
+
+            await WatchApps.CheckUpdates();
+            await WatchFaces.CheckUpdates();
+
+            int i = 0;
+            foreach (var watchitem in WatchApps.WatchApps)
+            {
+                if (watchitem.UpdateAvailable) i++;
+            }
+            foreach (var watchitem in WatchFaces.WatchFaces)
+            {
+                if (watchitem.UpdateAvailable) i++;
+            }
+
+            if (i == 0)
+            {
+                UpdateStatus = "No updates available";
+            }
+            else
+            {
+                UpdateStatus = $"{i} update(s) availables";
+            }
+
+            UpdateBusy = false;
+        }
+
+        private bool _UpdateBusy;
+        public bool UpdateBusy
+        {
+            get
+            {
+                return _UpdateBusy;
+            }
+            set
+            {
+                _UpdateBusy = value;
+                NotifyPropertyChanged("UpdateBusy");
+            }
+        }
+
+        private string _UpdateStatus;
+        public string UpdateStatus
+        {
+            get
+            {
+                return _UpdateStatus;
+            }
+            set
+            {
+                _UpdateStatus = value;
+                NotifyPropertyChanged("UpdateStatus");
+            }
         }
 
 
