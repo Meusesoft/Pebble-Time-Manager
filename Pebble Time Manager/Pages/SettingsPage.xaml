@@ -44,6 +44,7 @@
                     <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceName}"/>
                     <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceFirmware}" Foreground="Gray"/>
                     <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceBoard}" Foreground="Gray"/>
+                    <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceId}" Foreground="Gray" TextWrapping="Wrap"/>
                     <Button Margin="0,15,0,0" x:Name="btnUndoAssociation" FontSize="16" Command="{Binding UndoAssociationCommand}" RequestedTheme="Dark">Undo association</Button>
                 </StackPanel>
             

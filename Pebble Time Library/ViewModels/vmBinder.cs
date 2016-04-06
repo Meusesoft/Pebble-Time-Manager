@@ -727,6 +727,22 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+        public String AssociatedDeviceId
+        {
+            get
+            {
+                if (_AssociatedDevice == null)
+                {
+                    _AssociatedDevice = PebbleDevice.LoadAssociatedDevice();
+                }
+                if (_AssociatedDevice != null)
+                {
+                    return "Id " + _AssociatedDevice.ServiceId;
+                }
+                return "";
+            }
+        }
+
         public bool IsDeviceAssociated
         {
             get
@@ -744,6 +760,7 @@ namespace Pebble_Time_Manager.ViewModels
             NotifyPropertyChanged("AssociatedDeviceFirmware");
             NotifyPropertyChanged("AssociatedDeviceBoard");
             NotifyPropertyChanged("AssociatedDeviceName");
+            NotifyPropertyChanged("AssociatedDeviceId");
         }
 
         public async void Associate(object obj)
@@ -776,40 +793,48 @@ namespace Pebble_Time_Manager.ViewModels
                 {
                     Log.Add("Success");
 
-                    NotifyPropertyChanged("IsDeviceAssociated");
-                    NotifyPropertyChanged("AssociatedDeviceFirmware");
-                    NotifyPropertyChanged("AssociatedDeviceName");
-                    NotifyPropertyChanged("AssociatedDeviceBoard");
-
                     var successDialog = new Windows.UI.Popups.MessageDialog(String.Format("Association {0} completed successfully.", PebbleDeviceName.Name));
                     successDialog.Commands.Add(new UICommand("Ok"));
 
                     await successDialog.ShowAsync();
+                }
+                else
+                {
+                    throw new Exception();
+                }
 
-                    return;
+            }
+            catch (Exception exp)
+            {
+                if (exp.Message.Length > 0)
+                {
+                    Log.Add(String.Format("An error occurred while associating {0}: {1}", PebbleDeviceName, exp.Message));
                 }
                 else
                 {
                     Log.Add("Failed");
                 }
 
+                var messageDialog = new Windows.UI.Popups.MessageDialog(String.Format("Association {0} failed.", PebbleDeviceName.Name));
+                messageDialog.Commands.Add(new UICommand("Ok"));
+
+                await messageDialog.ShowAsync();
             }
-            catch (Exception exp)
+            finally
             {
-                Log.Add(String.Format("An error occurred while associating {0}: {1}", PebbleDeviceName, exp.Message));
+                NotifyPropertyChanged("IsDeviceAssociated");
+                NotifyPropertyChanged("AssociatedDeviceFirmware");
+                NotifyPropertyChanged("AssociatedDeviceName");
+                NotifyPropertyChanged("AssociatedDeviceBoard");
+                NotifyPropertyChanged("AssociatedDeviceId");
             }
-
-            var messageDialog = new Windows.UI.Popups.MessageDialog(String.Format("Association {0} failed.", PebbleDeviceName.Name));
-            messageDialog.Commands.Add(new UICommand("Ok"));
-
-            await messageDialog.ShowAsync();
         }
 
 
 
-#endregion
+        #endregion
 
-#region Updates
+        #region Updates
 
         public async void Update(object obj)
         {
