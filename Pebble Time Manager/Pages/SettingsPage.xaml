@@ -42,10 +42,14 @@
                 </StackPanel>
                 <StackPanel Visibility="{Binding IsDeviceAssociated, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceName}"/>
-                    <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceFirmware}" Foreground="Gray"/>
-                    <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceBoard}" Foreground="Gray"/>
-                    <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceId}" Foreground="Gray" TextWrapping="Wrap"/>
-                    <Button Margin="0,15,0,0" x:Name="btnUndoAssociation" FontSize="16" Command="{Binding UndoAssociationCommand}" RequestedTheme="Dark">Undo association</Button>
+                    <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceFirmware}" Visibility="{Binding MoreInfo, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Gray"/>
+                    <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceBoard}" Visibility="{Binding MoreInfo, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Gray"/>
+                    <TextBlock Margin="0,5,0,0" FontSize="16" Text="{Binding AssociatedDeviceId}" Visibility="{Binding MoreInfo, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Gray" TextWrapping="Wrap"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Margin="0,15,0,0" x:Name="btnUndoAssociation" FontSize="16" Command="{Binding UndoAssociationCommand}" RequestedTheme="Dark">Undo association</Button>
+                        <Button Margin="15,15,0,0" x:Name="btnMoreInfo" FontSize="16" RequestedTheme="Dark" Command="{Binding ShowHideMoreInfoCommand}" Visibility="{Binding MoreInfo, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=XOR}">More info</Button>
+                        <Button Margin="15,15,0,0" x:Name="btnHideInfo" FontSize="16" RequestedTheme="Dark" Command="{Binding ShowHideMoreInfoCommand}" Visibility="{Binding MoreInfo, Converter={StaticResource BooleanToVisibilityConverter}}">Less info</Button>
+                    </StackPanel>
                 </StackPanel>
             
             <TextBlock Margin="0,40,0,0" Style="{StaticResource SubtitleTextBlockStyle}" >Timeline</TextBlock>
@@ -79,6 +83,7 @@
                 <Button Margin="0,15,0,0" x:Name="btnUpdate" FontSize="16" RequestedTheme="Dark" Command="{Binding UpdateCommand}">Check for updates</Button>
                 <TextBlock Margin="0,25,0,0" 
                            FontSize="16"
+                           Visibility="{Binding UpdateStatus, Converter={StaticResource BooleanToVisibilityConverter}}"
                            Text="{Binding UpdateStatus}"
                            />
                 <ProgressBar
@@ -92,11 +97,12 @@
                 <StackPanel Orientation="Horizontal">
                     <Button Margin="0,15,0,0" x:Name="btnBackup" FontSize="16" RequestedTheme="Dark" Click="btnBackup_Click">Backup</Button>
                     <Button Margin="15,15,0,0" x:Name="btnRestore" FontSize="16" RequestedTheme="Dark" Click="btnRestore_Click">Restore</Button>
-                    <Button Margin="15,15,0,0" x:Name="btnClearFiles" FontSize="16" RequestedTheme="Dark" Click="btnClearFiles_Click" >Clear</Button>
+                    <Button Margin="15,15,0,0" x:Name="btnClearFiles" FontSize="16" RequestedTheme="Dark" Visibility="Collapsed" Click="btnClearFiles_Click" >Clear</Button>
                 </StackPanel>
                 <TextBlock Margin="0,25,0,0" 
                            FontSize="16"
                            Text="{Binding BackupStatus}"
+                           Visibility="{Binding BackupStatus, Converter={StaticResource BooleanToVisibilityConverter}}"
                            />
                 <ProgressBar
                     IsIndeterminate="True"

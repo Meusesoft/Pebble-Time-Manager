@@ -51,6 +51,7 @@ namespace Pebble_Time_Manager.ViewModels
             AssociateCommand = new RelayCommand(Associate);
             UndoAssociationCommand = new RelayCommand(UndoAssociation);
             UpdateCommand = new RelayCommand(Update);
+            ShowHideMoreInfoCommand = new RelayCommand(ShowHideMoreInfo);
 
         }
 
@@ -329,6 +330,12 @@ namespace Pebble_Time_Manager.ViewModels
 #endregion
 
 #region Commands
+
+        public RelayCommand ShowHideMoreInfoCommand
+        {
+            get;
+            private set;
+        }
 
         public RelayCommand UpdateCommand
         {
@@ -711,6 +718,20 @@ namespace Pebble_Time_Manager.ViewModels
             }
         }
 
+        public bool _MoreInfo;
+        public bool MoreInfo
+        {
+            get
+            {
+                return _MoreInfo;
+            }
+            set
+            {
+                _MoreInfo = value;
+                NotifyPropertyChanged("MoreInfo");
+            }
+        }
+
         public String AssociatedDeviceBoard
         {
             get
@@ -761,6 +782,8 @@ namespace Pebble_Time_Manager.ViewModels
             NotifyPropertyChanged("AssociatedDeviceBoard");
             NotifyPropertyChanged("AssociatedDeviceName");
             NotifyPropertyChanged("AssociatedDeviceId");
+
+            MoreInfo = false;
         }
 
         public async void Associate(object obj)
@@ -780,6 +803,11 @@ namespace Pebble_Time_Manager.ViewModels
                     await messageDialog.ShowAsync();
                 }
             }
+        }
+
+        private void ShowHideMoreInfo(object ob)
+        {
+            MoreInfo = !MoreInfo;
         }
 
         private async void PebbleAssociate(IUICommand command)
@@ -829,8 +857,6 @@ namespace Pebble_Time_Manager.ViewModels
                 NotifyPropertyChanged("AssociatedDeviceId");
             }
         }
-
-
 
         #endregion
 
