@@ -391,7 +391,7 @@ namespace Pebble_Time_Manager
         {
             await Pebble_Time_Manager.Helper.Purchases.getReference().Purchase("pebble_tennis");
 
-            _vmBinder.Sport.Purchased = true;            
+            _vmBinder.Tennis.Purchased = true;            
         }
 
         /// <summary>

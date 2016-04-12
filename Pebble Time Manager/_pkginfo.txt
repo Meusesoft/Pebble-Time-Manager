@@ -1,1 +1,1 @@
-D:\Projects\Pebble Time Manager\Pebble Time Manager\AppPackages\Pebble Time Manager_1.1.0.0\Pebble Time Manager_1.1.0.0_x86_x64_arm.appxbundle
+D:\Projects\Pebble Time Manager\Pebble Time Manager\AppPackages\Pebble Time Manager_1.1.2.0\Pebble Time Manager_1.1.2.0_x86_x64_arm.appxbundle
