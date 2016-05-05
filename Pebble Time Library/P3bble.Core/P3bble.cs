@@ -1259,6 +1259,7 @@ namespace P3bble
 
                 if (ServiceId.Length == 0)
                 {
+                  //  String DeviceSelectorString = BluetoothDevice.GetDeviceSelector();
                     AllDevices = await DeviceInformation.FindAllAsync();
                 }
                 else
@@ -1275,6 +1276,8 @@ namespace P3bble
                         var PebbleDevice = new PebbleDevice();
                         PebbleDevice.Name = device.Name;
                         PebbleDevice.ServiceId = device.Id;
+
+                        System.Diagnostics.Debug.WriteLine($"Name: {device.Name}, Id: {device.Id}");
 
                         return PebbleDevice;
                     }
