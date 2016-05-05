@@ -205,7 +205,7 @@
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
-                
+
                 <Grid Name="MainGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>

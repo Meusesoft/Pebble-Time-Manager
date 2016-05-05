@@ -1,28 +1,14 @@
-﻿using Pebble_Time_Manager.ViewModels;
+﻿using P3bble;
+using Pebble_Time_Manager.Connector;
 using Pebble_Time_Manager.Pages;
+using Pebble_Time_Manager.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.ApplicationModel.Store;
+using Windows.Storage;
+using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Windows.Storage;
-using Windows.ApplicationModel.Store;
-using Windows.Devices.Bluetooth;
-using Windows.Devices.Enumeration;
-using Windows.Devices.Bluetooth.Rfcomm;
-using Pebble_Time_Manager.Connector;
-using Windows.UI.Popups;
-using P3bble;
-using Windows.UI.ViewManagement;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 

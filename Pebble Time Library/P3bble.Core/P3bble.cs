@@ -1239,27 +1239,46 @@ namespace P3bble
             return result;
         }
 
-
         public static async Task<PebbleDevice> FindPebble()
         {
             return await FindPebble("");
         }
 
-
+            
         public static async Task<PebbleDevice> FindPebble(String ServiceId)
         {
             List<P3bble> result = new List<P3bble>();
 
             try
             {
-                //var PebbleRfCommID = RfcommServiceId.FromUuid(new Guid("00000000-deca-fade-deca-deafdecacaff"));
-                //var PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
-                //var PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
-                DeviceInformationCollection AllDevices;
+                List<DeviceInformation> AllDevices = new List<DeviceInformation>();
+                List<PebbleDevice> FoundPebbleDevices = new List<PebbleDevice>();
 
                 if (ServiceId.Length == 0)
+                { 
+                    //Find all possible devices by there Service ID
+                    var PebbleRfCommID = RfcommServiceId.FromUuid(new Guid("00000000-deca-fade-deca-deafdecacaff"));
+                    var PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
+                    var PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
+                    AllDevices.AddRange(PebbleDevices.AsEnumerable());
+
+                    PebbleRfCommID = RfcommServiceId.FromUuid(new Guid("00001101-0000-1000-8000-00805f9b34fb"));
+                    PebbleDeviceService = RfcommDeviceService.GetDeviceSelector(PebbleRfCommID);
+                    PebbleDevices = await DeviceInformation.FindAllAsync(PebbleDeviceService);
+                    AllDevices.AddRange(PebbleDevices.AsEnumerable());
+                }
+                else
                 {
-                  //  String DeviceSelectorString = BluetoothDevice.GetDeviceSelector();
+                    string InterfaceClassGuid = ServiceId.Substring(ServiceId.Length - 38);
+                    int startGuid = ServiceId.IndexOf("{");
+                    string ServiceGuid = ServiceId.Substring(startGuid, 38);
+                    string Filter = String.Format("System.Devices.InterfaceClassGuid:=\"{0}\" AND System.DeviceInterface.Bluetooth.ServiceGuid:=\"{1}\"", InterfaceClassGuid, ServiceGuid);
+                    var Devices = await DeviceInformation.FindAllAsync(Filter);
+                    AllDevices.AddRange(Devices.AsEnumerable());
+                }
+
+                /*if (ServiceId.Length == 0)
+                {
                     AllDevices = await DeviceInformation.FindAllAsync();
                 }
                 else
@@ -1267,21 +1286,25 @@ namespace P3bble
                     string InterfaceClassGuid = ServiceId.Substring(ServiceId.Length - 38);
                     string Filter = String.Format("System.Devices.InterfaceClassGuid:=\"{0}\"", InterfaceClassGuid);
                     AllDevices = await DeviceInformation.FindAllAsync(Filter);
-                }
+                }*/
 
+                //Process al detected devices; check if they are pebble
                 foreach (var device in AllDevices)
                 {
+                    System.Diagnostics.Debug.WriteLine($"Name: {device.Name}, Id: {device.Id}");
+
                     if (device.Name.ToLower().Contains("pebble"))
                     {
                         var PebbleDevice = new PebbleDevice();
                         PebbleDevice.Name = device.Name;
                         PebbleDevice.ServiceId = device.Id;
 
-                        System.Diagnostics.Debug.WriteLine($"Name: {device.Name}, Id: {device.Id}");
-
-                        return PebbleDevice;
+                        FoundPebbleDevices.Add(PebbleDevice);
                     }
                 }
+
+                //Return the first pebble device
+                if (FoundPebbleDevices.Count > 0) return FoundPebbleDevices[0];
             }
             catch (Exception ex)
             {

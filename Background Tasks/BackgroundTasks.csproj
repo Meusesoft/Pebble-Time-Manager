@@ -108,10 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BackgroundCommunication.cs" />
-    <None Include="BackgroundNotifications.cs" />
     <Compile Include="BackgroundSynchronizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\Background_Tasks.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Pebble Time Library\Pebble Time Library.csproj">

@@ -1,0 +1,8 @@
+MainPackage=D:\Projects\Pebble Time Manager\Pebble Time Manager\bin\ARM\Release\Upload\Pebble Time Manager_1.1.2.0_ARM.appx
+SymbolPackage=D:\Projects\Pebble Time Manager\Pebble Time Manager\AppPackages\Pebble Time Manager_1.1.2.0\Pebble Time Manager_1.1.2.0_ARM.appxsym
+ResourcePack=D:\Projects\Pebble Time Manager\Pebble Time Manager\_scale-100.appx
+ResourcePack=D:\Projects\Pebble Time Manager\Pebble Time Manager\_scale-125.appx
+ResourcePack=D:\Projects\Pebble Time Manager\Pebble Time Manager\_scale-140.appx
+ResourcePack=D:\Projects\Pebble Time Manager\Pebble Time Manager\_scale-150.appx
+ResourcePack=D:\Projects\Pebble Time Manager\Pebble Time Manager\_scale-240.appx
+ResourcePack=D:\Projects\Pebble Time Manager\Pebble Time Manager\_scale-400.appx

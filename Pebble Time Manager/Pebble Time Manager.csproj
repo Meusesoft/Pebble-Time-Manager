@@ -12,12 +12,16 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Pebble Time Manager_StoreKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>9C63C35A649A58854161FF266836D109DA6B0568</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -93,12 +97,6 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\BadgeLogo.scale-100.png" />
-    <Content Include="Assets\BadgeLogo.scale-125.png" />
-    <Content Include="Assets\BadgeLogo.scale-150.png" />
-    <Content Include="Assets\BadgeLogo.scale-200.png" />
-    <Content Include="Assets\BadgeLogo.scale-400.png" />
-    <Content Include="Assets\javascript.txt" />
     <Content Include="Assets\ptm_icons.otf" />
     <Content Include="Assets\Tennis.pbw" />
     <None Include="Pebble Time Manager_StoreKey.pfx" />
@@ -122,9 +120,6 @@
     </Compile>
     <Compile Include="Pages\ConnectPage.xaml.cs">
       <DependentUpon>ConnectPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\JavascriptPage.xaml.cs">
-      <DependentUpon>JavascriptPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\PaceApp.xaml.cs">
       <DependentUpon>PaceApp.xaml</DependentUpon>
@@ -154,15 +149,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.scale-240.png" />
-    <Content Include="Assets\Pebble_Logo_150.scale-100.png" />
-    <Content Include="Assets\Pebble_Logo_150.scale-140.png" />
-    <Content Include="Assets\Pebble_Logo_150.scale-240.png" />
-    <Content Include="Assets\Pebble_Logo_71.scale-100.png" />
     <Content Include="Assets\share.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-125.png" />
     <Content Include="Assets\SplashScreen.scale-150.png" />
-    <Content Include="Assets\SplashScreen.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-400.png" />
     <Content Include="Assets\sports_icon.png" />
     <Content Include="Assets\Square150x150Logo.scale-100.png" />
@@ -227,10 +217,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\JavascriptPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Pages\PaceApp.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -260,10 +246,6 @@
     <ProjectReference Include="..\Background Tasks\BackgroundTasks.csproj">
       <Project>{c139f5fd-ac82-4e2a-94d3-3bd56b6b33fa}</Project>
       <Name>BackgroundTasks</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jint\Jint.csproj">
-      <Project>{678738da-f723-4920-b9e5-cad667104bda}</Project>
-      <Name>Jint</Name>
     </ProjectReference>
     <ProjectReference Include="..\Pebble Time Library\Pebble Time Library.csproj">
       <Project>{bf2df8f4-3167-49ba-8e69-c9515764fe44}</Project>

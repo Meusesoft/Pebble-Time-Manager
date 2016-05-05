@@ -18,6 +18,44 @@ using System.Runtime.Serialization;
 
 namespace Pebble_Time_Library.Javascript
 {
+    /*public class PebbleKitJS
+    {
+        public PebbleKitJS(IWatchItem ParentItem)
+        {
+
+        }
+
+        public async Task Execute(String Javascript)
+        {
+
+        }
+        public class URLEventArgs : EventArgs
+        {
+            public String URL;
+            public IWatchItem WatchItem;
+        }
+        public void ShowConfiguration(IWatchItem item)
+        {
+
+        }
+
+        public void WebViewClosed(String Data)
+        {
+
+        }
+
+        public void Ready()
+        {
+
+        }
+
+        public async Task AppMessage(Dictionary<int, object> Content)
+        { }
+
+        public delegate void OpenURLEventHandler(object sender, EventArgs e);
+        public static event OpenURLEventHandler OpenURL;
+    }*/
+
     public class PebbleKitJS
     {
         #region Constructors
@@ -34,7 +72,7 @@ namespace Pebble_Time_Library.Javascript
         #region Fields
 
         private Pebble _Pebble;
-        public /*static*/ Engine _JintEngine;
+        public  Engine _JintEngine;
         private String[] _JavascriptLines;
         private IWatchItem _ParentItem;
 
@@ -453,16 +491,6 @@ namespace Pebble_Time_Library.Javascript
             {
                 String value = "null";
 
-                /*if (ParentItem.StoredItems == null)
-                {
-                    ParentItem.StoredItems = new Dictionary<string, string>();
-                }
-
-                if (ParentItem.StoredItems.ContainsKey(item))
-                {
-                    return ParentItem.StoredItems[item];
-                }*/
-
                 if (StorageContainer.ContainsKey(_ParentItem.ID))
                 {
                     Dictionary<String, String> ItemStorageContainer = StorageContainer[_ParentItem.ID];
@@ -480,19 +508,6 @@ namespace Pebble_Time_Library.Javascript
 
             public async Task<object> setItem(String item, string value)
             {
-                /*if (ParentItem.StoredItems == null)
-                {
-                    ParentItem.StoredItems = new Dictionary<string, string>();
-                }
-
-                if (ParentItem.StoredItems.ContainsKey(item))
-                {
-                    ParentItem.StoredItems[item] = value;
-                }
-                else
-                {
-                    ParentItem.StoredItems.Add(item, value);
-                }*/
 
                 if (!StorageContainer.ContainsKey(_ParentItem.ID))
                 {
@@ -793,14 +808,14 @@ namespace Pebble_Time_Library.Javascript
 
 
                     //_httpWebRequest.Accept = "text/html, application/json";
-                    /*
-                   Accept-Encoding: gzip, deflate
-                   Accept-Language: nl-NL, nl; q=0.5
-                   Cache-Control: no-cache
-                   Connection: Keep-Alive
-                   Host: nominatim.openstreetmap.org
-                   User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586
-                   */
+
+                   //Accept-Encoding: gzip, deflate
+                   //Accept-Language: nl-NL, nl; q=0.5
+                   //Cache-Control: no-cache
+                   //Connection: Keep-Alive
+                   //Host: nominatim.openstreetmap.org
+                   //User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586
+
 
                     _response = await _httpWebRequest.GetResponseAsync();
 

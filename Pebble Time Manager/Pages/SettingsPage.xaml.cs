@@ -42,16 +42,16 @@ namespace Pebble_Time_Manager
 
             vmBinder _vmBinder = vmBinder.GetInstance();
             _TimeLineSynchronizer = _vmBinder.TimeLineSynchronizer;
+            _vmBinder.UpdateStatus = "";
+            _vmBinder.BackupStatus = "";
+            _vmBinder.MoreInfo = false;
             //_vmBinder.NotificationsHandler.FatalError += NotificationsHandler_FatalError;
 
-            DataContext = _vmBinder;
-
 #if DEBUG
-
-#else
-                hubNotifications.Visibility = Visibility.Collapsed;
-                hubApps.Visibility = Visibility.Collapsed;                
+            btnClearFiles.Visibility = Visibility.Visible;
 #endif
+
+            DataContext = _vmBinder;
         }
 
         /// <summary>
